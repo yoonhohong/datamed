@@ -1,0 +1,12 @@
+name: "Yoon H. Hong"
+output_dir: "docs"
+navbar:
+  title: "Data medicine with R"
+  left:
+    - text: "by Yoon H. Hong"
+    - icon: fa-github fa-lg
+      href: http://www.github.com/yoonhohong/SnuDataMed
+output:
+  html_document:
+    theme: paper
+    css: 'styles.css'

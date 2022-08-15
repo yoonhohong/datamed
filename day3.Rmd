@@ -1,0 +1,437 @@
+---
+title: "데이터 정제와 가공, 시각화"   
+author: "Yoon-Ho Hong" 
+date: "2022-08-16"
+output: 
+  html_document:
+    toc: yes
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = F)
+```
+
+오늘 학습할 내용은 본격적인 데이터 분석에 앞선 전처리 과정입니다(preprocessing). 데이터 전처리는 보통 다음 순서로 이루어집니다. 
+
+- 데이터 정제      
+- 데이터 가공    
+- 탐색적 데이터분석(exploratory data analysis)                
+
+보통 위 과정은 한 번에 끝나지 않고, 필요에 따라 반복합니다(iterative process).        
+      
+### 데이터 정제(cleaning)
+
+데이터 정제는 보통 다음과 같은 오류를 찾아 제거하거나, 수정하는 과정을 말합니다. 
+
+- Duplicates    
+- Irrelevant values    
+- Inconsistent values   
+- Missing values   
+- Outliers    
+
+흔히 데이터 과학자는 데이터 정제에 80%의 시간을 쓰고, 나머지 20%의 시간을 이것에 대해 불평하느라 쓴다는 말이 있습니다. 데이터 정제 과정이 그만큼 오랜 시간과 많은 노력이 드는 단순 작업이라는 뜻인데, 아마 많은 사람들이 이에 공감하리라 생각합니다.
+
+데이터 정제는 실제 임상 데이터를 다루는 아래 실습 과제에서 좀 더 자세히 살펴보기로 하겠습니다.    
+
+
+### 데이터 가공       
+데이터 가공이란 원시 데이터를 본격적으로 분석하기에 앞서 소프트웨어가 처리할 수 있는 적절한 형식으로 변환하는 과정을 말합니다. 
+
+데이터 가공의 실제를 gapminder 데이터셋을 이용해 살펴보겠습니다.   
+gapminder 데이터셋에는 국가별, 년도별 life expectancy, GDP per capita, population 등의 데이터가 포함되어 있습니다.       
+
+gapminder 패키지를 설치하고 로딩하면 작업공간에서 gapminder 데이터를 불러올 수 있습니다.  
+
+```{r}
+install.packages("gapminder")
+library(gapminder)
+```
+
+
+```{r}
+head(gapminder)
+str(gapminder)
+summary(gapminder)
+```
+
+데이터 가공에 필요한 dplyr 패키지를 설치하고, 로딩합니다. 
+
+```{r}
+install.packages("dplyr")
+library(dplyr)
+```
+
+
+### select 
+특정 변수들만 골라냅니다.   
+
+```{r}
+gapminder %>%
+  select(continent, country) %>%
+  distinct() # return distinct data, removing duplicates  
+```
+
+%>% 는 pipe 연산자(operator)이며, 이전(좌측) 결과를 받아서 다음(우측)으로 넘겨 주는 역할을 합니다.   
+
+### filter
+
+조건에 맞는 관측치만 추출합니다.  
+
+```{r}
+gapminder %>%
+  filter(year == 1957) # 1957년 데이터만 추출합니다.    
+```
+
+```{r eval=FALSE}
+gapminder %>%
+  filter(country == "Korea, Rep.") # Korea, Rep. 데이터만 추출합니다.    
+```
+
+### arrange
+오름차순으로 정렬합니다.   
+```{r eval=FALSE}
+gapminder %>%
+  arrange(gdpPercap) # gdpPercap 이 낮은 값이서 높은 값으로 정렬합니다. 
+```
+
+내림차순으로 정렬하려면 desc() 함수를 사용합니다.   
+```{r eval=FALSE}
+gapminder %>%
+  arrange(desc(gdpPercap)) # 함수 안에서 함수를 사용, nested function 
+```
+
+### mutate
+변수를 변환해서 새로운 변수를 생성하는 함수입니다.
+인구수를 백만명단위로 변환해봅시다.   
+```{r eval=FALSE}
+gapminder %>%
+  mutate(pop = pop/1000000)
+```
+
+이번에는 총국민소득을 구해봅시다.   
+```{r eval=FALSE}
+gapminder %>%
+  mutate(gdp = gdpPercap*pop)
+```
+
+### summarize
+summarize() 함수는 통계 요약치를 구할 때 유용하게 사용됩니다.   
+2007년의 평균 기대수명을 구해봅시다.    
+```{r eval=FALSE}
+gapminder %>%
+  filter(year == 2007) %>%
+  summarize(meanLifeExp = mean(lifeExp))
+```
+
+
+### group_by
+년도별 평균 기대수명을 구해봅시다.   
+```{r eval=FALSE}
+gapminder %>%
+  group_by(year) %>%
+  summarise(meanLifeExp = mean(lifeExp))
+```
+
+대륙별, 년도별 평균 기대수명을 구해봅시다.      
+```{r eval=FALSE}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarize(meanLifeExp = mean(lifeExp))
+```
+
+### join 
+
+data frame의 병합을 위해 join 함수를 사용합니다. 
+예제를 위해 먼저 병합할 두 개의 data frame 을 만들어보겠습니다. 
+```{r}
+country = c("Korea", "Japan", "China")
+life_exp = c(80, 83, 67)
+df1 = data.frame(country, life_exp) 
+country = c("Korea", "Japan", "Taiwan")
+pop_mil = c(50, 100, 10)
+df2 = data.frame(country, pop_mil) 
+``` 
+
+```{r}
+inner_join(df1, df2, by="country")
+left_join(df1, df2, by="country")
+right_join(df1, df2, by="country")
+full_join(df1, df2, by="country")
+```
+
+
+참고로, vector의 병합을 위해서는 built-in 함수로 intersect, union, setdiff 를 사용합니다.   
+```{r}
+x = c("a", "b", "c")
+y = c("b", "c", "d")
+intersect(x, y) # 교집합   
+setdiff(x, y) # 여집합  
+union(x, y) # 합집합    
+```
+
+### reshaping data 
+
+분석에 적합한 형태로 long format <-> wide format 전환이 필요할 때, tidyr 패키지의 gather와 spread 함수를 사용합니다.
+
+```{r eval=FALSE}
+install.packages("tidyr")
+library(tidyr)
+```
+
+```{r}
+continent_gapminder <-gapminder %>%
+  group_by(continent, year) %>%
+  summarise(lifeExp = mean(lifeExp), 
+            pop = mean(pop), 
+            gdpPercap = mean(gdpPercap))
+continent_gapminder %>% gather(key = "attribute", value = "mean", lifeExp:gdpPercap)
+```
+
+long format의 데이터 구조를 다시 wide format 으로 바꾸어 봅시다. 
+
+```{r}
+long_format = continent_gapminder %>% gather(key = "attribute", value = "mean", lifeExp:gdpPercap)
+long_format %>% spread(key = attribute, value = mean)
+```
+
+
+### 데이터 시각화(Data visualization)
+
+데이터 시각화(data visualization)는 데이터 패턴 혹은 분석 결과를 직관적으로 이해할 수 있도록 시각적으로 표현하는 과정을 말합니다.    
+
+데이터 시각화를 위해 ggplot2 를 자주 사용합니다. ggplot2는 Hadley Wickham이 "Grammar of Graphics"에 기초하여 개발한 R package로, 점진적인 방식(incremental method), 즉, 기초 플롯을 생성한 후, 필요한 그래픽 요소들을 추가, 수정하는 방식으로 데이터를 시각화합니다.         
+
+실습을 위해 ggplot2 패키지를 설치하고 로딩합니다.    
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+```
+
+### scatter plot
+ 
+2007년 1인당 국민소득과 기대수명의 관계를 산점도로 그려봅니다.   
+```{r}
+gapminder_2007 <- gapminder %>%
+  filter(year == 2007) 
+gapminder_2007 %>% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point()
+```
+
+### other aesthetics
+그래픽 요소(color, size)에 데이터를 매핑
+```{r}
+gapminder_2007 %>% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point(aes(color = continent, size=pop)) 
+```
+
+### facet
+```{r}
+gapminder_2007 %>% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point(aes(color = continent, size=pop)) + 
+  facet_grid(.~continent)
+```
+
+### line plot
+
+geom_line 함수를 사용해서, 대륙별로 평균 기대수명의 연도에 따른 변화를 살펴봅시다.   
+```{r}
+gapminder_line = gapminder %>%
+  group_by(continent, year) %>%
+  summarize(meanLifeExp = mean(lifeExp))
+```
+
+```{r}
+gapminder_line %>% 
+  ggplot(aes(x=year, y=meanLifeExp, color=continent)) + 
+  geom_line()
+```
+
+*[도전: scale]*       
+2007년 1인당 국민소득과 기대 수명의 관계를 산점도로 그리고(위의 예제), x축을 로그 변환해봅시다.        
+
+```{r, include=FALSE}
+p <- ggplot(gapminder_2007, aes(gdpPercap, lifeExp)) + geom_point()
+p + scale_x_log10()# scale 함수 
+```
+
+*[도전: statistics]*        
+통계적 데이터 변환 함수를 이용해(stat_) 선형회귀직선을 추가해봅시다.     
+
+```{r, include=FALSE}
+p +scale_x_log10() + stat_smooth(method = "lm", se=T, color = "red") 
+```
+
+### bar plot
+
+대륙별 국가 수를 구하고, 이를 bar plot으로 그려봅시다.   
+```{r}
+gapminder_col = gapminder %>%
+  select(continent, country) %>%
+  distinct() %>%
+  group_by(continent) %>%
+  summarize(n = n()) 
+```
+
+
+```{r}
+gapminder_col %>% 
+  ggplot(aes(continent, n)) + 
+  geom_col()
+```
+다음과 같이 geom_bar 함수를 이용할 수도 있습니다.    
+```{r}
+gapminder_bar = gapminder %>%
+  select(continent, country) %>%
+  distinct() 
+gapminder_bar %>% 
+  ggplot(aes(continent)) + 
+  geom_bar()
+```
+
+*[도전: fill]*     
+위 bar graph에서 대륙별로 bar의 색깔을 다르게 표현해보세요.  
+```{r include=FALSE}
+gapminder_bar %>% 
+  ggplot(aes(continent)) + 
+  geom_bar(aes(fill=continent))
+```
+
+*[도전: coordinate flip]*    
+x-y 좌표축을 flip 해보세요.  
+```{r include=FALSE}
+gapminder_bar %>% 
+  ggplot(aes(continent)) + 
+  geom_bar(aes(fill=continent)) + 
+  coord_flip()
+```
+
+### histogram 
+
+기대수명의 분포를 살펴봅시다(histogram).   
+```{r}
+ggplot(gapminder, aes(x=lifeExp)) + 
+  geom_histogram()
+```
+
+5년 단위 구간(bins)으로 보고 싶으면 binwidth를 설정합니다.   
+```{r}
+ggplot(gapminder, aes(x=lifeExp)) + geom_histogram(binwidth = 5)
+```
+
+### box plot
+
+대륙별 기대수명의 분포를 비교해봅시다(box plot).  
+```{r}
+p = ggplot(gapminder, aes(x=continent, y=lifeExp)) 
+p + geom_boxplot()
+```
+
+*[도전]*      
+box plot은 유용하지만 한가지 단점이 있습니다. 데이터 분포의 모양을 알 수 없다는 것이지요. 
+1. 위 box plot에 데이터 점을 표시해봅시다.  
+```{r}
+p + geom_boxplot() + geom_jitter(col="orange", alpha=0.5)
+```
+
+Europe과 Oceania의 차이가 보이시나요?   
+위 box plot 대신에 violin plot을 그려봅시다. geom_violin()   
+```{r}
+p + geom_violin()
+```
+
+### theme 
+ggplot2에는 시각화의 모양을 빠르게 변경하는데 유용한 몇 가지 다른 테마가 있습니다. 예를 들어 theme_bw() 함수는 배경을 white color로 변경합니다.   
+```{r}
+p + geom_boxplot() + theme_bw()
+```
+
+### title & axis labels  
+ggplot2를 이용하면 원하는대로 쉽게 그래프를 사용자 정의할 수 있습니다. 예를 들어, 그래프에 제목을 달고, 축의 레이블을 변경해보겠습니다.    
+```{r}
+p = p + geom_boxplot() + 
+  labs(title = "Distribution of life expectancy across different continents", 
+       x = "Continent", 
+       y = "Life expectancy (years)") 
+p 
+```
+
+제목과 축의 레이블의 크기를 늘려서 가독성을 향상시켜보겠습니다.   
+```{r}
+p + theme(text = element_text(size = 16))
+```
+
+### ggplot2 plot 의 기본 성분과 구조
+
+ggplot2 plot의 기본 성분은 다음과 같습니다.   
+
+- Data: 주로 data frame 형태의 데이터 (data)    
+- Aesthetics: 데이터를 축, 색상, 점의 크기 등으로 매핑 (mapping)
+- Geometric objects: 점, 선, 도형과 같은 기하학적 객체   
+- Scales: 데이터의 스케일(x축, y축, 점의 크기, 투명도 등)을 동적으로 조정하여 어떤 시각적 요소를 사용할 것인가 정의   
+- Coordinate system: 좌표계    
+- Facetting: 조건부 플롯을 위해 패널을 분할하여 표현하는 방법
+- Statistical transformation: Binning, quantiles, smoothing 등의 통계 변환    
+- Position adjustment: 위치의 조정   
+
+```{r}
+attributes(p)
+```
+
+ggplot2 plot 의 구조는 다음과 같습니다. 
+
+- ggplot = layers + scales + coordinate system 
+- layers = data + mapping + geom + stat + position 
+
+### ggplot2 함수군
+
+ggplot2의 함수들은 다음과 같은 그룹들이 있습니다.    
+
+- Plot creation: ggplot 클래스 객체를 생성하는 함수군
+- Geoms: graphic의 geometric (기하학적인 형태)을 지정하는 함수군
+- Statistics: 데이터를 통계적인 관점으로 변환하는 함수군
+- Scales: 축의 스케일 변환과 라벨, 범례 등을 변경하는 함수군
+- Coordinate systems: 좌표계를 설정하는 함수군
+- Faceting: 그래픽 facet layout 을 정의하는 함수군
+- Position adjustment: geometric 의 위치를 지정하는 함수군
+- Others 
+
+
+### 데이터 불러오기와 쓰기  
+
+데이터 작업을 위해 외부 데이터를 불러들이는 방법에 대해서 알아봅시다.     
+```{r}
+# read a comma separated value (csv) file
+demograph = read.csv("data/demographic.csv") # csv 파일을 data frame 으로 불러들입니다. 
+head(demograph) # show the first 6 rows
+```
+
+다음은 일반 text 파일을 불러들이는 함수입니다. 
+```{r}
+# read a delimited text file 
+df_import = read.delim("data/all_forms_PROACT_training2.txt", sep="|") # sep은 delimiter를 가리키는 argument 입니다.  
+str(df_import)
+```
+
+R에서 생성하거나 가공한 data frame 등의 데이터구조 객체를 파일로 외부에 저장하는 방법입니다.  
+```{r}
+temp = demograph %>% 
+  select(-Race)
+write.csv(temp, file = "data/demographic_temp.csv", row.names = F, quote = F) 
+```
+
+
+### 참고 자료 
+
+데이터 가공   
+[data wrangling cheet sheet](https://github.com/yoonhohong/tutorial/blob/master/data-wrangling-cheatsheet.pdf)  
+
+데이터 시각화     
+[Introduction to data visualization using ggplot2](https://www.youtube.com/watch?v=YxKr2a-Y1WE) 
+[Grammar of Graphics](https://www.youtube.com/watch?v=uiTc55clwuA)   
+[ggplot2: layers](https://www.youtube.com/watch?v=PiY9hwOkL8U)    
+[ggplot2: stats and geoms](https://www.youtube.com/watch?v=9HBCPFNvkzQ)
+
