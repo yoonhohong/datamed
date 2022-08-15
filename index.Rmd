@@ -23,15 +23,16 @@ title: "데이터 의학 (Data Medicine) with R"
 (Gareth James, Daniel Witten, Trevor Hastie, Robert Tibshirani, 2013)](https://www-bcf.usc.edu/~gareth/ISL/)
 
 **강의록**    
-- [Day 1](docs/day1.html) 데이터 의학                            
-- [Day 2](docs/day2.html) R 프로그래밍의 기초    
-- [Day 3](docs/day3.html) 데이터 정제와 가공, 시각화    
-- [Exercise](docs/exercise_day2-3.html)  
-- [Day 4](docs/day4.html) 탐색적 분석과 협업의 도구                         
-- [Day 5](docs/day5.html) 기계학습의 기초, 회귀와 분류     
-- [Day 6](docs/day6.html) 모델 성능 평가와 교차검증     
-- [Day 7](docs/day7.html) 정규화    
-- [Day 8](docs/day8.html) 비지도기계학습      
+- [Day 1](day1.html) 데이터 의학                            
+- [Day 2](day2.html) R 프로그래밍의 기초    
+- [Day 3](day3.html) 데이터 정제와 가공, 시각화    
+- [Exercise](exercise_day2-3.html)  
+- [Day 4](day4.html) 탐색적 분석과 협업의 도구                         
+- [Day 5](day5.html) 기계학습의 기초, 회귀와 분류     
+- [Day 6](day6.html) 모델 성능 평가와 교차검증     
+- [Day 7](day7.html) 정규화    
+- [Day 8](day8.html) 비지도기계학습      
+
 
 
 
