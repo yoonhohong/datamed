@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Yoon-Ho Hong" />
+
+<meta name="date" content="2022-08-23" />
+
+<title>기계학습의 기초</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data medicine with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown-header">by Yoon H. Hong</li>
+<li>
+  <a href="http://www.github.com/yoonhohong/SnuDataMed">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">기계학습의 기초</h1>
+<h4 class="author">Yoon-Ho Hong</h4>
+<h4 class="date">2022-08-23</h4>
+
+</div>
+
+
+<p>이번 시간에는 기계학습의 기초가 되는 다음 개념을 다룬다.</p>
+<ul>
+<li>추정, 예측과 추론<br />
+</li>
+<li>모수 vs. 비모수<br />
+</li>
+<li>유연성과 정확성의 관계<br />
+</li>
+<li>편향과 분산의 관계</li>
+</ul>
+<div id="지도-기계학습" class="section level1">
+<h1>지도 기계학습</h1>
+<p>기계학습은 지도 기계학습과 비지도 기계학습으로 구분한다.</p>
+<p>지도 기계학습은 입력 변수를 기반으로 출력 변수를 예측하는 모델을
+만드는 것이고, 비지도 기계학습은 출력 변수 없이 입력 변수만 가지고
+자료의 상관 관계와 구조를 파악하는 것이다.</p>
+<p>출력 변수는 일반적으로 반응 변수 혹은 응답 변수, 종속 변수라고 불리며
+보통 <span class="math inline">\(Y\)</span>를 사용하여 나타낸다.</p>
+<p>입력 변수는 보통 <span class="math inline">\(X\)</span>로 나타내고,
+아래 첨자를 사용하여 서로 다른 입력 변수들을 구분한다. 입력 변수는 설명
+변수, 예측 변수, 독립 변수, 특징(features) 또는 그냥 변수라고
+불린다.</p>
+<p><span class="math inline">\(X\)</span>와 <span
+class="math inline">\(Y\)</span>의 관계를 다음 식으로 나타낼 수
+있다.</p>
+<p><span class="math display">\[Y = f(X) + e\]</span></p>
+<p><span class="math inline">\(X\)</span> (<span
+class="math inline">\(X_1\)</span> + <span
+class="math inline">\(X_2\)</span> + … + <span
+class="math inline">\(X_p\)</span>): features<br />
+<span class="math inline">\(Y\)</span>; response variable<br />
+<span class="math inline">\(e\)</span>; random error term (independent
+of <span class="math inline">\(X\)</span>, mean = 0)</p>
+<p>지도 기계학습은 결국 f를 추정하는(estimate) 것으로 볼 수 있다.</p>
+</div>
+<div id="f를-추정하는-이유" class="section level1">
+<h1><span class="math inline">\(f\)</span>를 추정하는 이유</h1>
+<p>f를 어떻게 추정하는지 하는 방법을 구체적으로 살펴보기에 앞서, 우선
+f를 추정하고자 하는 목적, 이유에 대해 살펴보자.</p>
+<p>크게 두가지로 구분해 볼 수 있는데, 바로 예측과 추론이다.</p>
+<div id="예측" class="section level2">
+<h2>예측</h2>
+<p><span class="math display">\[\hat{Y} = \hat{f}(X)\]</span></p>
+<p><span class="math inline">\(\hat{Y}\)</span>은 Y에 대한
+예측(prediction) 결과를 나타내며, <span
+class="math inline">\(\hat{f}\)</span>은 f에 대한 추정을 나타낸다.</p>
+<p>예측 문제에서 <span class="math inline">\(\hat{f}\)</span>은 보통
+블랙박스로 취급된다. <span class="math inline">\(\hat{f}\)</span>이
+정확한 예측을 제공한다면 그것의 내용에 대해서는 통상 관심이 없기
+때문이다.</p>
+<p><span class="math inline">\(\hat{Y}\)</span>의 정확성은 오차를 얼마나
+줄일 수 있느냐에 달려있다.</p>
+<p>오차는 크게 축소가능한 오차(reducible error)와 축소불가능한
+오차(irreducible error)로 구분할 수 있다.</p>
+<p>축소가능 오차(reducible error): 가장 적절한 기계학습 기법을 사용하여
+f를 추정함으로써 <span class="math inline">\(\hat{f}\)</span>의 정확성을
+개선할 수 있다.</p>
+<p>축소불가능 오차(irreducible error): 근본적으로 측정할 수 없는
+변동성이나, 혹은 측정되지 않은 어떤 유용한 변수들에 기인하는 오차를
+말한다.</p>
+<p>축소불가능 오차는 예측 정확도의 상한선이 되겠지만, 그 경계는
+현실적으로 거의 언제나 알려져 있지 않다. 우리는 축소가능 오차를 최대한
+줄이는 f를 추정하는 기법들에 대해 다룬다.</p>
+</div>
+<div id="추론" class="section level2">
+<h2>추론</h2>
+<p>추론(inference)은 X가 변함에 따라 Y가 어떻게 영향을 받는지를
+이해하는데 관심이 있다. 따라서, <span
+class="math inline">\(\hat{f}\)</span>은 블랙박스로 취급될 수 없다.
+그것의 정확한 형태를 알아야 할 필요가 있기 때문이다.</p>
+<p>다음과 같은 질문은 추론과 관련이 있다.</p>
+<ul>
+<li>어떤 예측 변수들이 결과 변수 값과 연관되어 있는가?<br />
+</li>
+<li>예측 변수와 결과 변수간에는 어떤 연관성이 있는가?<br />
+</li>
+<li>예측 변수와 결과 변수간의 연관성은 선형 관계인가 아니면 더 복잡한
+관계인가?</li>
+</ul>
+</div>
+</div>
+<div id="f를-추정하는-방법" class="section level1">
+<h1>f를 추정하는 방법</h1>
+<p>훈련 데이터를 이용하여 f를 추정하는데, 이를 위한 기계학습 기법들은
+크게 모수적 방법과 비모수적 방법으로 나누어 볼 수 있다.</p>
+<div id="모수적-방법" class="section level2">
+<h2>모수적 방법</h2>
+<p>모수적 방법(parametric)은 먼저 f 함수의 형태에 대한 가정으로투터
+출발한다. 예를 들면, 아주 단순하게 Y는 X에 대해 선형 관계라고 가정할 수
+있다.</p>
+<p><span class="math display">\[f(X) = \beta_0 + \beta_1X_1 + \beta_2X_2
++ ...+\beta_pX_p\]</span></p>
+<p>다음으로 훈련데이터를 이용하여 모델을 적합(fit)하는 절차가
+필요하다.</p>
+<p>이것은 위 선형 모델의 경우, 파라미터 집합 <span
+class="math inline">\(\beta_0\)</span>, <span
+class="math inline">\(\beta_1\)</span>, <span
+class="math inline">\(\beta_2\)</span>,…, <span
+class="math inline">\(\beta_p\)</span>을 추정하는 절차이며, 선형 모델의
+적합에 가장 일반적으로 사용되는 기법은 최소제곱법(least
+squares)이다.</p>
+<p><strong>figure</strong><br />
+<img src="img/least_flexible_model.png" style="border: #A9A9A9 1px solid; width:75%"/></p>
+<p><img src="img/flexible_model.png" style="border: #A9A9A9 1px solid; width: 75%"/></p>
+<p><img src="img/very_flexible_model.png" style="border: #A9A9A9 1px solid; width: 75%"/></p>
+</div>
+<div id="비모수적-방법non-parametric" class="section level2">
+<h2>비모수적 방법(non-parametric)</h2>
+<p>비모수적 방법은 함수 <span class="math inline">\(f\)</span>의 형태에
+대해 어떤 가정도 하지 않고, 가능한 학습 데이터에 가깝게 그러나
+과적합(overfitting)을 피하면서 함수 <span
+class="math inline">\(f\)</span>를 추정하는 것이다.</p>
+</div>
+</div>
+<div id="모델의-유연성과-해석-가능성model-flexibility-interpretability"
+class="section level1">
+<h1>모델의 유연성과 해석 가능성(Model flexibility &amp;
+Interpretability)</h1>
+<p><strong>figure</strong> 모델의 유연성과 해석력 사이의 관계<br />
+<img src="img/flexibility_interpretability.png" style="border: #A9A9A9 1px solid; width: 75%"/></p>
+<p>우리가 추론에는 관심이 없고, 예측에만 관심이 있다면 가장 유연한
+모델을 사용하는 것이 해석력을 희생하더라도 정확성을 높일 수있는 최선의
+선택이라고 예상할 수 있다.</p>
+<p>그러나, 과연 그러할까? 현실은 놀랍게도 종종 덜 유연한 방법을 사용할
+때 더 정확한 예측을 얻을 수 있다는 것을 보여준다.</p>
+<p>직관에 반하는 것처럼 보이는 이러한 현상을 어떻게 설명할 수 있을까?
+이것은 아주 유연한 방법들이 지닌 잠재적인 과적합(overfitting)의 문제와
+관련이 깊다.</p>
+</div>
+<div id="모델의-정확도-평가-how-to-asess-the-accuracy-of-model"
+class="section level1">
+<h1>모델의 정확도 평가 (How to asess the accuracy of model?)</h1>
+<p>기계학습 모델의 성능 평가에 대해 말하기에 앞서, 모든 자료에 대해 가장
+좋은 결과를 줄 수 있는 단 하나의 방법(master algorithm)은 없을까
+생각해보자.</p>
+<p>결론부터 말하자면, 그러한 기법은 없다는 것이 현재의 정설이다. 실은
+이것이 우리가 앞으로 여러가지 기계학습 기법을 살펴보아야 하는 이유이기도
+하다. 즉, 공짜 점심은 없다(<em>No free lunch theorem</em>)</p>
+<p>기계 학습 모델의 정확도를 어떻게 평가할까? 회귀와 분류로 나누어
+살펴보자.</p>
+<div id="회귀-regression" class="section level2">
+<h2>회귀 (Regression)</h2>
+<p>기계학습 모델의 성능을 평가한다는 것은 예측치와 관측치가 얼마나
+일치하는지 측정한다는 것이다.</p>
+<p>회귀 문제에서 가장 일반적으로 사용되는 척도는 아래 식으로 주어지는
+평균제곱오차(mean squared error)이다. 제곱근을 씌워 root mean squared
+error 를 이용하기도 한다.</p>
+<p>Mean Squared Error (MSE)</p>
+<p><span class="math display">\[MSE = \frac{1}{n}\sum_{i=1}^{n}(y_i -
+\hat{f}(x_i))^2\]</span></p>
+<p>학습 데이터(training data)를 이용하여 계산한 MSE는 training MSE 라고
+한다.</p>
+<p>우리는 일반적으로 기계학습 모델이 training data에서 얼마나 잘
+작동하는지에는 관심이 없다.</p>
+<p>실제로 관심이 있는 것은 검정 데이터(test data)에 적용할 때 얻는 예측
+정확도이다 (test MSE).</p>
+</div>
+<div id="분류-classification" class="section level2">
+<h2>분류 (Classification)</h2>
+<p>분류 문제에서 분류기 <span class="math inline">\(\hat{f}\)</span>의
+정확도를 수량화하는 가장 흔한 지표는 아래 식으로 주어지는 오차율(error
+rate)이다.</p>
+<p>Error rate</p>
+<p><span class="math display">\[\frac{1}{n}\sum_{i=1}^{n}I(y_i \neq
+\hat{y_i})\]</span></p>
+<p><span class="math inline">\(\hat{y_i}\)</span>는 <span
+class="math inline">\(\hat{f}\)</span>를 사용하여 예측된 i번째 관측치에
+대한 클래스 표시(label)이고,<br />
+<span class="math inline">\(I(y_i \neq \hat{y_i})\)</span>는 indicator
+variable로 <span class="math inline">\(y_i \neq \hat{y_i}\)</span>이면
+1이고, <span class="math inline">\(y_i = \hat{y_i}\)</span>이면
+0이다.</p>
+</div>
+</div>
+<div id="편향-분산-절충bias-variance-trade-off" class="section level1">
+<h1>편향 분산 절충(Bias-Variance trade-off)</h1>
+<p>편향(Bias)은 추정치가 실제값에서 얼마나 벗어나 있는지를 가리키는
+개념이다.</p>
+<p>반면, 분산은 학습 데이터(training data)에 따라 추정치가 얼마나
+변화하는지를 나타내는 개념이다.</p>
+<p>일반적으로 더 유연한 모델을 사용할 때 편향은 줄어드나, 분산이
+증가한다.</p>
+<p>즉, 모델의 유연성을 증가시킴에 따라 편향의 감소가 검정 데이터에서의
+오차를 줄이지만, 어느 지점을 넘어서면 편향의 감소분에 비해 분산의
+증가분이 더 커져 검정 데이터에서의 오차는 오히려 증가하게 된다. 이를
+과적합(overfitting)이라고 한다.</p>
+<p>따라서, 최적의 모델을 만드는 것은 결국 분산과 편향의 절충 문제로 볼
+수 있다.</p>
+<p><em>figure</em>
+<img src="img/bias_variance_tradeoff.png" style="border: #A9A9A9 1px solid; width:75%"/></p>
+<p><img src="img/knn_bias_variance_tradeoff.png" style="border: #A9A9A9 1px solid; width:75%"/></p>
+</div>
+<div id="사고-실험" class="section level1">
+<h1>사고 실험</h1>
+<blockquote>
+<p>의학,의료 분야에서 간단한 예측 문제와 복잡한 문제의 예를 들어봅시다.
+각각의 경우 어떤 기계학습 모델을 사용하는 것이 적절할지
+생각해봅시다.</p>
+</blockquote>
+<p>간단한 예측 작업은 적은 수의 예측 변수를 가지고 높은 정확도로 수행될
+수 있는 작업으로 정의됩니다.<br />
+예를 들어, 고칼륨혈증의 발생을 예측하는 것은 신장 기능, 칼륨 보충제 사용
+및 특정 약물의 복용과 같은 작은 변수 세트에서 가능할 수 있습니다. 반면,
+복잡한 예측 작업은 적은 수의 예측 변수로 정확하게 예측할 수 없는
+작업으로 정의됩니다. 예를 들어, 병리 슬라이드에서 이상을 식별하려면
+수백만 픽셀에서 분명하지 않은 패턴을 평가해야합니다.</p>
+<p>일반적으로 간단한 예측 작업은 기존 모델(예를 들면, 로지스틱 회귀와
+같은)을 사용하여 수행할 수 있으며 복잡한 작업에는 더 복잡한 모델 (예를
+들면, 딥러닝과 같은)이 필요합니다.</p>
+<blockquote>
+<p>당신이 훌륭한 예측 모델을 개발했다고 가정합니다. 해당 예측 모델이
+실제로 어떻게 사용될지를 생각해봅시다.</p>
+</blockquote>
+<p>예측 작업을 단순하거나 복잡한 것으로 분류하는 것 외에도 모델이 실제로
+어떻게 사용될지를 고려해야합니다.</p>
+<p>모델이 bedside scoring system (예를 들어, 폐색전증의 가능성을
+평가하는 Wells score)에 사용될 경우, 인간에 의해 선별된 적은 수의 변수를
+사용하는 것이 바람직합니다. 이 경우 해당 예측 모델은 더 복잡한 모델만큼
+효과적일 수 있습니다.</p>
+<p>모델이 사람의 개입없이 원시 데이터 자체를 자동으로 분석해야하는 경우
+작업이 더 복잡해지고 복잡한 모델이 일반적으로 더 유용해집니다. 이 경우,
+원시 데이터를 더 작은 정제된 데이터 세트로 처리하는 규칙 세트를 작성할
+수 있으며, 이는 예측 작업이 단순 할 경우 기존 모델에 적합할 수 있습니다.
+그러나 이러한 규칙을 작성하고 업데이트하는 데 많은 시간이
+소요됩니다.</p>
+<blockquote>
+<p>기계학습 모델 구축을 위해 얼마나 많은 훈련 데이터가 있어야 할지
+생각해봅시다.</p>
+</blockquote>
+<p>간단한 예측 작업은 일반적으로 모델을 구축하기 위해 많은 예제를 배울
+필요가 없습니다. 복잡한 모델의 훈련에는 일반적으로 더 많은 예가
+필요합니다. 미리 정해진 수의 예는 없지만 복잡한 모델을 구성하려면 최소한
+수천 개의 예가 필요하며 예측 작업이 복잡할수록 더 많은 데이터가
+필요합니다. 정확한 모델을 구성하는데 필요한 훈련 예제의 수를 줄이기 위해
+특수한 방법을(e.g., transfer learning) 사용하기도 합니다.</p>
+<blockquote>
+<p>예측 모델이 얼마나 해석 가능해야하는지 생각해봅시다.</p>
+</blockquote>
+<p>단순 예측모델은 평가된 변수의 수가 매우 적기 때문에 해석이 용이할 수
+있습니다.</p>
+<p>반면에 복잡한 모델은 복잡한 패턴을 식별하는 법을 학습하는 것이기
+때문에 본질적으로 해석하기가 어렵습니다. 이러한 복잡성으로 인해 보다
+정확한 예측이 가능하지만 특정 예측의 미묘한 패턴을 간결하게 제시하거나
+설명하기가 어렵다는 단점이 있습니다.</p>
+<blockquote>
+<p>아래 (a)에서 (c)까지의 각 항목에 대해, 유연한 기계학습 방법의 성능이
+유연성이 없는 방법보다 더 우수하거나 혹은 더 나쁠 것으로 예상하는지
+여부를 표시하십시오. 왜 그렇게 생각하는지 설명하십시오.</p>
+</blockquote>
+<ol style="list-style-type: lower-alpha">
+<li>표본 크기 n은 매우 크며 예측 변수 p의 수는 적다.<br />
+</li>
+<li>예측 변수 p의 수는 매우 많고, 관측 수 n은 적다.<br />
+</li>
+<li>예측 자와 반응 사이의 관계가 매우 비선형적이다.</li>
+</ol>
+</div>
+<div id="참고자료" class="section level1">
+<h1>참고자료</h1>
+<p><a href="https://www.youtube.com/watch?v=rwobGhobPzY">Introduction to
+machine learning with R</a></p>
+<p><a href="https://www.youtube.com/watch?v=UIKHlSjJAPE">Classification,
+regression and clustering problems</a></p>
+<p><a href="https://www.youtube.com/watch?v=UIKHlSjJAPE">Statistical
+modeling</a></p>
+<p><a href="https://www.youtube.com/watch?v=EuBBz3bI-aA">Bias-Variance
+Trade-off</a></p>
+<p><a
+href="https://www.nejm.org/action/showMediaPlayer?doi=10.1056%2FNEJMdo005499&amp;aid=10.1056%2FNEJMra1814259&amp;area=">Machine
+learning in medicine</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
