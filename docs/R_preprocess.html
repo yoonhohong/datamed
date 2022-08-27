@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Yoon-Ho Hong" />
+
+<meta name="date" content="2022-08-16" />
+
+<title>데이터 정제와 가공, 시각화</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data medicine with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown-header">by Yoon H. Hong</li>
+<li>
+  <a href="http://www.github.com/yoonhohong/SnuDataMed">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">데이터 정제와 가공, 시각화</h1>
+<h4 class="author">Yoon-Ho Hong</h4>
+<h4 class="date">2022-08-16</h4>
+
+</div>
+
+
+<p>오늘 학습할 내용은 본격적인 데이터 분석을 하기 전에 거쳐야 할 데이터
+전처리 과정에 대한 내용입니다(data preprocessing).</p>
+<p>데이터 전처리는 보통 다음 순서로 이루어집니다.</p>
+<ul>
+<li>데이터 정제<br />
+</li>
+<li>데이터 가공<br />
+</li>
+<li>탐색적 데이터분석(exploratory data analysis)</li>
+</ul>
+<div id="데이터-정제cleaning" class="section level2">
+<h2>데이터 정제(cleaning)</h2>
+<p>데이터 정제는 보통 다음과 같은 오류를 찾아 제거하거나, 수정하는
+과정을 말합니다.</p>
+<ul>
+<li>중복값(Duplicates)<br />
+</li>
+<li>부적절한 값(Irrelevant values)<br />
+</li>
+<li>일관되지 않은 값(Inconsistent values)<br />
+</li>
+<li>결축치(Missing values)<br />
+</li>
+<li>극단치(Outliers)</li>
+</ul>
+<p>흔히 데이터 과학자는 데이터 정제에 80%의 시간을 쓰고, 나머지 20%의
+시간을 이것에 대해 불평하느라 쓴다는 말이 있습니다. 데이터 정제 과정이
+그만큼 오랜 시간과 많은 노력이 드는 작업이라는 뜻입니다.</p>
+<p>우선, 데이터 가공을 먼저 살펴보고, 데이터 정제는 실제 임상 데이터를
+다루는 아래 실습 과제에서 좀 더 자세히 살펴보기로 하겠습니다.</p>
+</div>
+<div id="데이터-가공" class="section level2">
+<h2>데이터 가공</h2>
+<p>데이터 가공이란 원시 데이터를 본격적으로 분석하기에 앞서 소프트웨어가
+처리할 수 있는 적절한 형식으로 변환하는 과정을 말합니다.</p>
+<p>데이터 가공의 실제를 gapminder 데이터셋을 이용해 살펴보겠습니다.</p>
+<p>gapminder 데이터셋에는 국가별, 년도별 life expectancy, GDP per
+capita, population 등의 데이터가 포함되어 있습니다.</p>
+<p>gapminder 패키지를 설치하고 로딩하면 작업공간에서 gapminder 데이터를
+불러올 수 있습니다.</p>
+<pre class="r"><code>install.packages(&quot;gapminder&quot;)
+library(gapminder)</code></pre>
+<pre class="r"><code>head(gapminder)
+str(gapminder)
+summary(gapminder)</code></pre>
+<p>데이터 가공에 필요한 dplyr 패키지를 설치하고, 로딩합니다.</p>
+<pre class="r"><code>install.packages(&quot;dplyr&quot;)
+library(dplyr)</code></pre>
+<p>이제부터 데이터 가공에 자주 사용되는 주요 함수들을 하나씩
+살펴보겠습니다.</p>
+<div id="select" class="section level3">
+<h3>select</h3>
+<p>특정 변수들만 골라냅니다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  select(continent, country) %&gt;%
+  distinct() # return distinct data, removing duplicates  </code></pre>
+<p>%&gt;% 는 pipe 연산자(operator)이며, 이전(좌측) 결과를 받아서
+다음(우측)으로 넘겨 주는 역할을 합니다.</p>
+</div>
+<div id="filter" class="section level3">
+<h3>filter</h3>
+<p>조건에 맞는 관측치만 추출합니다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  filter(year == 1957) # 1957년 데이터만 추출합니다.    </code></pre>
+<pre class="r"><code>gapminder %&gt;%
+  filter(country == &quot;Korea, Rep.&quot;) # Korea, Rep. 데이터만 추출합니다.    </code></pre>
+</div>
+<div id="arrange" class="section level3">
+<h3>arrange</h3>
+<p>오름차순으로 정렬합니다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  arrange(gdpPercap) # gdpPercap 이 낮은 값이서 높은 값으로 정렬합니다. </code></pre>
+<p>내림차순으로 정렬하려면 desc() 함수를 사용합니다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  arrange(desc(gdpPercap)) # 함수 안에서 함수를 사용, nested function </code></pre>
+</div>
+<div id="mutate" class="section level3">
+<h3>mutate</h3>
+<p>변수를 변환해서 새로운 변수를 생성하는 함수입니다. 인구수를
+백만명단위로 변환해봅시다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  mutate(pop = pop/1000000)</code></pre>
+<p>이번에는 총국민소득을 구해봅시다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  mutate(gdp = gdpPercap*pop)</code></pre>
+</div>
+<div id="summarize" class="section level3">
+<h3>summarize</h3>
+<p>summarize() 함수는 통계 요약치를 구할 때 유용하게 사용됩니다.<br />
+2007년의 평균 기대수명을 구해봅시다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  filter(year == 2007) %&gt;%
+  summarize(meanLifeExp = mean(lifeExp))</code></pre>
+</div>
+<div id="group_by" class="section level3">
+<h3>group_by</h3>
+<p>년도별 평균 기대수명을 구해봅시다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  group_by(year) %&gt;%
+  summarise(meanLifeExp = mean(lifeExp))</code></pre>
+<p>대륙별, 년도별 평균 기대수명을 구해봅시다.</p>
+<pre class="r"><code>gapminder %&gt;%
+  group_by(continent, year) %&gt;%
+  summarize(meanLifeExp = mean(lifeExp))</code></pre>
+</div>
+<div id="join" class="section level3">
+<h3>join</h3>
+<p>data frame의 병합을 위해 join 함수를 사용합니다. 예제를 위해 먼저
+병합할 두 개의 data frame 을 만들어보겠습니다.</p>
+<pre class="r"><code>country = c(&quot;Korea&quot;, &quot;Japan&quot;, &quot;China&quot;)
+life_exp = c(80, 83, 67)
+df1 = data.frame(country, life_exp) 
+country = c(&quot;Korea&quot;, &quot;Japan&quot;, &quot;Taiwan&quot;)
+pop_mil = c(50, 100, 10)
+df2 = data.frame(country, pop_mil) </code></pre>
+<pre class="r"><code>inner_join(df1, df2, by=&quot;country&quot;)
+left_join(df1, df2, by=&quot;country&quot;)
+right_join(df1, df2, by=&quot;country&quot;)
+full_join(df1, df2, by=&quot;country&quot;)</code></pre>
+<p>참고로, vector의 병합을 위해서는 built-in 함수로 intersect, union,
+setdiff 를 사용합니다.</p>
+<pre class="r"><code>x = c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
+y = c(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;)
+intersect(x, y) # 교집합   
+setdiff(x, y) # 여집합  
+union(x, y) # 합집합    </code></pre>
+</div>
+<div id="reshaping-data" class="section level3">
+<h3>reshaping data</h3>
+<p>분석에 적합한 형태로 long format &lt;-&gt; wide format 전환이 필요할
+때, tidyr 패키지의 gather와 spread 함수를 사용합니다.</p>
+<pre class="r"><code>install.packages(&quot;tidyr&quot;)
+library(tidyr)</code></pre>
+<pre class="r"><code>continent_gapminder &lt;- gapminder %&gt;%
+  group_by(continent, year) %&gt;%
+  summarise(lifeExp = mean(lifeExp), 
+            pop = mean(pop), 
+            gdpPercap = mean(gdpPercap))
+continent_gapminder %&gt;% 
+  gather(key = &quot;attribute&quot;, value = &quot;mean&quot;, lifeExp:gdpPercap)</code></pre>
+<p>long format의 데이터 구조를 다시 wide format 으로 바꾸어 봅시다.</p>
+<pre class="r"><code>long_format = continent_gapminder %&gt;% 
+  gather(key = &quot;attribute&quot;, value = &quot;mean&quot;, lifeExp:gdpPercap)
+long_format %&gt;% 
+  spread(key = attribute, value = mean)</code></pre>
+</div>
+</div>
+<div id="데이터-시각화data-visualization" class="section level2">
+<h2>데이터 시각화(Data visualization)</h2>
+<p>데이터 시각화(data visualization)는 데이터 패턴 혹은 분석 결과를
+직관적으로 이해할 수 있도록 시각적으로 표현하는 과정을 말합니다.</p>
+<p>데이터 시각화를 위해 ggplot2 를 자주 사용합니다. ggplot2는 Hadley
+Wickham이 “Grammar of Graphics”에 기초하여 개발한 R package로, 점진적인
+방식(incremental method), 즉, 기초 플롯을 생성한 후, 필요한 그래픽
+요소들을 추가, 수정하는 방식으로 데이터를 시각화합니다.</p>
+<p>실습을 위해 ggplot2 패키지를 설치하고 로딩합니다.</p>
+<pre class="r"><code>install.packages(&quot;ggplot2&quot;)
+library(ggplot2)</code></pre>
+<p>이제 자주 사용되는 그래프를 중심으로 하나씩 살펴보겠습니다.</p>
+<div id="scatter-plot" class="section level3">
+<h3>scatter plot</h3>
+<p>2007년 1인당 국민소득과 기대수명의 관계를 산점도로 그려봅니다.</p>
+<pre class="r"><code>gapminder_2007 &lt;- gapminder %&gt;%
+  filter(year == 2007) 
+gapminder_2007 %&gt;% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point()</code></pre>
+<p>위에서 aes() 함수는 그래픽 요소(color, size)에 데이터를
+매핑합니다.</p>
+<pre class="r"><code>gapminder_2007 %&gt;% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point(aes(color = continent, size=pop)) </code></pre>
+<p>facet_grid() 함수는 ~ 기호 다음에 나오는 변수에 따라 그래프를
+분할하고자 할 때 사용합니다. 비슷한 것으로 facet_wrap() 함수가
+있습니다.</p>
+<pre class="r"><code>gapminder_2007 %&gt;% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point(aes(color = continent, size=pop)) + 
+  facet_grid(.~continent)</code></pre>
+</div>
+<div id="line-plot" class="section level3">
+<h3>line plot</h3>
+<p>geom_line 함수를 사용해서, 대륙별로 평균 기대수명의 연도에 따른
+변화를 살펴봅시다.</p>
+<pre class="r"><code>gapminder_line = gapminder %&gt;%
+  group_by(continent, year) %&gt;%
+  summarize(meanLifeExp = mean(lifeExp))</code></pre>
+<pre class="r"><code>gapminder_line %&gt;% 
+  ggplot(aes(x=year, y=meanLifeExp, color=continent)) + 
+  geom_line()</code></pre>
+<p>축의 스케일을 변환하고자 할 때 사용하는 함수들이 있습니다. 예를 들어,
+2007년 1인당 국민소득과 기대 수명의 관계에 대한 산점도(위의 예제)에서
+x축을 로그 변환해봅시다.</p>
+<p>통계적 데이터 변환 함수를 이용해(stat_) 선형회귀직선을
+추가해봅시다.</p>
+</div>
+<div id="bar-plot" class="section level3">
+<h3>bar plot</h3>
+<p>대륙별 국가 수를 구하고, 이를 bar plot으로 그려봅시다.</p>
+<pre class="r"><code>gapminder_col = gapminder %&gt;%
+  select(continent, country) %&gt;%
+  distinct() %&gt;%
+  group_by(continent) %&gt;%
+  summarize(n = n()) </code></pre>
+<pre class="r"><code>gapminder_col %&gt;% 
+  ggplot(aes(continent, n)) + 
+  geom_col()</code></pre>
+<p>다음과 같이 geom_bar 함수를 이용할 수도 있습니다.</p>
+<pre class="r"><code>gapminder_bar = gapminder %&gt;%
+  select(continent, country) %&gt;%
+  distinct() 
+gapminder_bar %&gt;% 
+  ggplot(aes(continent)) + 
+  geom_bar()</code></pre>
+<p>위 bar graph에서 대륙별로 bar의 색깔을 다르게 표현해보세요.</p>
+<p>x-y 좌표축을 flip 해보세요.</p>
+</div>
+<div id="histogram" class="section level3">
+<h3>histogram</h3>
+<p>기대수명의 분포를 살펴봅시다(histogram).</p>
+<pre class="r"><code>ggplot(gapminder, aes(x=lifeExp)) + 
+  geom_histogram()</code></pre>
+<p>5년 단위 구간(bins)으로 보고 싶으면 binwidth를 설정합니다.</p>
+<pre class="r"><code>ggplot(gapminder, aes(x=lifeExp)) + geom_histogram(binwidth = 5)</code></pre>
+</div>
+<div id="box-plot" class="section level3">
+<h3>box plot</h3>
+<p>대륙별 기대수명의 분포를 비교해봅시다(box plot).</p>
+<pre class="r"><code>p = ggplot(gapminder, aes(x=continent, y=lifeExp)) 
+p + geom_boxplot()</code></pre>
+<p>box plot은 유용하지만 한가지 단점이 있습니다. 데이터 분포의 모양을 알
+수 없다는 것이지요. 위 box plot에 데이터 점을 표시해 원시 데이터의
+분포를 자세히 보여줄 수 있습니다. 이를 위해 geom_jitter() 를
+사용합니다.</p>
+<pre class="r"><code>p + geom_boxplot() + geom_jitter(col=&quot;orange&quot;, alpha=0.5)</code></pre>
+<p>Europe과 Oceania의 차이가 보이시나요?<br />
+위 box plot 대신에 violin plot을 그려봅시다. geom_violin()</p>
+<pre class="r"><code>p + geom_violin()</code></pre>
+</div>
+<div id="customization" class="section level3">
+<h3>Customization</h3>
+<p>ggplot2를 이용하면 원하는대로 쉽게 그래프를 사용자 정의할 수
+있습니다.</p>
+<p><em>theme</em><br />
+ggplot2에는 시각화의 모양을 빠르게 변경하는데 유용한 몇 가지 다른 테마가
+있습니다. 예를 들어 theme_bw() 함수는 배경을 white color로
+변경합니다.</p>
+<pre class="r"><code>p + geom_boxplot() + theme_bw()</code></pre>
+<p><em>title &amp; axis labels</em><br />
+그래프에 제목을 달고, 축의 레이블을 변경해보겠습니다.</p>
+<pre class="r"><code>p = p + geom_boxplot() + 
+  labs(title = &quot;Distribution of life expectancy across different continents&quot;, 
+       x = &quot;Continent&quot;, 
+       y = &quot;Life expectancy (years)&quot;) 
+p </code></pre>
+<p>제목과 축의 레이블의 크기를 늘려서 가독성을 향상시켜보겠습니다.</p>
+<pre class="r"><code>p + theme(text = element_text(size = 16))</code></pre>
+</div>
+<div id="ggplot2-plot의-기본-성분과-구조" class="section level3">
+<h3>ggplot2 plot의 기본 성분과 구조</h3>
+<p>ggplot2 plot의 기본 성분은 다음과 같습니다.</p>
+<ul>
+<li>Data: 주로 data frame 형태의 데이터 (data)<br />
+</li>
+<li>Aesthetics: 데이터를 축, 색상, 점의 크기 등으로 매핑 (mapping)</li>
+<li>Geometric objects: 점, 선, 도형과 같은 기하학적 객체<br />
+</li>
+<li>Scales: 데이터의 스케일(x축, y축, 점의 크기, 투명도 등)을 동적으로
+조정하여 어떤 시각적 요소를 사용할 것인가 정의<br />
+</li>
+<li>Coordinate system: 좌표계<br />
+</li>
+<li>Facetting: 조건부 플롯을 위해 패널을 분할하여 표현하는 방법</li>
+<li>Statistical transformation: Binning, quantiles, smoothing 등의 통계
+변환<br />
+</li>
+<li>Position adjustment: 위치의 조정</li>
+</ul>
+<pre class="r"><code>attributes(p)</code></pre>
+<p>ggplot2 plot 의 구조는 다음과 같습니다.</p>
+<ul>
+<li>ggplot = layers + scales + coordinate system</li>
+<li>layers = data + mapping + geom + stat + position</li>
+</ul>
+</div>
+<div id="ggplot2-함수군" class="section level3">
+<h3>ggplot2 함수군</h3>
+<p>ggplot2의 함수들은 다음과 같은 그룹들이 있습니다.</p>
+<ul>
+<li>Plot creation: ggplot 클래스 객체를 생성하는 함수군</li>
+<li>Geoms: graphic의 geometric (기하학적인 형태)을 지정하는 함수군</li>
+<li>Statistics: 데이터를 통계적인 관점으로 변환하는 함수군</li>
+<li>Scales: 축의 스케일 변환과 라벨, 범례 등을 변경하는 함수군</li>
+<li>Coordinate systems: 좌표계를 설정하는 함수군</li>
+<li>Faceting: 그래픽 facet layout 을 정의하는 함수군</li>
+<li>Position adjustment: geometric 의 위치를 지정하는 함수군</li>
+<li>Others</li>
+</ul>
+</div>
+</div>
+<div id="참고-자료" class="section level2">
+<h2>참고 자료</h2>
+<p>데이터 가공<br />
+<a
+href="https://github.com/yoonhohong/tutorial/blob/master/data-wrangling-cheatsheet.pdf">data
+wrangling cheet sheet</a></p>
+<p>데이터 시각화</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

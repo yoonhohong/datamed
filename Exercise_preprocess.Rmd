@@ -1,0 +1,978 @@
+---
+title: "Exercise: 데이터 정제와 가공, 시각화"   
+author: "Yoon-Ho Hong" 
+date: "2022-08-16"
+output: 
+  html_document:
+    toc: yes
+    toc_float: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) 
+```
+         
+### 데이터셋       
+
+PRO-ACT (Pooled Resource Open-Access ALS Clinical Trials Database)는  30여개에 달하는 ALS 치료 임상시험 데이터를 모아서 정리한 공개 데이터셋입니다.     
+        
+[PRO-ACT](https://ncri1.partners.org/proact)      
+        
+최초 공개된 이후 두 차례에 걸쳐 crowdsourcing challenge가 있었습니다.   
+
+[The DREAM Phil Bowen ALS Prediction Prize4Life Challenge, the DREAM Prize4Life ALS Stratification Challenge](https://ncri1.partners.org/ProACT/Document/DisplayLatest/3)     
+해당 challenge 결과 입상팀의 논문은 아래에서 확인할 수 있습니다.    
+
+[Crowdsourced analysis of clinical trial data to predict amyotrophic lateral sclerosis progression, Nat Biotech, 2015](https://www.nature.com/articles/nbt.3051)     
+[Stratification of amyotrophic lateral sclerosis patients: a crowdsourcing approach, Sci Rep, 2019](https://www.nature.com/articles/s41598-018-36873-4)        
+
+
+### 작업 디렉터리 설정(Set working directory)    
+
+먼저 원하는 위치에 새로운 폴더를 생성하고, 해당 폴더를 작업 디렉터리로  설정하겠습니다. 다음, 해당 폴더 아래에 data 라는 이름의 새로운 폴더를 만듭니다.        
+
+```{r}
+setwd("/Users/hong/Dropbox/datamed")
+```
+
+       
+### 데이터셋 다운로드    
+
+PRO-ACT 데이터셋의 정제와 가공을 위해 PRO-ACT 웹사이트에서 제공하는 데이터셋 파일들을 다운로드합니다. 
+
+아래 URL 에서 다음 4개의 txt 파일을 다운로드합니다(data folder로). 
+
+https://github.com/yoonhohong/SnuDataMed/tree/main/data 
+
+- all_forms_PROACT_training.txt
+- all_forms_PROACT_training2.txt
+- all_forms_PROACT_leaderboard_full.txt
+- all_forms_PROACT_validation_full 
+
+
+### 패키지 로딩     
+
+이번 실습에 필요한 다음 패키지를 로딩합니다(이전에 해당 패키지를 설치한 적이 없다면 먼저 install.packages 함수로 설치)     
+
+- tidyverse    
+- broom   
+- VennDiagram    
+
+```{r, message=FALSE}
+library(tidyverse)
+library(broom)
+library(VennDiagram)
+```
+
+### R로 데이터셋을 불러오기(Import source datasets)
+
+위에서 다운로드 받은 데이터셋을 R의 작업환경으로 불러옵니다.   
+
+```{r}
+training <- read.delim("https://www.dropbox.com/s/efmua6cro6goh6u/all_forms_PROACT_training.txt?dl=1", sep = "|", header = T)
+training2<-read.delim("https://www.dropbox.com/s/ps9ouerwi3pswjx/all_forms_PROACT_training2.txt?dl=1",sep="|", header=T)
+leaderboard<-read.delim("https://www.dropbox.com/s/uxeio2maq3wbjqp/all_forms_PROACT_leaderboard_full.txt?dl=1",sep="|", header=T)
+validation<-read.delim("https://www.dropbox.com/s/8yonr4rgkdfh5cz/all_forms_PROACT_validation_full.txt?dl=1",sep="|", header=T)
+```
+
+위에서 불러들인 4개의 데이터셋을 병합하여 proact라는 이름의 dataframe을 생성합니다.   
+
+```{r}
+proact <- rbind(training, training2, leaderboard, validation)
+head(proact)
+```
+
+포함된 환자 수는 몇 명인가요?   
+```{r}
+length(unique(proact$SubjectID)) # 10723 patients 
+```
+
+몇 개의 레코드(관측치)가 포함되어있나요?    
+```{r}
+dim(proact) # 4,456,146 records 
+```
+
+
+### 데이터 형변환(Data type conversion)   
+
+proact에서 각 변수의 데이터 유형을 살펴보고, 적절한 데이터 유형으로 변환합니다.   
+
+feature_delta 는 임상시험 등록일을 기점으로 데이터 관측일을 가리킵니다. 일(days) 단위를 월(months)로 변환합시다.    
+
+```{r, message=FALSE}
+proact <- within(proact, {
+  SubjectID = as.character(SubjectID)
+  feature_delta = round((as.numeric(feature_delta)/365)*12, 2)
+  form_name = factor(form_name)
+})
+```
+
+
+### 데이터 정제: 중복(duplicates) 처리하기      
+
+데이터 정제(clearning)의 첫번째 과정으로 duplicate 를 제거합니다.   
+
+```{r}
+proact = distinct(proact)
+```
+
+
+
+### 데이터 정제: 부적절한 값(irrelavant values) 제거하기    
+
+각 변수에 부적절한 값이 있는지 먼저 확인해봅니다.  
+
+
+```{r}
+summary(proact)
+```
+
+feature_delta 의 분포를 확인해봅시다(histogram)   
+
+```{r, message=FALSE}
+proact %>% 
+  ggplot(aes(feature_delta)) + 
+  geom_histogram()
+```
+
+feature_delta 가 음수인 레코드는 제거합니다.   
+```{r}
+proact = proact %>%
+  filter(feature_delta >= 0)
+```
+
+
+### 데이터 정제: 일관되지 않은 값(inconsistent values) 처리하기      
+
+데이터 정제(clearning)의 두번째 과정으로 일관되지 않은 값을 찾아 제거합니다. 즉, SubjectID, form_name, feature_name, feature_unit, feature_delta 가 모두 동일한데, feature_value 가 다른 관측치가 대상입니다.            
+
+```{r}
+temp = proact %>%
+  count(SubjectID, form_name, feature_name, feature_unit, 
+        feature_delta) %>%
+  filter(n == 1) %>%
+  select(-n)
+proact = proact %>%
+  inner_join(temp, by = c("SubjectID","form_name","feature_name","feature_unit","feature_delta"))
+```
+
+### 데이터 정제: 결측치(missing data) 처리하기   
+
+인구학적 정보(demographic information)에서 결측치를 어떻게 처리할지 생각해보기 위해 각 변수별로 결측치를 확인합니다.  
+
+```{r}
+demographic = proact %>% 
+  filter(form_name == "Demographic") %>% 
+  select(SubjectID, feature_name, feature_value)
+demographic = spread(demographic, feature_name, feature_value) 
+demographic = within(demographic, {
+  Age = round(as.numeric(Age))
+  Gender = factor(Gender)
+  Race = factor(Race)
+})
+summary(demographic)
+``` 
+
+인구학적 정보(demographic information)에서 결측치가 있는 환자를 제외하기로 합니다.    
+
+```{r}
+demographic = demographic[complete.cases(demographic),]
+``` 
+
+완전한 인구학적 정보가 있는 환자 수는 몇 명인가요? 
+
+```{r}
+length(unique(demographic$SubjectID)) # 8646 patients 
+```
+
+demographic.csv 파일로 data 폴더내에 저장합니다.    
+
+```{r}
+write.csv(demographic, "data/demographic.csv", quote = F, row.names = F)
+```
+
+
+이번에는 같은 방식으로 ALSHX form 에서 결측치를 확인합니다.   
+
+```{r}
+alshx = proact %>% 
+  filter(form_name == "ALSHX") %>% 
+  select(SubjectID, feature_name, feature_value) 
+alshx = spread(alshx, feature_name, feature_value)
+alshx = within(alshx, {
+  diag_delta = as.numeric(as.character(diag_delta))
+  onset_delta = as.numeric(as.character(onset_delta))
+  onset_site = factor(onset_site)
+})
+summary(alshx)
+```
+
+결축치를 확인하는 과정에서 부적절한 값(irrelavant values)들이 포함되어 있는 것을 확인할 수 있습니다.        
+
+diag_delta, onset_delta 가 양수인 환자들을 제외합니다.     
+
+```{r}
+alshx = alshx %>%
+  filter(diag_delta <= 0) %>%
+  filter(onset_delta <= 0)
+``` 
+
+단위 변환: diag_delta, onset_delta 변수 값 단위를 월로 변환하고, 부호를 음에서 양으로 전환합니다.   
+
+새로운 변수(meta-feature) 만들기: onset2dx, 즉 onset 에서 dx 까지 기간을 가리키는 새로운 변수를 만듭니다.    
+
+```{r}
+alshx = within(alshx, {
+  diag_delta = -round((diag_delta/365)*12,2)
+  onset_delta = -round((onset_delta/365)*12,2)
+  onset2dx = onset_delta - diag_delta
+})
+```
+
+onset2dx 이 음의 값이 되는 환자는 제외합니다(부적절한 값)    
+
+```{r}
+alshx = alshx %>%
+  filter(onset2dx >= 0)
+```
+
+결측치가 있는 환자를 제외합니다.     
+
+```{r}
+alshx = alshx[complete.cases(alshx),]
+```
+
+완전한 ALSHX 정보를 가진 환자는 몇 명인가요?   
+```{r}
+length(unique(alshx$SubjectID)) # 4442 patients  
+```
+  
+
+### 데이터 가공: Factor levels 조정             
+
+onset_site 변수 값의 범주를 확인합니다.   
+
+```{r}
+levels(alshx$onset_site)
+```
+
+onset_site 값의 범주를 Bulbar와 Non-bulbar 둘로 재조직합니다.   
+
+```{r}
+alshx$onset_site = fct_collapse(alshx$onset_site, Nonbulbar = c("Limb","Limb and Bulbar","Other")) 
+```
+
+### 데이터 정제 과정에서 추출한 데이터셋들간의 집합 관계 확인하기    
+
+demographic과 alshx 데이터셋의 SubjectID 리스트 간의 집합 관계를 살펴봅시다(VennDiagram::venn.diagram). 
+
+
+```{r, message=FALSE}
+A = unique(demographic$SubjectID)
+B = unique(alshx$SubjectID)
+venn.diagram(list(SetA = A, SetB = B), filename = "img/venndiagram.png", disable.logging = T)
+```
+
+
+### ALSFRS 데이터셋 추출하기    
+
+proact에서 ALSFRS form 에 해당하는 데이터만 추출합니다.    
+
+ALSFRS는 ALS functional rating scale 입니다. 질환의 중증도에 대한 임상 척도입니다.      
+
+```{r}
+alsfrs <- proact %>%
+  filter(form_name=="ALSFRS") %>%
+  select(-c(form_name,feature_unit))
+head(alsfrs)
+```
+
+
+### ALSFRS 데이터셋에서 형변환   
+
+아래 변수들을 적절히 형변환합니다.   
+
+- feature_value: chr to numeric     
+- feature_name: chr to factor    
+
+```{r}
+alsfrs$feature_value <- as.numeric(alsfrs$feature_value)
+alsfrs$feature_name = factor(alsfrs$feature_name)
+```
+
+### 데이터프레임의 구조 변환하기: long to wide format  
+
+alsfrs 데이터셋을 long format 에서 wide format 으로 전환합니다.   
+
+```{r}
+alsfrs_wide <- spread(alsfrs,key = feature_name, value = feature_value)
+head(alsfrs_wide)
+```
+
+alsfrs 레코드는 총 몇개가 있나요? 
+
+```{r}
+dim(alsfrs_wide) # 59284 records 
+```
+
+alsfrs 레코드가 있는 환자 수는 총 몇 명인가요? 
+
+```{r}
+length(unique(alsfrs_wide$SubjectID)) # 6510 patients 
+```
+
+### 데이터 정제: ALSFRS  
+
+
+alsfrs_wide 요약을 살펴봅니다. 어떤 변수들이 있는지, 각 변수 값의 요약 통계치, 결측치 규모를 확인합니다.     
+
+```{r}
+summary(alsfrs_wide)
+```
+
+
+Q5 항목은 Gastrostomy 여부에 따라 Q5a 와 Q5b 둘 중의 한 항목만 기록합니다. 따라서, 두 항목이 모두 기록된 경우 부적절한 레코드로 간주합니다. 해당 레코드가 몇 개나 있는지 확인해봅시다.    
+
+```{r}
+temp2 = alsfrs_wide %>% 
+  filter(!is.na(Q5a_Cutting_without_Gastrostomy)) %>%
+  filter(!is.na(Q5b_Cutting_with_Gastrostomy)) %>%
+  count(SubjectID, feature_delta) 
+head(temp2)
+dim(temp2)
+```
+
+해당 레코드를 제거합니다(Exclude records with both Q5a and Q5b item scores recorded) 
+
+
+```{r}
+alsfrs_wide = alsfrs_wide %>%
+  anti_join(temp2, by = c("SubjectID", "feature_delta")) 
+```
+
+
+Gastrostomy 여부에 관한 변수를 생성합니다(TRUE/FALSE)  
+
+Q5b_Cutting_with_Gastrostomy 변수 값이 NA 면 TRUE, 그렇지 않으면 FALSE   
+
+```{r}
+alsfrs_wide = alsfrs_wide %>%
+  mutate(Gastrostomy = ifelse(is.na(Q5b_Cutting_with_Gastrostomy), F, T)) %>%
+  select(-c(Q5a_Cutting_without_Gastrostomy, Q5b_Cutting_with_Gastrostomy))
+```
+
+ALSFRS 는 original version 과 revised version, 이렇게 두 가지가 있습니다.   
+ALSFRS revised version 기록만 추출하기 위해서,    
+
+먼저 ALSFRS original version 에만 있는 항목들을 제거합니다: ALSFRS_Total, Q10_Respiratory, respiratory      
+
+```{r}
+alsfrs_rev = alsfrs_wide %>%
+  select(-c(ALSFRS_Total, 
+            Q10_Respiratory, respiratory))
+```
+
+
+ALSFRS revised 에는 총 12개의 항목(item)들이 있고, 이들은 크게 신체 부위별 운동 기능(hands, leg, trunk)과 구기능(mouth), 호흡 기능(respiratory)로 구분할 수 있습니다. 이러한 meta-features 들을 재조직하도록 하겠습니다. 
+
+
+hands, leg, trunk 점수를 합하여, motor 라는 변수로 하고,       
+mouth 변수 이름은 bulbar로,     
+respiratory_R 변수 이름은 respiratory 로 변경합니다.        
+
+```{r}
+alsfrs_rev = alsfrs_rev %>%
+  mutate(motor = hands + leg + trunk) %>%  
+  rename(bulbar = mouth, respiratory = respiratory_R) %>%
+  select(-c(hands, leg, trunk))   
+```
+
+
+
+```{r}
+summary(alsfrs_rev)
+```
+
+ALSFRS revised 에 고유한 항목들(R1_Dyspnea, R2_Orthopnea, R3_Respiratory_Insufficiency)과 meta-feature (respiratory)에 결측치는 ALSFRS original 만 기록된 환자들로부터 유래한 레코드들입니다. 이들을 포함하여 어떤 항목에서도 결측치가 없는 레코드들만을 추출하도록 합시다.     
+
+```{r}
+alsfrs_rev = alsfrs_rev[complete.cases(alsfrs_rev),] 
+```
+
+해당 환자들의 수가 얼마인가요?    
+
+```{r}
+length(unique(alsfrs_rev$SubjectID)) # 3275 patients 
+``` 
+
+
+변수들의 순서를 정렬해서, data 폴더에 ALSFRS_rev.csv 파일로 저장하겠습니다.    
+
+```{r}
+alsfrs_rev = alsfrs_rev[c(1:3,5:16,4,19,17,18)]
+write.csv(alsfrs_rev, "data/ALSFRS_rev.csv",
+          row.names = F, quote = F)
+```
+
+
+### 데이터 시각화: ALSFRS_R_Total 변화 추세를 line plot 으로 확인하기   
+
+
+환자 별로 ALSFRS_R_Total 변화 추세를 line plot 으로 확인해봅시다.     
+
+먼저 전체 환자에서 100명을 무작위로 추출합니다.   
+
+```{r}
+pt_lst = unique(alsfrs_rev$SubjectID)
+set.seed(9)
+spl = sample(pt_lst, 100, replace = F)
+```
+
+추출된 환자들의 line plot 을 그려봅시다.    
+
+```{r}
+alsfrs_rev %>%
+  filter(SubjectID %in% spl) %>%
+  group_by(SubjectID) %>%
+  ggplot(aes(feature_delta, ALSFRS_R_Total)) + 
+  geom_path()
+```
+
+
+
+### 데이터 가공: ALSFRS Q3_Swallowing 점수 기반 event 정의    
+
+
+Q3_Swallowing 점수가 1점 이하는 독립적인 삼킴 기능이 소실된 것을 가리키며,  영양 공급을 위해서는 위루술(gastrostomy)이 필요합니다.  
+
+환자 별로 위루술이 필요한 시점을 예측하는 기계학습 모델을 만들기위해 해당 event 의 발생 여부와 시점으로 구성된 학습 데이터셋이 필요합니다. 데이터 가공을 통해 이를 만들어봅시다.   
+
+```{r}
+# Target event dataset 
+tg = alsfrs_rev %>%
+  select(SubjectID, feature_delta, Q3_Swallowing)
+```
+
+환자 등록 이후 초기 3개월 데이터에 기반한 예측 모델에서 alsfrs 점수는 가장 중요한 예측 변수로 예상됩니다. 따라서, 적어도 등록 이후 3개월 이상 alsfrs 기록이 있는 환자들만을 포함하고자 합니다. 
+
+배제해야 할 환자 수는 몇 명인가요?   
+
+```{r}
+# Patients with fu duration <= 3 mo (group I)
+lt3mo_fu = alsfrs_rev %>%
+  group_by(SubjectID) %>%
+  summarise(last_delta = max(feature_delta)) %>%
+  filter(last_delta <= 3)
+dim(lt3mo_fu) # 322 patients (fu should be longer than 3 mo)
+```
+
+
+3개월 이전에 이미 해당 이벤트가 발생한 환자는 데이터셋에서 제외해야합니다. 해당 환자들은 몇 명인가요?   
+
+```{r}
+# Patients in whom event occurred at or before 3 mo (group II)
+lt3mo_event = tg %>%
+  filter(Q3_Swallowing <= 1) %>%
+  group_by(SubjectID) %>%
+  summarise(feature_delta = min(feature_delta)) %>%
+  filter(feature_delta <= 3)
+  # if event occurred, it should be after 3 mo 
+dim(lt3mo_event) # 112 patients 
+```
+
+위와 같이 fu duration 이 3 mo 이하이거나, event 가 3 mo 이전에 발생한 환자는 제외합니다.   
+
+```{r}
+# Exclude the above group I and II patients 
+tg2 = tg %>%
+  anti_join(lt3mo_fu, by = "SubjectID") %>%
+  anti_join(lt3mo_event, by = "SubjectID")
+length(unique(tg2$SubjectID)) # 2857 patients 
+```
+
+fu 기간 중 event 발생 여부를 가리키는 새로운 변수 event 를 생성하고, event 가 발생한 경우 1, 그렇지 않은 경우(censoring) 0으로 코딩합니다.     
+
+먼저 event 가 발생한 환자들만 추출하여 event 가 발생한 시기로 이루어진 데이터셋을 만듭니다.    
+
+```{r}
+# event occurred 
+tg_event = tg2 %>%
+  filter(Q3_Swallowing <= 1) %>%
+  group_by(SubjectID) %>%
+  summarise(feature_delta = min(feature_delta)) %>%
+  mutate(event = 1) 
+```
+
+feature_delta 는 3 mo 을 baseline 으로 조정합니다(shift baseline to 3 mo)    
+```{r}
+tg_event = tg_event %>%
+  mutate(feature_delta = feature_delta - 3) 
+dim(tg_event) # 605 patients 
+```
+
+다음, event 가 발생하지 않은 환자 데이터셋을 생성합니다. 
+
+```{r}
+# censored 
+tg_censored = tg2 %>%
+  anti_join(tg_event, by = "SubjectID") %>%
+  group_by(SubjectID) %>%
+  summarise(feature_delta = max(feature_delta)) %>%
+  mutate(feature_delta = feature_delta - 3) %>%
+  mutate(event = 0)
+dim(tg_censored) # 2252 patients 
+```
+
+최종 event 데이터셋을 생성하고, csv 파일로 저장합니다(파일 이름, LOA_swallowing.csv)    
+
+```{r}
+tg_fin = rbind(tg_event, tg_censored)
+write.csv(tg_fin, "data/LOA_swallowing.csv", quote = F, row.names = F)
+```
+
+
+### 데이터 가공: alsfrs_rev 데이터셋에서 각 항목의 초기 3개월 평균치를 계산하고, 변화 기울기(slope)를 신형 회귀 모델로 추정      
+
+
+초기 3개월 간 alsfrs_rev 각 항목의 평균치를 구합니다.   
+
+```{r}
+# Calculate meta-features (means) of alsfrs_rev over the first 3 months    
+alsfrs_rev_mean_3mo = alsfrs_rev %>%
+  filter(feature_delta <= 3) %>%
+  group_by(SubjectID) %>%
+  summarise(Gastrostomy = ifelse(any(Gastrostomy == T), T, F), # Gastrostomy == T if patients underwent gastrostomy during the first 3 mo 
+            ALSFRS_Total = mean(ALSFRS_R_Total), 
+            Q1_Speech = mean(Q1_Speech), 
+            Q2_Salivation = mean(Q2_Salivation), 
+            Q3_Swallowing = mean(Q3_Swallowing), 
+            Q4_Handwriting = mean(Q4_Handwriting), 
+            Q5_Cutting = mean(Q5_Cutting), 
+            Q6_Dressing_and_Hygiene = mean(Q6_Dressing_and_Hygiene),
+            Q7_Turning_in_Bed = mean(Q7_Turning_in_Bed),
+            Q8_Walking = mean(Q8_Walking),
+            Q9_Climbing_Stairs = mean(Q9_Climbing_Stairs),
+            R1_Dyspnea = mean(R1_Dyspnea), 
+            R2_Orthopnea = mean(R2_Orthopnea),
+            R3_Respiratory_Insufficiency = mean(R3_Respiratory_Insufficiency))
+```
+
+slope 추정치 신뢰도를 높이기 위해 초기 3 개월에서 최초-최후 측정 구간이 최소 1.5 개월 이상인 환자들만을 대상으로 합니다.    
+
+```{r}
+# Estimate meta-features (slopes) of alsfrs_rev over the first 3 months, using linear regression   
+alsfrs_rev_slope_3mo = alsfrs_rev %>%
+  filter(feature_delta <= 3) %>%
+  group_by(SubjectID) %>%
+  mutate(interval = max(feature_delta) - min(feature_delta)) %>%
+  filter(interval >= 1.5)
+```
+
+환자별 slope 를 추정하기 위해서는 반복문을 사용해서 각 환자별로 선형 회귀 모델을 적용해야 합니다. 이와 같이 반복문이 필요할 때 purrr 패키지를 사용하면 편리합니다(purrr 패키지는 tidyverse 패키지에 포함되어 있습니다)     
+
+purrr 패키지의 nest 함수를 이용해 list column 을 생성합니다. 새로 생성된 list column 의 이름은 data 입니다.        
+
+```{r}
+df_data = alsfrs_rev_slope_3mo %>%
+  group_by(SubjectID) %>%
+  nest() 
+df_data
+```
+
+
+purrr 패키지의 map 함수를 이용하여 data 리스트에 lm 함수를 적용하여 model 을 생성합니다. map 함수는 list 타입의 데이터를 반환합니다.        
+```{r}
+df_model = df_data %>%
+  mutate(model = map(data, ~lm(ALSFRS_R_Total ~ feature_delta, 
+                               data = .x))) 
+df_model
+```
+
+purrr 패키지의 map 함수를 이용해 model 에 tidy 함수(broom 패키지)를 적용하여 model 의 결과를 새로운 변수에 담습니다.         
+```{r message=FALSE, warning=FALSE}
+df_stat = df_model %>%
+  mutate(stat = map(model, ~tidy(.x))) 
+df_stat
+```
+
+purrr 패키지의 map 함수를 이용해 stat 변수에 unnest 함수를 적용하여 모델의 추정치 를 추출합니다.    
+
+```{r}
+df_est = df_stat %>%
+  unnest(stat) 
+df_est
+```
+
+마지막으로 slope 추정치를 추출하여 alsfrs_rev_slope 데이터셋을 생성합니다.   
+  
+```{r}
+alsfrs_rev_slope_3mo_total = df_est %>%
+  filter(term == "feature_delta") %>%
+  select(SubjectID, estimate) %>%
+  rename(slope_total = estimate)
+alsfrs_rev_slope_3mo_total
+```
+
+
+위와 같은 과정으로 이번에는 bulbar slope 를 추정합니다.   
+
+```{r message=FALSE, warning=FALSE}
+alsfrs_rev_slope_3mo_bulbar = alsfrs_rev_slope_3mo %>%
+  group_by(SubjectID) %>%
+  nest() %>%
+  mutate(model = map(data, ~lm(bulbar ~ feature_delta, 
+                               data = .x))) %>%
+  mutate(stat = map(model, ~tidy(.x))) %>%
+  unnest(stat) %>%
+  filter(term == "feature_delta") %>%
+  select(SubjectID, estimate) %>%
+  rename(slope_bulbar = estimate)
+alsfrs_rev_slope_3mo_bulbar
+```
+
+위와 같은 과정으로 이번에는 motor slope 를 추정합니다.   
+  
+```{r message=FALSE, warning=FALSE}
+# Estimate slope_motor
+alsfrs_rev_slope_3mo_motor = alsfrs_rev_slope_3mo %>%
+  group_by(SubjectID) %>%
+  nest() %>%
+  mutate(model = map(data, ~lm(motor ~ feature_delta, 
+                               data = .x))) %>%
+  mutate(stat = map(model, ~tidy(.x))) %>%
+  unnest(stat) %>%
+  filter(term == "feature_delta") %>%
+  select(SubjectID, estimate) %>%
+  rename(slope_motor = estimate)
+alsfrs_rev_slope_3mo_motor
+```
+
+위와 같은 과정으로 이번에는 respiratory slope 를 추정합니다.   
+  
+```{r message=FALSE, warning=FALSE}
+# Estimate slope_respiratory
+alsfrs_rev_slope_3mo_resp = alsfrs_rev_slope_3mo %>%
+  group_by(SubjectID) %>%
+  nest() %>%
+  mutate(model = map(data, ~lm(respiratory ~ feature_delta, 
+                               data = .x))) %>%
+  mutate(stat = map(model, ~tidy(.x))) %>%
+  unnest(stat) %>%
+  filter(term == "feature_delta") %>%
+  select(SubjectID, estimate) %>%
+  rename(slope_resp = estimate)
+alsfrs_rev_slope_3mo_resp
+```
+
+
+위에서 계산한 평균치와 추정한 slope 데이터를 모아 초기 3개월 meta-features 데이터셋을 완성합니다.    
+
+```{r}
+alsfrs_rev_3mo = alsfrs_rev_mean_3mo %>%
+  left_join(alsfrs_rev_slope_3mo_total, by = "SubjectID") %>%
+  left_join(alsfrs_rev_slope_3mo_bulbar, by = "SubjectID") %>%
+  left_join(alsfrs_rev_slope_3mo_motor, by = "SubjectID") %>%
+  left_join(alsfrs_rev_slope_3mo_resp, by = "SubjectID")
+alsfrs_rev_3mo
+```
+
+
+#### 데이터 가공: ALSFRS, 3-12 mo, ALSFRS_rev total score slope 추청하기     
+
+slope 추정치 신뢰도를 높이기 위해 3-12개월 최초-최후 측정 구간이 최소 6개월 이상인 환자들만을 대상으로 합니다.    
+
+```{r}
+# Estimate meta-features (slopes) of alsfrs_rev over 3 to 12 months, using linear regression   
+alsfrs_rev_slope_3to12mo = alsfrs_rev %>%
+  filter(feature_delta >= 3) %>%
+  filter(feature_delta <= 12) %>%
+  group_by(SubjectID) %>%
+  mutate(interval = last(feature_delta) - first(feature_delta)) %>%
+  filter(interval >= 6)
+```
+
+초기 3개월 데이터에서 linear regression 모델을 이용하여 slope 를 구한 것과 같은 방식으로 total score 의 slope 를 추정합니다.  
+
+```{r message=FALSE, warning=FALSE}
+# Estimate slope_total 
+alsfrs_rev_slope_3to12mo_total = alsfrs_rev_slope_3to12mo %>%
+  group_by(SubjectID) %>%
+  nest() %>%
+  mutate(model = map(data, ~lm(ALSFRS_R_Total ~ feature_delta, 
+                               data = .x))) %>%
+  mutate(stat = map(model, ~tidy(.x))) %>%
+  unnest(stat) %>%
+  filter(term == "feature_delta") %>%
+  select(SubjectID, estimate) %>%
+  rename(slope_total = estimate)
+alsfrs_rev_slope_3to12mo_total 
+```
+
+data 폴더에 ALSFRS_rev_slope_3to12mo.csv 파일로 저장합니다. 
+
+```{r}
+write.csv(alsfrs_rev_slope_3to12mo_total, "data/ALSFRS_rev_slope_3to12mo.csv", row.names = F, quote = F)
+```
+
+
+
+### 데이터 정제 및 가공: FVC
+
+proact 데이터셋에서 form_name 이 FVC 이고, feature_name 이 fvc_percent 인 데이터만 추출합니다.   
+
+```{r}
+fvc = proact %>% 
+  filter(form_name == "FVC") %>% 
+  filter(feature_name == "fvc_percent") %>%
+  select(SubjectID, feature_name, feature_value, feature_delta)
+head(fvc)
+```
+
+feature_value 변수를 형변환하고(chr to numeric), 정수로 반올림하고, 이름을 FVC 로 변경하고, 결측치는 제외합니다.   
+
+```{r}
+fvc = fvc %>%
+  mutate(feature_value = round(as.numeric(feature_value))) %>%
+  rename(FVC = feature_value) %>% 
+  select(-feature_name)
+fvc = fvc[complete.cases(fvc),]
+summary(fvc)
+```
+
+fvc 초기 3개월 평균치와 slope 를 ALSFRS_rev 에 대해서 했던 것과 같은 방식으로 계산하고 추정합니다.    
+
+```{r}
+# Calculate fvc_mean for the first 3 mo 
+fvc_3mo_mean = fvc %>% 
+  filter(feature_delta <= 3) %>% 
+  group_by(SubjectID) %>%
+  summarise(FVC = mean(FVC))
+fvc_3mo_mean
+```
+
+slope 추정치의 신뢰도를 위해 초기 3개월 내에 적어도 1.5 개월 이상의 간격 측정치가 있는 환자로 한정합니다.   
+
+```{r}
+# Estimate fvc_3mo_slope with linear regression (3 mo)
+fvc_3mo = fvc %>%
+  filter(feature_delta <= 3) %>%
+  group_by(SubjectID) %>%
+  mutate(interval = max(feature_delta) - min(feature_delta)) %>%
+  filter(interval >= 1.5) %>%
+  select(-interval)
+```
+
+linear regression 을 적용하여 slope 를 추정합니다.    
+
+```{r message=FALSE, warning=FALSE}
+fvc_3mo_slope = fvc_3mo %>%
+  group_by(SubjectID) %>%
+  nest() %>%
+  mutate(model = map(data, ~lm(FVC ~ feature_delta, 
+                               data = .x))) %>%
+  mutate(stat = map(model, ~tidy(.x))) %>%
+  unnest(stat) %>% 
+  filter(term == "feature_delta") %>%
+  select(SubjectID, estimate) %>% 
+  rename(FVC_3mo_slope = estimate)
+fvc_3mo_slope
+```
+
+FVC 3mo 평균치와 slope 데이터셋을 병합하기(Merge fvc_3mo_mean and fvc_3mo_slope)   
+
+```{r}
+fvc_3mo = fvc_3mo_mean %>%
+  left_join(fvc_3mo_slope, by = "SubjectID")
+fvc_3mo
+```
+
+
+### 데이터 가공: Riluzole    
+
+form_name 이 FamilyHx 인 레코드를 추출하고, feature_name 과 feature_value 의 형변환(chr to factor)    
+
+```{r}
+rlz = proact %>% 
+  filter(form_name == "Riluzole") %>% 
+  select(-c(form_name, feature_unit, feature_delta)) %>%
+  mutate(feature_name = factor(feature_name), 
+         feature_value = factor(feature_value))
+summary(rlz)
+```
+
+
+### 데이터 가공: Vitals  
+
+form_name 이 Vitals 인 데이터셋을 추출하고, feature_name 을 형변환합니다(chr to factor)   
+
+```{r}
+vitals = proact %>% 
+  filter(form_name == "Vitals") %>%
+  mutate(feature_name = factor(feature_name), 
+         feature_value = as.numeric(feature_value)) %>%
+  select(-c(form_name, feature_unit))
+summary(vitals)
+```
+
+
+feature_name 변수 값을 확인합니다.    
+
+```{r}
+levels(vitals$feature_name)
+```
+
+
+초기 3개월 BMI 평균치를 구합니다.     
+
+```{r}
+# Calculate mean BMI for the first 3 mo
+bmi_3mo = vitals %>%
+  filter(feature_name  == "BMI") %>%
+  filter(feature_delta <= 3)
+bmi_3mo_wide = spread(bmi_3mo, key = feature_name, value = feature_value)
+bmi_3mo_mean = bmi_3mo_wide %>%
+  group_by(SubjectID) %>%
+  summarise(BMI = mean(BMI)*10000)
+bmi_3mo_mean
+```
+
+
+초기 3개월 bp_diastolic, bp_systolic, pulse, respiratory_rate, temperature 평균치를 구합니다.     
+
+```{r}
+vitalsign_3mo = vitals %>%
+  filter(feature_name %in% 
+           c("bp_systolic", "bp_diastolic", "pulse", 
+             "respiratory_rate", "temperature")) %>%
+  filter(feature_delta <= 3)
+vitalsign_3mo_wide = spread(vitalsign_3mo, key = feature_name, value = feature_value)
+vitalsign_3mo_wide = vitalsign_3mo_wide %>% 
+  rename(dbp = bp_diastolic, 
+       sbp = bp_systolic, 
+       hr = pulse, 
+       rr = respiratory_rate, 
+       temp = temperature)
+
+# Calculate mean vital sign over the first 3 mo  
+vitalsign_3mo_mean = vitalsign_3mo_wide %>%
+  group_by(SubjectID) %>% 
+  summarise(dbp = mean(dbp), 
+            sbp = mean(sbp), 
+            hr = mean(hr), 
+            rr = mean(rr),
+            temp = mean(temp))
+vitalsign_3mo_mean
+```
+
+
+### 데이터 가공:  Lab Test 
+
+form_name 이 Lab Test 인 데이터셋을 추출합니다.    
+
+```{r}
+lab = proact %>% 
+  filter(form_name == "Lab Test") %>%
+  select(-c(form_name, feature_unit)) %>% 
+  mutate(feature_name = factor(feature_name), 
+         feature_value = as.numeric(feature_value))
+```
+
+
+feature_name 에 어떤 값들이 포함되어 있는지 살펴봅니다. 
+```{r}
+head(levels(lab$feature_name))
+```
+
+다음 lab test features 들을 추출합니다.  
+
+- Absolute Neutrophil Count
+- Absolute Lymphocyte Count 
+- C-Reactive Protein 
+- CK 
+- Creatinine 
+- GFR
+- Total Cholesterol
+- Triglycerides 
+- HDL
+- LDL
+- Uric Acid
+- Urine Creatinine
+- Urine Creatinine Clearance
+
+```{r}
+lab_subset = lab %>% 
+  filter(feature_name %in% 
+           c("Absolute Neutrophil Count",
+             "Absolute Lymphocyte Count",
+             "C-Reactive Protein",
+             "CK",
+             "Creatinine",
+             "GFR",
+             "Total Cholesterol",
+             "Triglycerides",
+             "HDL",
+             "LDL",
+             "Uric Acid",
+             "Urine Creatinine",
+             "Urine Creatinine Clearance"
+           ))
+```
+             
+초기 3개월 평균치를 구합니다.    
+wide format 으로 변환 후에 평균치를 구할 수도 있으나, 여기서는 purrr 패키지의 nest 와 map 함수를 사용해봅시다.   
+
+```{r}
+# Calculate mean 
+lab_data = lab_subset %>%
+  filter(feature_delta <= 3) %>%
+  group_by(SubjectID, feature_name) %>%
+  nest() 
+lab_data
+``` 
+
+```{r}
+lab_3mo_mean = lab_data %>%
+  mutate(mean = map_dbl(data, ~mean(.x$feature_value))) %>%
+  select(-data)
+lab_3mo_mean
+```
+
+
+
+### 데이터 가공:  데이터셋의 병합    
+
+이제 마지막으로 지금까지 정리한 다음 데이터셋들을 병합하도록 합니다.  
+
+- demographic (complete cases)
+- alxhx (complete cases) 
+- alsfrs_rev_3mo (complete cases; mean, slope)   
+- fvc_3mo (mean, slope) 
+- rlz 
+- bmi_3mo_mean 
+- vitalsign_3mo_mean 
+- lab_3mo_mean  
+
+```{r}
+df = demographic %>%
+  inner_join(alshx, by = "SubjectID") %>% 
+  inner_join(alsfrs_rev_3mo, by = "SubjectID") %>%
+  left_join(fvc_3mo, by = "SubjectID") %>%
+  left_join(rlz, by = "SubjectID") %>%
+  left_join(bmi_3mo_mean, by = "SubjectID") %>%
+  left_join(vitalsign_3mo_mean, by = "SubjectID") %>%
+  left_join(lab_3mo_mean, by = "SubjectID")
+```
+
+
+병합한 데이터셋을 data 폴더에 저장합니다.   
+
+```{r}
+write.csv(df, "data/PROACT_preprocessed.csv", quote = F, row.names = F)
+```
+
+- The End - 
+
+
+
+
