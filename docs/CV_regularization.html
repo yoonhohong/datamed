@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Hong, Yoon-Ho" />
+
+<meta name="date" content="2022-09-04" />
+
+<title>CV_regularization</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data medicine with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown-header">by Yoon H. Hong</li>
+<li>
+  <a href="http://www.github.com/yoonhohong/SnuDataMed">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">CV_regularization</h1>
+<h4 class="author">Hong, Yoon-Ho</h4>
+<h4 class="date">2022-09-04</h4>
+
+</div>
+
+
+<p>모델의 성능을 평가할 때에는 항상 검증셋(test dataset)을 이용해야
+합니다. 학습셋(training set)에서는 항상 더 유연한 모델이 더 정확한 예측
+결과를 보여줍니다. 그러나, 훈련셋에서 더 정확한 결과가 검정셋에서의
+정확성을 보장해주지는 못합니다. 오히려, 유연한 모델일 수록 검정셋의
+noise까지 학습하게 됩니다.즉, 과적합(overfit)하게 되어 분산(variance)이
+커지게 됩니다. 우리는 편향-분산 절충(bias-variance trade-off)를 고려하여
+적절한 수준의 유연성을 갖는 모델을 선택(model selection)해야 합니다.</p>
+<p>검증셋을 이용하여 모델의 성능을 평가하는 방법에는 아래의 세가지가
+있습니다.</p>
+<ol style="list-style-type: decimal">
+<li>Validation set approach<br />
+</li>
+<li>LOOCV (Leave-one-out cross-validation)</li>
+<li>k-fold CV</li>
+</ol>
+<p>auto 데이터셋에서 연비(mpg)를 예측하는 회귀 모델을 만들고, 모델의
+성능을 평가해봅시다.</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre class="r"><code>auto = read.csv(&quot;data/auto.csv&quot;)
+auto = select(auto, -name)
+summary(auto)</code></pre>
+<pre><code>##       mpg          cylinders      displacement     horsepower        weight    
+##  Min.   : 9.00   Min.   :3.000   Min.   : 68.0   Min.   : 46.0   Min.   :1613  
+##  1st Qu.:17.00   1st Qu.:4.000   1st Qu.:105.0   1st Qu.: 75.0   1st Qu.:2225  
+##  Median :22.75   Median :4.000   Median :151.0   Median : 93.5   Median :2804  
+##  Mean   :23.45   Mean   :5.472   Mean   :194.4   Mean   :104.5   Mean   :2978  
+##  3rd Qu.:29.00   3rd Qu.:8.000   3rd Qu.:275.8   3rd Qu.:126.0   3rd Qu.:3615  
+##  Max.   :46.60   Max.   :8.000   Max.   :455.0   Max.   :230.0   Max.   :5140  
+##   acceleration        year           origin     
+##  Min.   : 8.00   Min.   :70.00   Min.   :1.000  
+##  1st Qu.:13.78   1st Qu.:73.00   1st Qu.:1.000  
+##  Median :15.50   Median :76.00   Median :1.000  
+##  Mean   :15.54   Mean   :75.98   Mean   :1.577  
+##  3rd Qu.:17.02   3rd Qu.:79.00   3rd Qu.:2.000  
+##  Max.   :24.80   Max.   :82.00   Max.   :3.000</code></pre>
+<pre class="r"><code>set.seed(1)
+train_index = sample(nrow(auto), round(nrow(auto)*2/3))
+train_data = auto[train_index, ]
+test_data = auto[-train_index, ]
+lm.fit = lm(mpg ~ ., data = train_data)
+pred = predict(lm.fit, test_data)
+obs = test_data$mpg
+mse = mean((pred - obs)^2)
+sqrt(mse)</code></pre>
+<pre><code>## [1] 3.116298</code></pre>
+<div id="검정셋-접근법" class="section level2">
+<h2>검정셋 접근법</h2>
+<p>validation set approach 를 10번 반복해서 rmse의 추정치와 분산을
+구해봅시다.</p>
+<pre class="r"><code>rmse_vs = c()
+for (i in 1:10){
+  train_index = sample(nrow(auto), round(nrow(auto)*2/3), replace = F)
+  train_data = auto[train_index, ]
+  test_data = auto[-train_index, ]
+  lm.fit = lm(mpg ~ ., data = train_data)
+  pred = predict(lm.fit, test_data)
+  obs = test_data$mpg
+  mse = mean((pred - obs)^2)
+  rmse_vs[i] = sqrt(mse)
+}
+mean(rmse_vs); var(rmse_vs)</code></pre>
+<pre><code>## [1] 3.332443</code></pre>
+<pre><code>## [1] 0.04445261</code></pre>
+</div>
+<div id="loocv" class="section level2">
+<h2>LOOCV</h2>
+<p>LOOCV를 이용하여 평균제곱오차의 추정치와 분산을 구해보자.</p>
+<pre class="r"><code>rmse_loocv = c()
+for (i in 1:nrow(auto)){
+  lm.fit = lm(mpg ~ ., data = auto[-i,])
+  pred = predict(lm.fit, auto[i,])
+  obs = auto$mpg[i]
+  mse = (pred - obs)^2
+  rmse_loocv[i] = sqrt(mse)
+}
+mean(rmse_loocv); var(rmse_loocv)</code></pre>
+<pre><code>## [1] 2.556369</code></pre>
+<pre><code>## [1] 4.848472</code></pre>
+</div>
+<div id="교차검증법" class="section level2">
+<h2>교차검증법</h2>
+<p>K-fold CV<br />
+<strong>rule of thumb: k=5 or 10 (bias-variance trade-off)</strong></p>
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre class="r"><code>folds = createFolds(1:nrow(auto), k=10)
+rmse_kcv = c()
+for (i in 1:10){
+  lm.fit = lm(mpg ~ ., data = auto[-folds[[i]],])
+  pred = predict(lm.fit, auto[folds[[i]],])
+  obs = auto[folds[[i]],]$mpg
+  mse = mean((pred - obs)^2)
+  rmse_kcv[i] = sqrt(mse)
+}
+mean(rmse_kcv); var(rmse_kcv)</code></pre>
+<pre><code>## [1] 3.327057</code></pre>
+<pre><code>## [1] 0.3876995</code></pre>
+<p>위 세가지 검증 기법을 비교해봅시다.</p>
+<p>Validation set approach는 training set이 작아서 bias가 큰 경향이
+있고, training vs. test dataset 분할의 임의성으로 인해 예측치의 변동성이
+보통 크게 나타납니다. 즉, bias와 variance가 모두 큰 경향이 있습니다.</p>
+<p>LOOCV은 training dataset의 크기가 커서 bias를 줄일 수 있고, k-fold
+CV의 bias는 validation set approach와 LOOCV의 사이에 해당합니다.</p>
+<p>분산은 LOOCV 와 k-fold CV 중 어느 것이 더 크게 나타날까요? 예상과
+달리 대부분 k-fold CV이 LOOCV 보다 variance가 더 작은 경향이 있습니다.
+LOOCV는 training dataset이 서로 매우 유사하므로 모델간의 상관 관계가
+매우 높습니다. 모델 간의 상관 관계가 높을 수록 variance가 더 크게
+나타납니다.</p>
+</div>
+<div id="정규화regulariziation" class="section level2">
+<h2>정규화(Regulariziation)</h2>
+<blockquote>
+<p>차원의 저주(Curse of dimensionality)</p>
+</blockquote>
+<p>in circumstances of p &gt;&gt; n<br />
+using all the features to predict response variable<br />
+will face two drawbacks in terms of …<br />
+- interpretability<br />
+- increase of variance (overfitting)<br />
+</br></p>
+<p>so, we do<br />
+feature selection<br />
+- subset selection<br />
+- shrinkage (regularization)<br />
+- dimension reduction</p>
+<div id="부분집합-선택subset-selection" class="section level3">
+<h3>부분집합 선택(Subset selection)</h3>
+<p>최상의 부분집합 선택<br />
+가능한 모든 경우의 수: <span class="math inline">\(2^p\)</span></p>
+<p>단계적 선택(stepwise selection)<br />
+- 전진(forward)<br />
+- 후진(backward) - 하이브리드/혼합(mixed)</p>
+<p>전진과 후진에서 새로운 변수를 모델에 추가(전진)하거나 제거(후진)하는
+기준으로는 RSS (residual sum of square) 혹은 <span
+class="math inline">\(R^2\)</span>를 이용합니다.</p>
+<dl>
+<dt>최적의 모델 선택</dt>
+<dd>
+총 p개의 모델 중에서(각 모델은 1부터 p개의 변수를 갖는) 최적의 모델은
+교차 검증 기법을 이용해 검정오차를 직접 추정하거나, 간접적으로
+추정합니다 (간접 추정에는 Cp, AIC, BIC, adjusted <span
+class="math inline">\(R^2\)</span>를 이용)
+</dd>
+</dl>
+<p>혼합 선택법은 변수들이 모델에 순차적으로 추가된다는 점에서는 전진
+기법과 비슷하나, 새로운 변수가 추가됨에 따라 기존의 변수들에 대한
+p-value 가 커질 수 있는데, 이것이 어떤 임계치보다 커지면 그 변수를
+모델에서 제외합니다.</p>
+</div>
+</div>
+<div id="수축shrinkage" class="section level2">
+<h2>수축(Shrinkage)</h2>
+<p><a href="https://www.youtube.com/watch?v=Q81RR3yKn30">Ridge
+regression</a><br />
+<a href="https://www.youtube.com/watch?v=NGf0voTMlcs">Lasso
+regression</a></p>
+<p>아래 식을 최소로 하는 <span class="math inline">\(\beta\)</span> 를
+추정 (note: shrinkage penalty)</p>
+<p>능형회귀(ridge regresssion)<br />
+<span class="math display">\[RSS + \lambda \sum_{j=1}^{p}
+\beta^2_j\]</span><br />
+<span class="math inline">\(\lambda\)</span>: tuning parameter</p>
+<p>라소회귀(lasso regression)<br />
+<span class="math display">\[RSS + \lambda \sum_{j=1}^{p}
+|\beta_j|\]</span></p>
+<pre class="r"><code>library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## Loaded glmnet 4.1-3</code></pre>
+<pre class="r"><code>x = model.matrix(Salary~., Hitters)[,-1] # create a design matrix, convert factors to a set of dummy variables, remove intercept term   
+y = Hitters$Salary </code></pre>
+<p>lambda 값의 범위를 설정합니다.</p>
+<pre class="r"><code>grid = 10^seq(10, -2, length = 100) # lambda를 10^10 에서 10^-2 까지 값을 갖도록 설정 </code></pre>
+<pre class="r"><code>ridge.mod = glmnet(x,y,alpha = 0, lambda = grid, standardize = T) # alpha = 0 for ridge regression, alpha = 1 for lasso regression, standardize = TRUE </code></pre>
+<p>ridge/lasso regression 에서는 변수들이 모두 동일한 scale을 값도록
+표준화해주어야 합니다(모든 변수의 표준편차가 1이 되도록 각 변수의
+표준편차로 나누어줌).</p>
+<pre class="r"><code>plot(ridge.mod)</code></pre>
+<p><img src="CV_regularization_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>L1 norm <span
+class="math display">\[\sum_{j=1}^{p}|\beta_j|\]</span></p>
+<p>L2 norm<br />
+<span
+class="math display">\[\sqrt{\sum_{j=1}^{p}\beta^2_j}\]</span><br />
+능형회귀 계수들은 각 lambda 값별로 coef()로 액세스할 수 있는 행렬에
+저장됩니다.</p>
+<pre class="r"><code>dim(coef(ridge.mod))</code></pre>
+<p>lambda 값이 클 때 L2 norm은 lambda 값이 작을 때의 L2 norm에 비해
+작습니다.</p>
+<p>100개의 lambda 값 중 50번째의 L2 norm 을 계산해봅시다.</p>
+<pre class="r"><code>ridge.mod$lambda[50]</code></pre>
+<pre><code>## [1] 11497.57</code></pre>
+<pre class="r"><code>coef(ridge.mod)[-1,50] # at 50th lambda, coefficients</code></pre>
+<pre><code>##        AtBat         Hits        HmRun         Runs          RBI        Walks 
+##  0.036957182  0.138180344  0.524629976  0.230701523  0.239841459  0.289618741 
+##        Years       CAtBat        CHits       CHmRun        CRuns         CRBI 
+##  1.107702929  0.003131815  0.011653637  0.087545670  0.023379882  0.024138320 
+##       CWalks      LeagueN    DivisionW      PutOuts      Assists       Errors 
+##  0.025015421  0.085028114 -6.215440973  0.016482577  0.002612988 -0.020502690 
+##   NewLeagueN 
+##  0.301433531</code></pre>
+<pre class="r"><code>sqrt(sum(coef(ridge.mod)[-1,50]^2)) # L2 norm at 50th lambda </code></pre>
+<pre><code>## [1] 6.360612</code></pre>
+<p>검정셋 기법을 이용해 검정오차를 추정해봅시다.</p>
+<pre class="r"><code>set.seed(1)
+train = sample(nrow(x), nrow(x)/2)
+y.test = y[-train]</code></pre>
+<p>임의로 lamda 값이 4 일때, ridge regression model의 계수 추정치를
+구해봅시다.</p>
+<pre class="r"><code>ridge.mod = glmnet(x[train,], y[train], alpha = 0, lambda = grid)
+ridge.pred = predict(ridge.mod, s=4, newx = x[-train,])
+mse = mean((ridge.pred-y.test)^2)
+sqrt(mse)</code></pre>
+<pre><code>## [1] 377.1293</code></pre>
+<p>lamda 값을 매우 큰 모델을 적합하여(10^10) 계수 추정치를
+구해봅시다.</p>
+<pre class="r"><code>ridge.pred = predict(ridge.mod, s=10^10, newx = x[-train,])
+mse = mean((ridge.pred-y.test)^2)
+sqrt(mse)</code></pre>
+<pre><code>## [1] 473.9935</code></pre>
+<p>penalty term을 없앨 때(즉, 최소제곱 적합)의 결과와 비교해봅시다.</p>
+<pre class="r"><code>ridge.pred = predict(ridge.mod, s=0, newx = x[-train,])
+mse = mean((ridge.pred-y.test)^2)
+sqrt(mse)</code></pre>
+<pre><code>## [1] 407.7478</code></pre>
+<p>임의로 lambda 값을 선택하는 대신에 교차검증을 사용하여 결정하도록
+합시다. 즉, 교차검증을 통해 검정오차 추정치가 가장 낮은 lambda 값을
+구합니다.</p>
+<pre class="r"><code>set.seed(1)
+cv.ridge = cv.glmnet(x[train,], y[train], alpha = 0, nfolds = 10)
+plot(cv.ridge)</code></pre>
+<p><img src="CV_regularization_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code>bestlambda.ridge = cv.ridge$lambda.min
+bestlambda.ridge</code></pre>
+<pre><code>## [1] 326.0828</code></pre>
+<p>cv 검정오차 추정치가 가장 낮은 lambda 값에 연관된 검정 MSE를
+구해봅시다.</p>
+<pre class="r"><code>ridge.pred = predict(ridge.mod, s=bestlambda.ridge, newx = x[-train,])
+mse = mean((ridge.pred - y.test)^2)
+sqrt(mse)</code></pre>
+<pre><code>## [1] 373.9433</code></pre>
+<p>마지막으로 교차검증에 의해 선택된 lambda 값을 사용하여 전체
+데이터셋에 ridge regression 모델을 적합하고 coefficients 추정치를
+구해봅시다.</p>
+<pre class="r"><code>ridge.out = glmnet(x,y,alpha = 0)
+predict(ridge.out, type = &quot;coefficients&quot;, s=bestlambda.ridge)</code></pre>
+<pre><code>## 20 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                       s1
+## (Intercept)  15.44383120
+## AtBat         0.07715547
+## Hits          0.85911582
+## HmRun         0.60103106
+## Runs          1.06369007
+## RBI           0.87936105
+## Walks         1.62444617
+## Years         1.35254778
+## CAtBat        0.01134999
+## CHits         0.05746654
+## CHmRun        0.40680157
+## CRuns         0.11456224
+## CRBI          0.12116504
+## CWalks        0.05299202
+## LeagueN      22.09143197
+## DivisionW   -79.04032656
+## PutOuts       0.16619903
+## Assists       0.02941950
+## Errors       -1.36092945
+## NewLeagueN    9.12487765</code></pre>
+<p>lasso</p>
+<pre class="r"><code>lasso.mod = glmnet(x[train,], y[train], alpha = 1, lambda = grid)
+plot(lasso.mod)</code></pre>
+<pre><code>## Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):
+## collapsing to unique &#39;x&#39; values</code></pre>
+<p><img src="CV_regularization_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<pre class="r"><code>cv.lasso = cv.glmnet(x[train,], y[train], alpha=1)
+plot(cv.lasso)</code></pre>
+<p><img src="CV_regularization_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code>bestlambda.lasso = cv.lasso$lambda.min
+lasso.pred = predict(lasso.mod, s=bestlambda.lasso, newx = x[-train,])
+mse = mean((lasso.pred - y.test)^2)
+sqrt(mse)</code></pre>
+<pre><code>## [1] 380.0754</code></pre>
+<pre class="r"><code>lasso.out = glmnet(x,y,alpha = 1, lambda = grid)
+lasso.coef = predict(lasso.out, type = &quot;coefficients&quot;,s=bestlambda.lasso)
+lasso.coef</code></pre>
+<pre><code>## 20 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                        s1
+## (Intercept)   48.80107051
+## AtBat         -0.67774237
+## Hits           3.75024484
+## HmRun          .         
+## Runs           .         
+## RBI            .         
+## Walks          3.14969177
+## Years         -4.59912214
+## CAtBat         .         
+## CHits          .         
+## CHmRun         0.16726718
+## CRuns          0.37005850
+## CRBI           0.41962226
+## CWalks        -0.16768313
+## LeagueN       26.82180577
+## DivisionW   -118.53979587
+## PutOuts        0.24922460
+## Assists        0.01431651
+## Errors        -0.72474528
+## NewLeagueN     .</code></pre>
+<p>linear regression</p>
+<pre class="r"><code>lm.fit = lm(Salary~., data = Hitters, subset = train)
+lm.pred = predict(lm.fit, newdata = Hitters[-train,])
+mse = mean((lm.pred - y.test)^2)
+sqrt(mse)</code></pre>
+<pre><code>## [1] 410.6011</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
