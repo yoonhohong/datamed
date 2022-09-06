@@ -12,7 +12,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-모델의 성능을  평가할 때에는 항상 검증셋(test dataset)을 이용해야 합니다. 학습셋(training set)에서는 항상 더 유연한 모델이 더 정확한 예측 결과를 보여줍니다. 그러나, 훈련셋에서 더 정확한 결과가 검정셋에서의 정확성을 보장해주지는 못합니다. 오히려, 유연한 모델일 수록 검정셋의 noise까지 학습하게 됩니다.즉, 과적합(overfit)하게 되어 분산(variance)이 커지게 됩니다. 우리는 편향-분산 절충(bias-variance trade-off)를 고려하여 적절한 수준의 유연성을 갖는 모델을 선택(model selection)해야 합니다.   
+모델의 성능을  평가할 때에는 항상 검증셋(test dataset)을 이용해야 합니다. 학습셋(training set)에서는 항상 더 유연한 모델이 더 정확한 예측 결과를 보여줍니다. 그러나, 훈련셋에서 더 정확한 결과가 검정셋에서의 정확성을 보장해주지는 못합니다. 오히려, 유연한 모델일 수록 학습셋의 noise까지 학습하게 됩니다.즉, 과적합(overfit)하게 되어 분산(variance)이 커지게 됩니다. 우리는 편향-분산 절충(bias-variance trade-off)를 고려하여 적절한 수준의 유연성을 갖는 모델을 선택(model selection)해야 합니다.   
 
 검증셋을 이용하여 모델의 성능을 평가하는 방법에는 아래의 세가지가 있습니다.   
 
@@ -37,10 +37,15 @@ set.seed(1)
 train_index = sample(nrow(auto), round(nrow(auto)*2/3))
 train_data = auto[train_index, ]
 test_data = auto[-train_index, ]
+
 lm.fit = lm(mpg ~ ., data = train_data)
+
 pred = predict(lm.fit, test_data)
+
 obs = test_data$mpg
+
 mse = mean((pred - obs)^2)
+
 sqrt(mse)
 ```
 
@@ -49,6 +54,7 @@ sqrt(mse)
 validation set approach 를 10번 반복해서 rmse의 추정치와 분산을 구해봅시다.       
 ```{r}
 rmse_vs = c()
+
 for (i in 1:10){
   train_index = sample(nrow(auto), round(nrow(auto)*2/3), replace = F)
   train_data = auto[train_index, ]
@@ -59,6 +65,7 @@ for (i in 1:10){
   mse = mean((pred - obs)^2)
   rmse_vs[i] = sqrt(mse)
 }
+
 mean(rmse_vs); var(rmse_vs)
 ```
 
@@ -86,6 +93,7 @@ K-fold CV
 library(caret)
 folds = createFolds(1:nrow(auto), k=10)
 rmse_kcv = c()
+
 for (i in 1:10){
   lm.fit = lm(mpg ~ ., data = auto[-folds[[i]],])
   pred = predict(lm.fit, auto[folds[[i]],])
@@ -93,6 +101,7 @@ for (i in 1:10){
   mse = mean((pred - obs)^2)
   rmse_kcv[i] = sqrt(mse)
 }
+
 mean(rmse_kcv); var(rmse_kcv)
 ```
 
