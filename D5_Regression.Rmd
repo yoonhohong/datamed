@@ -1,0 +1,264 @@
+---
+title: "회귀(Regression)"       
+author: "Yoon-Ho Hong"  
+date: "2022-08-30 "
+output: 
+  html_document:
+    toc: yes
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+이번 시간에는 선형 회귀 모델을 학습합니다.    
+
+선형 회귀는 최신의 기계학습 기법만큼 흥미롭지 않을 수도 있지만, 여전히 유용하고 자주 사용되는 방법입니다.
+
+사실 많은 기계학습 기법이 선형회귀의 일반화 혹은 확장으로 볼 수 있습니다. 따라서, 더 복잡한 기계학습 기법에 대해 학습하기 전에 선형회귀에 대해 잘 이해하는 것이 매우 중요합니다.
+
+## 선형 회귀(linear regression)
+
+선형회귀 모델을 gapminder 자료에 적용해 다음 질문들에 답해보기로 합시다.
+
+1.  일인당 국민소득과 기대수명은 상관관계가 있는가?
+
+2.  일인당 국민소득과 기대수명사이에 얼마나 강한 상관관계가 있는가?
+
+3.  기대수명에 대한 일인당 국민소득의 효과는 어느정도이며, 이 추정치는 얼마나 정확한가?
+
+4.  기대수명에 대해 얼마나 정확하게 예측할 수 있는가?
+
+필요한 패키지를 먼저 로딩하겠습니다.
+
+```{r message=FALSE}
+library(gapminder)
+library(dplyr)
+library(ggplot2)
+```
+
+1952년 데이터를 추출해서 일인당 국민소득과 기대수명은 상관관계를 알아보기 위해 산점도를 먼저 그려보겠습니다.
+
+```{r}
+gapminder %>%
+  filter(year == 1952) %>%
+  ggplot(aes(gdpPercap, lifeExp)) + 
+  geom_point()
+```
+
+x축 값들이 낮은 수치에 몰려있어, 로그변환을 하겠습니다.
+
+```{r}
+gapminder %>%
+  filter(year == 1952) %>%
+  ggplot(aes(gdpPercap, lifeExp)) + 
+  geom_point() + 
+  scale_x_log10()
+```
+
+직관적으로 일인당 국민소득과 기대수명은 상관관계가 있어보입니다.
+
+이제, 앞서 제기했던 질문에 대해 답해보기로 합니다.
+
+## 상관관계 여부    
+
+> 일인당 국민소득과 기대수명은 상관관계가 있는가?
+
+위 질문에 답하기 위해 우리는 다음 두 가지를 해야합니다.
+
+-   선형회귀 모델의 적합
+-   가설 검정 $\beta_x$ = 0   
+
+선형 회귀 모델을 적합시키는 함수로 lm()을 사용합니다.
+
+```{r message=FALSE}
+df_1952 = gapminder %>%
+  filter(year == 1952) %>%
+  select(gdpPercap, lifeExp) %>%
+  mutate(gdpPercap_log10 = log10(gdpPercap))
+lm_1952 = lm(lifeExp ~ gdpPercap_log10, data = df_1952)
+```
+
+통계적 모델링의 결과를 보기위해 summary() 함수를 사용합니다.
+
+```{r}
+summary(lm_1952)
+```
+
+선형회귀를 적합시키기 위해 lm() 함수는 최소제곱법을 사용하는데, 최소제곱법은 잔차제곱합(residual sum of squares, RSS)을 최소화하는 계수 추정치를 구하는 방법입니다(미분을 사용함).
+
+Coefficients에서 gdpPercap_log10에 해당하는 estimate (slope 추정치)와 표준오차가 얼마인지 확인해봅시다($\beta_x$ = 20.331, 표준 오차는 1.526).
+
+선형 회귀 모델을 적합하면, $\beta_x$ = 0 라는 귀무 가설에 대한 검정 결과도 제시되는데, 귀무 가설 검정에는 t-statistic 을 사용합니다.
+
+t statistic은 는 아래와 같습니다.
+
+$$t=\frac{\overline{x}-\mu_o}{SE}$$
+
+$\overline{x}$: sample mean (coefficient in linear regression)\
+$\mu_0$: population mean (coefficient in linear regression) SE: standard error (of the coefficient in linear regression)
+
+$\overline{x}$ 는 최소제곱법(least square method)으로 구했고, $\mu_0$ 는 귀무 가설에서 0 입니다(기울기가 0이라는 것은 상관관계가 없다는 뜻이므로)
+
+계수 추정치의 표준오차는 아래에서 자세히 살펴보겠습니다.   
+
+자유도가 n-2 (=140)인 t 분포에서(n이 대략 30보다 크면 t 분포는 정규분포와 아주 유사) t 값이 위에서 구한 $|t|$ 값보다 큰 경우를 관측할 확률(즉, p-value)을 구함으로써 상관 관계를 유추할 수 있습니다.
+
+즉, p-value 가 충분히 작으면(예를 들어, 0.05보다 작으면) 귀무가설을 기각하고 상관관계가 있다고 합니다.
+
+일인당 국민소득과 기대수명의 예에서 t = 13.326, p-value \< 2e-16 이므로, 우리는 귀무가설을 기각하고, 일인당 국민소득과 기대수명간에는 통계적으로 유의한 상관관계가 있다고 말할 수 있습니다.
+
+## 모델 적합도      
+
+> 일인당 국민소득과 기대수명사이에 얼마나 강한 상관관계가 있는가?
+
+귀무가설을 기각하고 대립가설을 채택했다면, 모델이 데이터에 적합한 정도를 수량화하고자 할 것입니다.
+
+선형회귀적합의 정도는 보통 잔차표준오차(RSE)와 $R^2$ 통계량을 사용하여 표현합니다.
+
+RSE는 위에서 살펴보았으니, $R^2$ 를 어떻게 구하는지 알아봅시다.
+
+$$R^2 = \frac{TSS - RSS}{TSS}$$\
+TSS: Total sum of squares (aka, SS around the mean) RSS: Residual sum of squares (aka, SS around the fit)
+
+위 식에서 알 수 있듯이, $R^2$는 반응변수의 전체 분산에서 회귀 모델에 의해 설명되는 변동의 비율을 말합니다.   
+
+$R^2$: the proportion of the total variation explained by the fit (regression model)  
+
+위 예에서 $R^2$는 0.5592입니다. 기대수명 변동의 56%는 일인당 국민소득(의 로그변환값)에 대한 단순선형회귀 모델로 설명된다는 뜻입니다.     
+
+adjusted $R^2$는 모델의 예측변수의 수를 보정한 값입니다. 예측 변수의 수가 2개 이상인 다중 선형회귀 모델에서는 예측 변수와  설명변수의 상관 여부와 관계없이 예측 변수의 개수가 증가할 수도록 $R^2$는 증가합니다. 따라서, 새로운 예측 변수가 추가됨에 따든 우연한 증가분을 보정해야 하는 것입니다.     
+
+선형회귀 모델의 적합도에 대한 통계적 검정은 F 분포를 이용합니다(모델의 특정 예측 변수와 반응 변수간의 상관 관계에 대한 검정은 t 분포를 이용).    
+
+F-statistic은 모델에 의해 설명되는 분산을 모델에 의해 설명되지 않는 분산으로 나눈 값입니다.    
+
+F 분포에서 F 값이 위에서 구한 F-statistic 값보다 큰 경우를 관측할 확률(즉, p-value)을 구함으로써 귀무가설에 대해 통계적 검정을 합니다. 즉, p-value 가 충분히 작으면(예를 들어, 0.05보다 작으면) 귀무가설을 기각합니다.   
+
+## 상관관계의 크기와 추정의 정확도      
+
+> 기대수명에 대한 일인당 국민소득의 효과는 어느정도이며, 얼마나 정확하게 추정할 수 있는가?
+
+계수 추정치가 20.331입니다. 이는 log10(gdpPercap)가 1만큼 증가할 때(즉, 일인당 국민소득이 10배 증가할 때) 기대수명이 약  20년 증가한다는 것을 의미합니다.   
+
+이러한 추정치가 얼마나 정확한가에 대답하기 위해서는 표준오차를 살펴야합니다.          
+
+계수 추정치의 표준오차는 다음 식으로 구합니다.
+
+$$SE(\hat{\beta_1}) = \frac{\sigma}{\sqrt{\sum_{i=1}^{n}{(x_i-\overline{x})^2}}}$$  
+
+$\sigma$는 랜덤오차(random error)의 표준편차를 가리키며, 그 추정치로 잔차표준오차(residual standard error, RSE)를 사용합니다($RSE = \sqrt{RSS/(n-2)}$)
+
+위 식에서 직관적으로 표준오차는 RSS가 작을 수록, 그리고 $x_i$가 넓게 퍼질수록(기울기를 추정할 레버지리(leverage)가 크다고 합니다) 더 작아진다는 것을 알 수 있습니다.
+
+일반적으로 표준오차는 신뢰구간(confidence interval)을 계산하는데 사용됩니다. 계수 추정치에 대한 95% 신뢰구간은 실제값(모집단에서의 기울기)이 95%의 확률로 존재하는 구간이며 대략 아래와 같은 형태를 가집니다.    
+
+$$[\hat{\beta_1}-2SE(\hat{\beta}), \space \hat{\beta_1}+2SE(\hat{\beta})]$$
+
+```{r}
+confint(lm_1952, level = 0.95)
+```
+
+## 예측      
+
+> 기대수명에 대해 얼마나 정확하게 예측할 수 있는가?
+
+위에서 신뢰구간은 기대수명에 대한 일인당국민소득의 효과를 둘러싼 불확실성을 수량화하는 것입니다.    
+
+한편, 특정 국가의 기대수명에 대한 불확실성을 수량화하는데 관심이 있다면, 신뢰구간 대신 예측구간(prediction interval)을 사용해야 합니다.    
+
+예측구간은 신뢰구간보다 항상 더 넓습니다. 이유는 예측구간은 계수에 대한 추정오차(축소가능오차) 뿐만아니라 축소불가능 오차를 포함하기 때문입니다.   
+
+선형회귀 모델의 회귀 직선과 신뢰구간, 그리고 예측 구간을 모두 포함하는 산점도를 그려보겠습니다.      
+
+
+```{r}
+predictions = predict(lm_1952, newdata = df_1952, interval = "predict")
+head(predictions)
+```
+
+
+```{r}
+df_pred = cbind(df_1952, predictions)
+df_pred %>%
+  ggplot(aes(gdpPercap_log10, lifeExp)) + 
+  geom_point() + 
+  stat_smooth(method = "lm", level = 0.95) + 
+  geom_line(aes(y=lwr), col = "red", linetype = "dashed") + 
+  geom_line(aes(y=upr), col = "red", linetype = "dashed")
+```
+
+> 1952년 데이터를 이용해 학습시킨 이 단순 선형회귀 모델을 이용해 2002년 기대수명을 예측해봅시다.    
+
+```{r}
+df_2002 = gapminder %>%
+  filter(year == 2002) %>%
+  select(lifeExp, gdpPercap) %>%
+  mutate(gdpPercap_log10 = log10(gdpPercap))
+```
+
+예측값의 산출을 위해 predict() 함수를 사용합니다.    
+
+```{r include=FALSE}
+pred = predict(lm_1952, newdata = df_2002)
+head(pred)
+```
+
+예측값과 실제 관측값이 얼마나 다른지 살펴봅시다.
+
+```{r}
+df = data.frame(obs = df_2002$lifeExp, prd = pred)
+ggplot(df, aes(obs, prd)) + 
+  geom_point() + 
+  geom_abline(slope = 1, intercept = 0)
+```
+
+2002년 데이터 포인트들은 위 그림에서 직선(y=x) 아래 주로 분포되어 있습니다. 1952년 데이터로 학습한 모델을 2002년 데이터에 적용했을 때 기대 수명을 실제보다 낮게 예측하는 경향이 있다는 것을 알 수 있습니다.     
+
+회귀모델의 예측 정확도를 나타내는 정량 지표로 RMSE (Root mean squared error)를 사용합니다.  
+
+rmse를 구하는 함수를 정의해봅시다.   
+```{r}
+rmse = function(x){
+  sqrt(sum((residuals(x)^2))/df.residual(x))
+} # x <- model object 
+```
+
+1952년 학습 데이터셋에서의 rmse를 구해봅시다.   
+```{r}
+rmse(lm_1952)
+```
+
+검정 데이터셋(test)에서의 rmse를 구해봅시다.   
+```{r}
+lm_2002 = lm(obs ~ prd, data = df)
+rmse(lm_2002) 
+```
+
+
+Confidence interval을 구해봅시다.
+
+```{r include=FALSE}
+prd_2002 = predict(lm_1952, newdata = df_2002, 
+                           interval ="confidence")
+head(prd_2002) 
+```
+
+## 더 생각해볼 문제들     
+
+- Outliers 
+- Leverage    
+- 교호 작용(interaction)    
+- 공선성(collinearity)   
+- 비선형 회귀   
+
+
+
+
+
+
+
+
+
+

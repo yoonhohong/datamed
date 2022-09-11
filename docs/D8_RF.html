@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Hong, Yoon-Ho" />
+
+<meta name="date" content="2022-09-10" />
+
+<title>Decision tree, Random forest &amp; Gradient boosting</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data medicine with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown-header">by Yoon H. Hong</li>
+<li>
+  <a href="http://www.github.com/yoonhohong/SnuDataMed">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Decision tree, Random forest &amp; Gradient
+boosting</h1>
+<h4 class="author">Hong, Yoon-Ho</h4>
+<h4 class="date">2022-09-10</h4>
+
+</div>
+
+
+<div id="의사결정나무" class="section level2">
+<h2>의사결정나무</h2>
+<p>의사결정나무(decision tree) 알고리즘은 기본적으로 설명변수 공간을
+다수의 영역으로 분할하는 방법입니다. 해당 관측치가 속하는 영역의 훈련
+관측치들의 평균 (회귀 문제에서) 또는 최빈값 (분류 문제에서)을 사용하여
+예측합니다.</p>
+<p><메이저리그 타자의 연봉을 예측하는 문제><br />
+<img src="img/tree1.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+<p><img src="img/treeRegression.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+<p>회귀 문제에서는 아래 식으로 주어진 RSS 를 최소로 하는 셜명변수 공간을
+찾는 것이 목적입니다.</p>
+<p><span class="math display">\[\sum_{j=1}^J\sum_{i\in R_j}(y_i -
+\hat{y}_{R_j})^2\]</span></p>
+<p>Rj: jth 설명변수 공간<br />
+<span class="math inline">\(\hat{y}_{R_j}\)</span>: jth 설명변수 공간에
+속한 훈련 관측치 반응변수들의 평균값</p>
+<p>그러나, 설명변수 공간을 J개로 분할하는 모든 가능한 경우를 고려하는
+것은 계산상 실현이 불가능하므로, top-down 방식의 반복적인 이분 분할
+전략을 이용합니다(<strong>recursive binary splitting</strong>)</p>
+<p><img src="img/recursiveBinarySpliting.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+<p>위 전략은 다음 두 가지 단점이 있습니다(<em>drawbacks</em>)</p>
+<ul>
+<li>탐욕적이고 근시안적임(greedy, short-sighted)<br />
+</li>
+<li>과적합에 취약(prone to overfitting)</li>
+</ul>
+<p>탐욕적이라는 것은 무슨 뜻일까요?</p>
+<p>예를 들어, 5만원짜리 지폐, 3만원짜리 지폐, 5천원짜리 지폐가 있다고
+해봅시다.</p>
+<p>가장 적은 수의 지폐를 사용하여 6만원을 만들어야 한다고 해보죠.</p>
+<p>정답은?</p>
+<p>Top-down 방식의 탐욕적 알고리즘은 어떤 답을 내놓을까요?</p>
+</div>
+<div id="가지치기" class="section level2">
+<h2>가지치기</h2>
+<p>의사결정나무의 단점에 대한 해결방안으로 가지치기(<em>pruning</em>)
+전략이 있습니다.</p>
+<p>의사결정나무(tree) 빌딩 초기에 쓸모 없어 보이는 분할 이후에 아주 좋은
+분할이 올 수 있습니다. 따라서, 더 나은 전략은 아주 큰 트리를 만든 다음에
+그것을 다시 가지치기(prune)하여 subtree를 얻는 것입니다.그러나, 이렇게
+모든 가능한 subtree에 대해 교차 검증(혹은 검증셋 기법)을 이용하여 검정
+오차율를 추청하는 것은 너무 번거롭습니다. 대신, 우리는 고려할 작은
+subtree 집합을 다음에 소개할 알고리즘으로 선택하고자 합니다.</p>
+<p><strong>cost complexity pruning (weakest link pruning)</strong><br />
+모든 가능한 subtree 를 고려하는 대신에 tuning parameter <span
+class="math inline">\(\alpha\)</span> (&gt;=0) 에 의해 색인된 일련의
+tree 들을 고려.</p>
+<p>각 <span class="math inline">\(\alpha\)</span> 값에 대해, 아래 식이
+최소가 되는 subtree T 를 구할 수 있다.</p>
+<p><span class="math display">\[\sum_{j=1}^J\sum_{i\in R_j}(y_i -
+\hat{y}_{R_j})^2 + \alpha T\]</span></p>
+<p>T: subtree T의 number of terminal nodes<br />
+<span class="math inline">\(\alpha\)</span>: tuning parameter</p>
+<p><span class="math inline">\(\alpha = 0\)</span>일때,subtree T=<span
+class="math inline">\(T_0\)</span><br />
+<span class="math inline">\(\alpha\)</span>가 증가함에 따라 많은 터미널
+노드가 있는 트리의경우 <span class="math inline">\(\alpha T\)</span>
+항이 크게 증가할 것이므로 트리가 작을 때 위 식의 값이 최소로 되는 경향이
+있습니다.</p>
+<p>즉, tuning parameter <span class="math inline">\(\alpha\)</span> 는
+서브트리의 복잡도와 훈련자료에 대한 적합 사이의 trade-off 를
+제어합니다.</p>
+<p>k-fold CV 을 이용해서 검정오차를 <span
+class="math inline">\(\alpha\)</span>의함수로평가하고,평균
+검정오차를최소로하는 <span class="math inline">\(\alpha\)</span>를
+선택합니다.</p>
+<p><img src="img/MSE_pruning.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+<p>Linear model vs. Tree-based model</p>
+<p><img src="img/linearVsTree.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+</div>
+<div id="분류-오차" class="section level2">
+<h2>분류 오차</h2>
+<p>분류 문제에서 의사결정나무는 아래의 분류 오류율(E)을 최소로 하는 것이
+목적입니다.</p>
+<p><span class="math display">\[E = 1 - \max(\hat{p}_{mk})\]</span>
+<span class="math inline">\(\hat{p}_{mk}\)</span>: m번째 설명변수 공간
+내 k class에 속하는 관측치들의 비율</p>
+<p>이분 분할(binary split) 과정에서 위 식의 분류 오류율을 사용할 수
+있지만, 실제로는 node purity에 더 민감한 아래 두 가지 척도를 주로
+사용합니다.</p>
+<ul>
+<li>지니 지수(Gini index)<br />
+</li>
+<li>교차엔트로피(cross-entropy)</li>
+</ul>
+<p><strong>Gini index</strong><br />
+<span class="math display">\[G = \sum_{k=1}^{K}
+\hat{p}_{mk}(1-\hat{p}_{mk})\]</span></p>
+<p><strong>Cross-entropy</strong><br />
+<span class="math display">\[D = - \sum_{k=1}^{K}
+\hat{p}_{mk}log(\hat{p}_{mk})\]</span></p>
+</div>
+<div id="bagging" class="section level2">
+<h2>Bagging</h2>
+<p>배깅(bagging)은 bootstrap aggregation으로도 알려져 있고,
+기계학습모델의 분산을 줄여 예측 정확도를 증가시키기 위한 범용
+절차(general-purpose procedure)입니다.</p>
+<p><span class="math display">\[\hat{f}_{bag}(x) =
+\frac{1}{B}\sum_{b=1}^{B}\hat{f}_b(x)\]</span> 회귀 에서는
+평균값을(average for regression), 분류에서는 다수 모델의 예측치에 따라
+결정됩니다(majority rule for classification)</p>
+<p><img src="img/bagging.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+<p>배깅에 사용되지 않은 관측치들을 Out-of-bag (OOB) 관측치라고
+합니다.</p>
+<p><strong>OOB 오차</strong>란 i번째 관측치에 대해 그 관측치가 OOB
+이었던 각각의 트리를 이용하여 검정 오차를 추정할 수 있습니다. 교차검증
+또는 검증셋 기법을 수행하기 힘든 규모가 큰 데이터셋에 대해 특히
+편리합니다.</p>
+<p><strong>Variable importance</strong> 주어진 설명변수에 대한 분할로
+인한 검정 오차(RSS or Gini index/Cross entropy)의 감소분을 모든(B개)
+트리에 대해 평균합니다. 이 값이 크면 해당 설명변수가 중요하다고 할 수
+있습니다.</p>
+</div>
+<div id="랜덤-포레스트random-forest" class="section level2">
+<h2>랜덤 포레스트(Random Forest)</h2>
+<p>참고 자료</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=J4Wdy0Wc_xQ">Random Forest
+part I</a><br />
+</li>
+<li><a href="https://www.youtube.com/watch?v=nyxTdL_4Q-Q">Random Forest
+part II</a></li>
+</ul>
+<p>배깅에서와 마찬가지로 bootstrap에 의해 다수의 트리를 만드는 것은
+동일합니다. 그러나, 배깅과 달리 트리 내에서 split이 고려될 때마다 p개
+설명변수들의 전체 집합에서 랜덤하게 m개 설명변수가 선택됩니다(<span
+class="math inline">\(m = \sqrt{p}\)</span>, rule of thumb)</p>
+<p>위와 같이 설명 변수 공간을 임의로 줄이는 것은 트리들 간의 상관성을
+낮추어 결국 분산을 감소시키는 방법입니다.</p>
+<p><img src="img/randomForest.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+</div>
+<div id="실습-rf" class="section level2">
+<h2>실습: RF</h2>
+<p>보스턴 주택가격 데이터셋</p>
+<pre class="r"><code>library(MASS)
+?Boston</code></pre>
+<p>medv: median value of owner-occupied homes in $1K</p>
+<pre class="r"><code>library(caret)
+library(dplyr)
+library(ggplot2)</code></pre>
+<pre class="r"><code>set.seed(1) 
+train_index = createDataPartition(1:nrow(Boston), p=0.75, list = FALSE)
+train_boston = Boston[train_index,]
+test_boston = Boston[-train_index,]</code></pre>
+<p>set resampling method</p>
+<pre class="r"><code>trctrl = trainControl(method = &quot;repeatedcv&quot;, number = 10, repeats = 2)</code></pre>
+<pre class="r"><code>tunegrid = expand.grid(.mtry = c(2,7,13))</code></pre>
+<p>build model by using training data</p>
+<pre class="r"><code>rf_model = train(medv ~ ., data = train_boston, method = &quot;rf&quot;, trControl = trctrl, tuneGrid = tunegrid, importance = TRUE)  
+rf_model</code></pre>
+<pre><code>## Random Forest 
+## 
+## 382 samples
+##  13 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold, repeated 2 times) 
+## Summary of sample sizes: 344, 345, 343, 343, 344, 344, ... 
+## Resampling results across tuning parameters:
+## 
+##   mtry  RMSE      Rsquared   MAE     
+##    2    3.535638  0.8794782  2.438138
+##    7    3.274050  0.8821079  2.245771
+##   13    3.414543  0.8682930  2.328727
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was mtry = 7.</code></pre>
+<p>random forest 모델의 두가지 tuning parameter는 ntree와
+mtry입니다.</p>
+<p>ntree는 tree의 개수를 말하고, default 값은 500입니다.</p>
+<p>mtry는 매 split마다 무작위로 선택되는 변수의 개수입니다.
+tuneGrid(지정한 mtry 값으로) 혹은 tuneLength(무작위로)를 이용해
+정해줍니다.</p>
+<pre class="r"><code>plot(rf_model)</code></pre>
+<p><img src="D8_RF_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>test set 에서의 성능</p>
+<pre class="r"><code>pred = predict(rf_model, newdata = test_boston)
+df = data.frame(prd = pred, obs =test_boston$medv)
+df %&gt;% 
+  ggplot(aes(obs, prd)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1)</code></pre>
+<p><img src="D8_RF_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>sqrt(mean((pred - test_boston$medv)^2))</code></pre>
+<pre><code>## [1] 2.908614</code></pre>
+<pre class="r"><code>rf_imp = varImp(rf_model, scale = F)
+plot(rf_imp)</code></pre>
+<p><img src="D8_RF_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="부스팅boosting" class="section level2">
+<h2>부스팅(Boosting)</h2>
+<p>여러개의 decision tree 를 만들어 결합하는 것은 배깅과 동일합니다.
+그러나, 배깅과 달리 bootstrap 샘플링을 하지 않고, 대신 모든 훈련셋
+자료를 이용하여 순차적으로 천천히 학습합니다.</p>
+<p>회귀 문제에서의 알고리즘</p>
+<ol style="list-style-type: decimal">
+<li><p><span
+class="math inline">\(\hat{f}(x)=0\)</span>이라하고,훈련셋의 모든
+i에대해 <span class="math inline">\(r_i = y_i\)</span> 로 설정한다. (r:
+residuals)</p></li>
+<li><p>b = 1,2,…,B 에 대하여 다음을 반복한다.</p></li>
+</ol>
+<ul>
+<li><p>d개의 분할(d+1 터미널 노드)을 가진 트리 <span
+class="math inline">\(\hat{f}^b\)</span>를 훈련자료 (X,r)에
+적합한다.</p></li>
+<li><p>새로운 트리의 수축 버전을 더하여 <span
+class="math inline">\(\hat{f}(x)\)</span> 를 업데이트한다.</p></li>
+</ul>
+<p><span class="math display">\[\hat{f}(x) \leftarrow \hat{f}(x) +
+\lambda \hat{f}^b(x)\]</span></p>
+<ul>
+<li>잔차들을 업데이트한다.</li>
+</ul>
+<p><span class="math display">\[r_i \leftarrow r_i - \lambda
+\hat{f}^b(x_i)\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>부스팅 모델을 출력한다.</li>
+</ol>
+<p><span class="math display">\[\hat{f}(x) = \sum_{b=1}^B \lambda
+\hat{f}^b(x)\]</span></p>
+<p>Boosting 의 tuning parameters</p>
+<ul>
+<li>B: number of trees<br />
+</li>
+<li><span class="math inline">\(\lambda\)</span>: 수축 파라미터 (학습
+속도를 제어)<br />
+</li>
+<li>d: number of split in each tree (boosting의 복잡도를 제어)</li>
+</ul>
+<p><img src="img/boosting.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+</div>
+<div id="실습-gbm" class="section level2">
+<h2>실습: GBM</h2>
+<p>Boston 데이터셋에서 실습을 해봅시다.</p>
+<pre class="r"><code>set.seed(9)
+gbm_model = train(medv~., data = train_boston, trControl = trctrl, method = &quot;gbm&quot;, verbose = F) # gradient boosting machine    </code></pre>
+<pre class="r"><code>gbm_model</code></pre>
+<pre><code>## Stochastic Gradient Boosting 
+## 
+## 382 samples
+##  13 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold, repeated 2 times) 
+## Summary of sample sizes: 346, 344, 342, 342, 345, 343, ... 
+## Resampling results across tuning parameters:
+## 
+##   interaction.depth  n.trees  RMSE      Rsquared   MAE     
+##   1                   50      4.247584  0.8007864  2.977374
+##   1                  100      3.926869  0.8262090  2.742294
+##   1                  150      3.783172  0.8380866  2.657258
+##   2                   50      3.794828  0.8363081  2.695033
+##   2                  100      3.536513  0.8570699  2.510464
+##   2                  150      3.396137  0.8692006  2.430731
+##   3                   50      3.587275  0.8538374  2.497789
+##   3                  100      3.407543  0.8675589  2.384323
+##   3                  150      3.351050  0.8724060  2.351484
+## 
+## Tuning parameter &#39;shrinkage&#39; was held constant at a value of 0.1
+## 
+## Tuning parameter &#39;n.minobsinnode&#39; was held constant at a value of 10
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were n.trees = 150, interaction.depth =
+##  3, shrinkage = 0.1 and n.minobsinnode = 10.</code></pre>
+<pre class="r"><code>plot(gbm_model)</code></pre>
+<p><img src="D8_RF_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>gbmGrid &lt;-  expand.grid(interaction.depth = c(1,5,10), n.trees = c(50*(1:10)), shrinkage = 0.1, n.minobsinnode = 10)</code></pre>
+<pre class="r"><code>gbm_model = train(medv~., data = train_boston, trControl = trctrl, method = &quot;gbm&quot;, tuneGrid = gbmGrid,  verbose = F) # gradient boosting machine    </code></pre>
+<pre class="r"><code>gbm_model</code></pre>
+<pre><code>## Stochastic Gradient Boosting 
+## 
+## 382 samples
+##  13 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold, repeated 2 times) 
+## Summary of sample sizes: 344, 343, 344, 344, 345, 344, ... 
+## Resampling results across tuning parameters:
+## 
+##   interaction.depth  n.trees  RMSE      Rsquared   MAE     
+##    1                  50      4.272009  0.8043800  3.023046
+##    1                 100      3.967701  0.8280995  2.780211
+##    1                 150      3.814630  0.8405777  2.676617
+##    1                 200      3.745968  0.8461298  2.651081
+##    1                 250      3.685634  0.8517873  2.632449
+##    1                 300      3.633569  0.8558753  2.606267
+##    1                 350      3.610795  0.8576115  2.598718
+##    1                 400      3.585159  0.8596692  2.609834
+##    1                 450      3.571315  0.8617680  2.594121
+##    1                 500      3.544019  0.8638616  2.586708
+##    5                  50      3.513608  0.8632121  2.404211
+##    5                 100      3.327700  0.8773976  2.303103
+##    5                 150      3.253846  0.8819957  2.255191
+##    5                 200      3.230400  0.8833972  2.233041
+##    5                 250      3.210435  0.8845112  2.223303
+##    5                 300      3.203701  0.8848963  2.210434
+##    5                 350      3.187955  0.8855681  2.196203
+##    5                 400      3.193574  0.8850286  2.198415
+##    5                 450      3.192302  0.8850336  2.193614
+##    5                 500      3.197555  0.8845974  2.195310
+##   10                  50      3.401725  0.8718930  2.258571
+##   10                 100      3.220207  0.8844562  2.155694
+##   10                 150      3.193744  0.8863081  2.149944
+##   10                 200      3.154453  0.8890847  2.129045
+##   10                 250      3.144653  0.8897584  2.126596
+##   10                 300      3.140780  0.8897445  2.122873
+##   10                 350      3.130025  0.8903199  2.117722
+##   10                 400      3.128015  0.8902333  2.114623
+##   10                 450      3.131599  0.8900092  2.118969
+##   10                 500      3.133477  0.8897547  2.121861
+## 
+## Tuning parameter &#39;shrinkage&#39; was held constant at a value of 0.1
+## 
+## Tuning parameter &#39;n.minobsinnode&#39; was held constant at a value of 10
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were n.trees = 400, interaction.depth =
+##  10, shrinkage = 0.1 and n.minobsinnode = 10.</code></pre>
+<pre class="r"><code>plot(gbm_model)</code></pre>
+<p><img src="D8_RF_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>summary(gbm_model, las = 1)</code></pre>
+<p><img src="D8_RF_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre><code>##             var     rel.inf
+## lstat     lstat 48.30117390
+## rm           rm 25.39286411
+## dis         dis  7.92139019
+## crim       crim  4.22479186
+## nox         nox  3.45187519
+## ptratio ptratio  2.67358713
+## age         age  2.51868297
+## black     black  1.96016223
+## tax         tax  1.49649865
+## indus     indus  1.17947312
+## rad         rad  0.55834341
+## zn           zn  0.29398557
+## chas       chas  0.02717168</code></pre>
+<pre class="r"><code>gbm_pred = predict(gbm_model, newdata = test_boston)
+sqrt(mean(gbm_pred - test_boston$medv)^2)</code></pre>
+<pre><code>## [1] 0.2113814</code></pre>
+<pre class="r"><code>resamps = resamples(list(RF = rf_model, 
+               GBM = gbm_model))
+resamps</code></pre>
+<pre><code>## 
+## Call:
+## resamples.default(x = list(RF = rf_model, GBM = gbm_model))
+## 
+## Models: RF, GBM 
+## Number of resamples: 20 
+## Performance metrics: MAE, RMSE, Rsquared 
+## Time estimates for: everything, final model fit</code></pre>
+<pre class="r"><code>summary(resamps)</code></pre>
+<pre><code>## 
+## Call:
+## summary.resamples(object = resamps)
+## 
+## Models: RF, GBM 
+## Number of resamples: 20 
+## 
+## MAE 
+##         Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA&#39;s
+## RF  1.817414 2.044993 2.142592 2.245771 2.399982 2.843888    0
+## GBM 1.389045 1.850496 2.135562 2.114623 2.359493 2.980546    0
+## 
+## RMSE 
+##         Min.  1st Qu.   Median     Mean  3rd Qu.     Max. NA&#39;s
+## RF  2.232549 2.808442 3.001310 3.274050 3.613557 5.480696    0
+## GBM 1.763994 2.512573 2.873849 3.128015 3.784773 5.682615    0
+## 
+## Rsquared 
+##          Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA&#39;s
+## RF  0.7247324 0.8648384 0.8908405 0.8821079 0.9231209 0.9482653    0
+## GBM 0.7428865 0.8724682 0.8982811 0.8902333 0.9384065 0.9720575    0</code></pre>
+<pre class="r"><code>bwplot(resamps)</code></pre>
+<p><img src="D8_RF_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

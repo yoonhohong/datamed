@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Yoon-Ho Hong" />
+
+<meta name="date" content="2022-08-30" />
+
+<title>분류</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data medicine with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown-header">by Yoon H. Hong</li>
+<li>
+  <a href="http://www.github.com/yoonhohong/SnuDataMed">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">분류</h1>
+<h4 class="author">Yoon-Ho Hong</h4>
+<h4 class="date">2022-08-30</h4>
+
+</div>
+
+
+<p>이번 시간에는 아래 두가지 모델을 이용하여 분류에 대해 학습합니다.</p>
+<ul>
+<li>로지스틱회귀<br />
+</li>
+<li>선형판별분석(linear discriminant analysis)</li>
+</ul>
+<div id="로지스틱-회귀logistic-regression" class="section level2">
+<h2>로지스틱 회귀(logistic regression)</h2>
+<p>로지스틱 회귀는 비록 회귀라는 이름을 가지고 있지만 분류기로 자주
+사용됩니다. 분류 문제는 결국 결과 변수가 범주 변수(category)일 때 결과가
+특정 범주일 확률을 구하는 문제로 볼 수 있습니다.</p>
+<p>예를 들어 결과 변수의 범주가 2개라고 하고(편의상 1/0으로 코딩), 예측
+변수를 이용하여 결과 변수의 범주를 예측하는 분류 문제를 보겠습니다. 즉,
+P(Y=1|X) - 편의상 P(X)로 표기 - 를 구하는 문제입니다.</p>
+<p>로지스틱 함수를 살펴봅시다.</p>
+<p><span class="math display">\[y = \frac{1}{1 + e^{-x}}\]</span>
+로지스틱 함수의 출력값은 항상 0에서 1사이입니다. 시그모이드 모양을
+가져서 시그모이드 함수라고도 합니다.</p>
+<p>아래와 같이 결과 변수의 오즈(odds) - 오즈는 어떤 사건이 일어날
+가능성으로 성공확률/실패확률, 즉 P/(1-P)를 말합니다 - 를 선형 함수로
+모델링한다고 해봅시다.<br />
+<span class="math display">\[\frac{P(X)}{1-P(X)} =
+\beta_0+\beta_1X\]</span></p>
+<p>위 식에서 좌변은 0에서 무한대인데 반해 우변은 모든 범위의 값이
+가능합니다. 양변의 범위가 맞지 않죠.</p>
+<p>이 문제를 해결하기 위해 좌변에 log 를 취합니다. odds의 로그 변환을
+logit 변환이라고 부릅니다.</p>
+<p><span class="math display">\[\frac{P(X)}{1-P(X)} =
+e^{\beta_0+\beta_1X}\]</span></p>
+<p><span class="math display">\[log(\frac{P(X)}{1-P(X)}) = \beta_0 +
+\beta_1X\]</span></p>
+<p>위 식을 정리하면 다음과 같이 됩니다.<br />
+<span class="math display">\[P(X) =
+\frac{1}{1+e^{-(\beta_0+\beta_1X)}}\]</span></p>
+<p>앞에서 보았던 로지스틱 함수의 형태가 됩니다.<br />
+logistic regression은 결국 linear model의 일반화인 것입니다.</p>
+</div>
+<div id="예제-titanic-survival-classification" class="section level2">
+<h2>예제: titanic survival classification</h2>
+<p>타이타닉호의 생존 데이터에서 생존 여부를 예측하는 분류 모델을
+만들어봅시다.</p>
+<pre class="r"><code>library(carData)</code></pre>
+<pre class="r"><code>str(TitanicSurvival)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    1309 obs. of  4 variables:
+##  $ survived      : Factor w/ 2 levels &quot;no&quot;,&quot;yes&quot;: 2 2 1 1 1 2 2 1 2 1 ...
+##  $ sex           : Factor w/ 2 levels &quot;female&quot;,&quot;male&quot;: 1 2 1 2 1 2 1 2 1 2 ...
+##  $ age           : num  29 0.917 2 30 25 ...
+##  $ passengerClass: Factor w/ 3 levels &quot;1st&quot;,&quot;2nd&quot;,&quot;3rd&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>summary(TitanicSurvival)</code></pre>
+<pre><code>##  survived      sex           age          passengerClass
+##  no :809   female:466   Min.   : 0.1667   1st:323       
+##  yes:500   male  :843   1st Qu.:21.0000   2nd:277       
+##                         Median :28.0000   3rd:709       
+##                         Mean   :29.8811                 
+##                         3rd Qu.:39.0000                 
+##                         Max.   :80.0000                 
+##                         NA&#39;s   :263</code></pre>
+<p>결측치(age, NA’s)가 있는 레코드는 일단 제거하기로 합니다(결측치의
+처리 방법에 대해서는 뒤에 좀 더 자세히 다루기로 합니다.)</p>
+<pre class="r"><code>TitanicSurvival = TitanicSurvival[complete.cases(TitanicSurvival),]</code></pre>
+<p>다음으로 logistic regression model을 데이터에
+적합시켜봅시다(fit).</p>
+<pre class="r"><code>glm.fit = glm(survived ~., data = TitanicSurvival, family = &quot;binomial&quot;)</code></pre>
+<p>모델 적합의 결과를 살펴봅시다.</p>
+<pre class="r"><code>summary(glm.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = survived ~ ., family = &quot;binomial&quot;, data = TitanicSurvival)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.6399  -0.6979  -0.4336   0.6688   2.3964  
+## 
+## Coefficients:
+##                    Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        3.522074   0.326702  10.781  &lt; 2e-16 ***
+## sexmale           -2.497845   0.166037 -15.044  &lt; 2e-16 ***
+## age               -0.034393   0.006331  -5.433 5.56e-08 ***
+## passengerClass2nd -1.280570   0.225538  -5.678 1.36e-08 ***
+## passengerClass3rd -2.289661   0.225802 -10.140  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1414.62  on 1045  degrees of freedom
+## Residual deviance:  982.45  on 1041  degrees of freedom
+## AIC: 992.45
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>로지스틱 회귀에서 계수 추정은 최대가능도 추정법(maximum likelihood
+estimation)을 사용합니다. 이에 대한 자세한 설명은 생략하고, 우리는 모델
+적합의 결과를 어떻게 해석할 것인지에 우선 집중하기로 합니다.</p>
+<p>그러나, 가능도(우도)와 최대가능도 추정의 개념에 대해서는 스스로
+공부해서 꼭 이해하시기 바랍니다.</p>
+<p>남자와 여자의 생존 확률을 비교해봅시다. 어느 쪽이 얼마나 큽니까?</p>
+<p>male의 계수 추정치는 -2.49 입니다. 로지스틱 회귀 모델의 결과 변수는
+<em>odds의 로그변환 값</em>이라는 것을 기억합시다. 따라서, odds ratio는
+계수 추정치의 자연지수 변환이 됩니다.<br />
+<span class="math display">\[log(odds_m) - log(odds_f) =
+log(\frac{odds_m}{odds_f}) = \beta_x\]</span></p>
+<pre class="r"><code>exp(coef(glm.fit)[2])</code></pre>
+<pre><code>##    sexmale 
+## 0.08226211</code></pre>
+<p>male의 생존 odds는 female의 생존 odds의 0.08배 입니다. 즉, 여성의
+생존 오즈는 남성보다 10배 이상 큽니다.</p>
+<p>유의성 여부에 대한 통계적 검정 결과가 z 값과 p-value로 제시되어
+있습니다.</p>
+<p>로지스틱 회귀 모델의 적합도에 대한 통계적 검정을 위해 일반적으로
+가능도 비율 검정법(likelihood ratio test)을 사용합니다.</p>
+<pre class="r"><code>library(lmtest)</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>glm.fit.null = glm(survived ~ 1, data = TitanicSurvival, family = &quot;binomial&quot;)
+lrtest(glm.fit, glm.fit.null)</code></pre>
+<pre><code>## Likelihood ratio test
+## 
+## Model 1: survived ~ sex + age + passengerClass
+## Model 2: survived ~ 1
+##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)    
+## 1   5 -491.23                         
+## 2   1 -707.31 -4 432.17  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>1등칸에 비해 2등칸과 3등칸에 탄 승객들의 생존 오즈비는
+얼마일까요?<br />
+독립 변수가 범주형 변수일 때, 회귀 모델에서는 이를 dummy variable로
+변환합니다.</p>
+<pre class="r"><code>contrasts(TitanicSurvival$passengerClass)</code></pre>
+<pre><code>##     2nd 3rd
+## 1st   0   0
+## 2nd   1   0
+## 3rd   0   1</code></pre>
+</div>
+<div id="분류-정확도classification-accurancy" class="section level2">
+<h2>분류 정확도(Classification accurancy)</h2>
+<p>분류 정확도를 어떻게 평가할까요?</p>
+<p>먼저, 위에서 만든 모델을 사용하여 타이타닉호의 생존 결과를
+예측해봅시다.</p>
+<pre class="r"><code>prob = predict(glm.fit, type = &quot;response&quot;) 
+head(prob)</code></pre>
+<pre><code>##   Allen, Miss. Elisabeth Walton  Allison, Master. Hudson Trevor 
+##                       0.9258533                       0.7296211 
+##    Allison, Miss. Helen Loraine Allison, Mr. Hudson Joshua Crei 
+##                       0.9693290                       0.4981081 
+## Allison, Mrs. Hudson J C (Bessi             Anderson, Mr. Harry 
+##                       0.9347616                       0.3482715</code></pre>
+<p>이제, 분류 예측 정확도를 계산해봅시다.</p>
+<pre class="r"><code>pred = rep(&quot;no&quot;, length(prob))
+pred[prob&gt;0.5] = &quot;yes&quot;
+mean(pred == TitanicSurvival$survived)</code></pre>
+<pre><code>## [1] 0.7848948</code></pre>
+<p>위의 예제는 training data 에서 성능을 평가한 것이고, 우리가 실제로
+관심이 있는 것은 모델 훈련에 사용되지 않은 새로운 데이터셋에서의
+성능일겁니다.</p>
+<p>아래는 전체 데이터셋을 training set과 test set으로 나누고, training
+set에서 만든 모델을 test set에 적용해 성능을 평가한 것입니다.</p>
+<pre class="r"><code>set.seed(1)
+cnt = dim(TitanicSurvival)[1]
+index = sample(cnt, round(cnt/7), replace = F)
+train.data = TitanicSurvival[index,]
+test.data = TitanicSurvival[-index,]</code></pre>
+<p>로지스틱 회귀 모델을 학습 데이터에 적합시키고, 검정 데이터에 적용하여
+예측값을 얻습니다.</p>
+<pre class="r"><code>glm.fit = glm(survived ~., data = train.data, 
+              family = &quot;binomial&quot;)
+prob = predict(glm.fit, test.data, type = &quot;response&quot;)</code></pre>
+<p>confusion matrix를 출력하고, 정확도를 계산합니다.</p>
+<pre class="r"><code>pred = rep(&quot;no&quot;, cnt-round(cnt/7))
+pred[prob&gt;0.5] = &quot;yes&quot;
+table(pred, test.data$survived)</code></pre>
+<pre><code>##      
+## pred   no yes
+##   no  464 136
+##   yes  60 237</code></pre>
+<pre class="r"><code>mean(pred == test.data$survived)</code></pre>
+<pre><code>## [1] 0.7814939</code></pre>
+</div>
+<div id="선형판별분석linear-discrminant-analysis-lda"
+class="section level2">
+<h2>선형판별분석(Linear discrminant analysis, LDA)</h2>
+<p>로지스틱 회귀는 로지스틱 함수를 이용하여 두 개의 반응 변수 클래스에
+대해 <span class="math inline">\(Pr(Y=k|X=x)\)</span>를 직접 모델링하는
+것입니다.</p>
+<p>이제 LDA라고 불리는 대안 기법에 대해 알아봅시다.</p>
+<p>LDA에서는 반응 변수 Y의 각 클래스내의 관측치들이 클래스 별로
+평균(<span class="math inline">\(\mu_k\)</span>)과 클래스 공통
+분산(<span class="math inline">\(\sigma^2\)</span>)을 갖는 정규분포를
+따른다는 가정하에 이 파라미터에 대한 추정값을 베이즈 분류기에 대입한
+것입니다.</p>
+<p>베이즈 뷘류기(Bayes classifier)는 설명변수 X가 <span
+class="math inline">\(x\)</span>로 주어졌을 때 반응변수 Y가 <span
+class="math inline">\(k\)</span> 클래스일 확률을 베이즈 정리를 이용해
+구하고, 이에 따라 관측치를 분류합니다.</p>
+<p><span class="math display">\[P(Y=k|X=x)\]</span></p>
+<p>베이즈 정리(Bayes theorem)<br />
+<span class="math display">\[P(B|A) = \frac{P(A|B)\times
+P(B)}{P(A)}\]</span></p>
+<p>베이즈 정리를 베이즈 분류기에 적용하면 아래 식이 된다.<br />
+<span class="math display">\[P(Y=k|X=x) = \frac{P(X=x|Y=k) \times
+P(Y=k)}{\sum_{l=1}^k P(X=x|Y=l)}\]</span></p>
+<p>위 베이즈 정리가 의미하는 것은 <span
+class="math inline">\(P(Y=k|X=x)\)</span> - 사후 확률이라고 한다 - 를
+구하기 위해 사전 확률 <span class="math inline">\(P(Y=k)\)</span>와
+조건부 확률밀도 함수 <span class="math inline">\(P(X=x|Y=k)\)</span>를
+이용하는 것입니다.</p>
+<p><span class="math inline">\(P(Y=k)\)</span> 추정치는 k번째 클래스에
+속하는 관측치들의 비율입니다.</p>
+<p><span class="math inline">\(P(X=x|Y=k)\)</span>을 구하기 위해 LDA는
+아래와 같은 가정을 합니다.</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(P(X=x|Y=k)\)</span>은 정규 분포를
+따른다.<br />
+</li>
+<li>공통 분산을 갖는다(common variance across different k class)</li>
+</ol>
+<p>우리는 위 가정과 k 클래스에 속한 관측치에서 확률밀도함수 <span
+class="math inline">\(P(X=x|Y=k)\)</span>와 <span
+class="math inline">\(P(Y=k)\)</span>를 추정할 수 있습니다.</p>
+<p>이들을 위 베이즈 정리에 대입하면 아래와 같은 선형판별함수를 얻을 수
+있습니다.</p>
+<p><span class="math display">\[\hat{\delta_k} =
+x\times\frac{\hat{\mu_k}}{\hat{\sigma}^2}-\frac{\hat{\mu_k}^2}{2\hat{\sigma}^2}+log(\hat{\pi_k})\]</span></p>
+<p><span class="math display">\[\hat{\mu_k} =
+\frac{1}{n_k}\sum_{i:y_i=k}^{n}x_i\]</span></p>
+<p><span class="math display">\[\hat{\sigma^2} =
+\frac{1}{n-K}\sum_{k=1}^{K}\sum_{i:y_i=k}(x_i-\hat{\mu_k})^2\]</span>
+<span class="math display">\[\hat{\pi_k}=\frac{n_k}{n}\]</span></p>
+<p>LDA 분류기는 위식에서 <span
+class="math inline">\(\hat{\delta_k}\)</span> 값이 최대가 되는 클래스
+k에 관측치(<span class="math inline">\(X=x\)</span>)를 할당합니다.</p>
+<p>위 식을 선형판별함수(linear disciminant function)이라고 하는 것은 위
+판별함수가 x의 선형함수이기 때문입니다.</p>
+<p><strong>figure</strong>
+<img src="img/LDA.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+<p>LDA는 나중에 살펴볼 PCA (principal component analysis)와 매우
+유사하다. 어떤 유사점과 차이점이 있는지 알아보자.</p>
+<p><a href="https://www.youtube.com/watch?v=azXCzI57Yfc">LDA &amp;
+PCA</a></p>
+</div>
+<div id="로지스틱-회귀-vs.-lda" class="section level2">
+<h2>로지스틱 회귀 vs. LDA</h2>
+<p>로지스틱 회귀와 비교하여 LDA의 장점은 다음과 같습니다.</p>
+<p>클래스의 수가 2보다 많은 반응 변수를 분류해야 할 때가 있습니다. 다중
+로지스틱회귀 모델이 있지만 실제로는 자주 사용되지 않습니다.</p>
+<p>클래스들이 잘 분리될 때 로지스틱 회귀모델에 대한 모수 추정치는
+불안정한 경향이 있습니다. 선형판별분석은 이런 문제가 없습니다.</p>
+<p>만약 n이 작고, 각 클래스에서 설명변수 X의 분포가 근사적으ㄹ
+정규분포이면 선형판별모델이 로지스틱회귀모델보다 더 안정적입니다.</p>
+</div>
+<div id="lda-실습" class="section level2">
+<h2>LDA 실습</h2>
+<p>titanic 예제에서 LDA 실습을 해봅시다.</p>
+<p>lda 함수를 위해 필요한 패키지를 로딩하고 lda 함수로 training 데이터에
+모델을 적합합니다.</p>
+<pre class="r"><code>library(MASS) 
+lda.fit = lda(survived~., data = train.data)</code></pre>
+<p>LDA fit 결과를 살펴봅시다.</p>
+<pre class="r"><code>lda.fit</code></pre>
+<pre><code>## Call:
+## lda(survived ~ ., data = train.data)
+## 
+## Prior probabilities of groups:
+##        no       yes 
+## 0.6375839 0.3624161 
+## 
+## Group means:
+##       sexmale      age passengerClass2nd passengerClass3rd
+## no  0.8210526 30.45000         0.2842105         0.5894737
+## yes 0.3518519 30.00617         0.3888889         0.2407407
+## 
+## Coefficients of linear discriminants:
+##                          LD1
+## sexmale           -1.8435829
+## age               -0.0188373
+## passengerClass2nd -1.0724779
+## passengerClass3rd -1.8081687</code></pre>
+<p>Prior probabilities of groups, 즉, LDA 분석 이전 확률은 학습 데이터에
+존재하는 비율로 no (사망), yes (생존), 각각 0.66, 0.33으로 산정됨을 알
+수 있습니다.</p>
+<p>Group mean 은 집단별 독립변수 X의 평균을 의미합니다.</p>
+<p>Coefficients of linear discriminants는 LDA분석으로 계산된
+판별함수식의 계수가 되겠습니다. 생존 여부를 분류하는, 즉 2개의 범주를
+분류하는 것이므로 1개의 판별함수식(LD1)이 만들어짐을 확인할 수
+있습니다.</p>
+<p>각 클래스에서 LD 값의 분포를 알고 싶다면…</p>
+<pre class="r"><code>plot(lda.fit)</code></pre>
+<p><img src="D6_Classification_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>위에서 만든 LDA 모델을 이용해 test data에서 생존 결과를
+예측해봅시다.</p>
+<pre class="r"><code>pred = predict(lda.fit, test.data)</code></pre>
+<pre class="r"><code>names(pred)</code></pre>
+<pre><code>## [1] &quot;class&quot;     &quot;posterior&quot; &quot;x&quot;</code></pre>
+<p>class는 예측 결과값을, posterior는 각 클래스일 확률을, x는 linear
+discriminant function 값을 반환합니다.</p>
+<pre class="r"><code>head(pred$posterior)</code></pre>
+<pre><code>##                                         no       yes
+## Allison, Master. Hudson Trevor  0.33417270 0.6658273
+## Allison, Miss. Helen Loraine    0.03817545 0.9618245
+## Allison, Mr. Hudson Joshua Crei 0.51825621 0.4817438
+## Allison, Mrs. Hudson J C (Bessi 0.06762952 0.9323705
+## Anderson, Mr. Harry             0.63295948 0.3670405
+## Andrews, Miss. Kornelia Theodos 0.16417296 0.8358270</code></pre>
+<p>실제 관측치와 예측치가 얼마나 일치하는지 알아보기 위해 confusion
+matrix 를 구해봅시다.</p>
+<pre class="r"><code>table(pred$class, test.data$survived)</code></pre>
+<pre><code>##      
+##        no yes
+##   no  453 118
+##   yes  71 255</code></pre>
+<p>예측 정확도는? 로지스틱회귀모델과 비교하여 분류 정확도는?</p>
+<pre class="r"><code>mean(pred$class == test.data$survived)</code></pre>
+<pre><code>## [1] 0.7892977</code></pre>
+</div>
+<div id="roc-curve" class="section level2">
+<h2>ROC curve</h2>
+<p>일반적으로는 K class일 확률이 0.5 보다는 큰 경우 관측치를 해당
+class에 분류합니다. 그러나, 어떤 임계치가 적절할지는 분류의 목적에 따라
+달라질 수 있습니다.</p>
+<p>이것은 임계치에 따라 confusion matrix에서 예민도와 특이도가 변화하고,
+이 둘 간에는 절충 관계가 있기 때문입니다. 특이도를 희생하더라도 예민도를
+높일 것인가, 아니면 예민도를 희생하더라도 특이도를 높일 것인가의 선택의
+문제인 것입니다.<br />
+ROC 곡선은 모든 가능한 임계치에 대해 예민도와 특이도의 관계, 즉 위양성과
+위음성 오류를 동시에 나타내는 그래프입니다.</p>
+<p><strong>figure</strong>
+<img src="img/ROC.png" style="border: #A9A9A9 1px solid; width:75%"></p>
+<p>분류기의 전체적인 성능은 ROC 곡선 아래의 면적(AUC)에 의해 주어집니다.
+AUC 가 클수록 더 좋은 분류기입니다.</p>
+<p><a href="https://www.youtube.com/watch?v=4jRBRDbJemM">ROC</a></p>
+<p>ROC 분석을 위해 ROCR 패키지를 설치하고 로딩합니다.</p>
+<pre class="r"><code>library(ROCR)</code></pre>
+<p>검정 데이터셋에 로지스틱 회귀모델을 적용하여 반응 변수의 예측 확률을
+구합니다.</p>
+<pre class="r"><code>prob = predict(glm.fit, test.data, type = &quot;response&quot;)</code></pre>
+<p>예측 확률과 실제 분류 결과를 이용하여 prediction object를
+생성합니다.</p>
+<pre class="r"><code>pred = prediction(prob, test.data$survived)</code></pre>
+<p>ROCR:performance 함수를 이용하여 performance object를 생성합니다.</p>
+<pre class="r"><code>perf = performance(pred, &quot;tpr&quot;, &quot;fpr&quot;) # tpr = true positive rate, fpr = false positive rate </code></pre>
+<p>ROC 곡선을 그립니다.</p>
+<pre class="r"><code>plot(perf)</code></pre>
+<p><img src="D6_Classification_files/figure-html/unnamed-chunk-27-1.png" width="672" />
+AUC 값을 구합니다.</p>
+<pre class="r"><code>perf = performance(pred, &quot;auc&quot;)
+str(perf)</code></pre>
+<pre><code>## Formal class &#39;performance&#39; [package &quot;ROCR&quot;] with 6 slots
+##   ..@ x.name      : chr &quot;None&quot;
+##   ..@ y.name      : chr &quot;Area under the ROC curve&quot;
+##   ..@ alpha.name  : chr &quot;none&quot;
+##   ..@ x.values    : list()
+##   ..@ y.values    :List of 1
+##   .. ..$ : num 0.842
+##   ..@ alpha.values: list()</code></pre>
+<pre class="r"><code>perf@y.values[[1]]</code></pre>
+<pre><code>## [1] 0.8422196</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
