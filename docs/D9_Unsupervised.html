@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Hong, Yoon-Ho" />
+
+<meta name="date" content="2022-09-18" />
+
+<title>Unsupervised learning: PCA, clustering</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data medicine with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown-header">by Yoon H. Hong</li>
+<li>
+  <a href="http://www.github.com/yoonhohong/SnuDataMed">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Unsupervised learning: PCA, clustering</h1>
+<h4 class="author">Hong, Yoon-Ho</h4>
+<h4 class="date">2022-09-18</h4>
+
+</div>
+
+
+<p>비지도기계학습이란?</p>
+<ul>
+<li>주성분분석(Principal component analysis, PCA)<br />
+</li>
+<li>군집분석(Clustering)
+<ul>
+<li>K-means clustering</li>
+<li>계층적 군집분석(Hierchical clustering)</li>
+</ul></li>
+</ul>
+<dl>
+<dt>PCA</dt>
+<dd>
+dimension reduction for visualization and/or preprocessing of
+high-dimensional data
+</dd>
+<dt>Clustering</dt>
+<dd>
+subgrouping of predictors or observations based on similarity (distance)
+</dd>
+</dl>
+<div id="주성분분석pca" class="section level2">
+<h2>주성분분석(PCA)</h2>
+<dl>
+<dt>첫번째 주성분(the first principal component)</dt>
+<dd>
+변수들의 정규화된 (normalized) 선형결합 (가장 큰 분산을 가지는, 즉
+관측치가 가장 많이 변화되는 변수공간의 방향)
+</dd>
+</dl>
+<p><span class="math display">\[Z_1 = \phi_{11}X_1 + \phi_{21}X_2 + ...
++ \phi_{p1}X_p\]</span></p>
+<p><span class="math display">\[\sum_{j=1}^p \phi^2_{j1} =
+1\]</span></p>
+<dl>
+<dt>두번째 주성분(the second principal component)</dt>
+<dd>
+첫번째 주성분과 상관되지 않은 (uncorrelated, orthogonal) X1,X2,,,Xp 의
+모든 선형결합 중에서 분산을 최대로 하는 선형결합
+</dd>
+<dt>변수 스케일링(scaling)</dt>
+<dd>
+스케일링되지 않은 변수에 PCA 를 수행하면 단순히 분산이 큰 변수에 의해
+주성분벡터가 결정됨
+</dd>
+</dl>
+<p>로딩 벡터와 주성분 점수<br />
+- 로딩 벡터(loading vector, length=p)</p>
+<p><span class="math display">\[\phi_1 = (\phi_{11},
+\phi_{21},,,\phi_{p1})^T\]</span> - 주성분 점수(principal component
+scores, length=n) 각 관측치의 값을 주성분(principal component)으로
+변환한 것으로 해당 주성분(principal component)별로 있음</p>
+<p>예를 들어, 첫번째 주성분(principal component)에 대한 각 관측치의
+주성분 점수(principal component scores) 값은 아래와 같이 표현함</p>
+<p>(z11,z21,,,zn1)</p>
+</div>
+<div id="실습pca" class="section level2">
+<h2>실습(PCA)</h2>
+<pre class="r"><code>states = row.names(USArrests) 
+states # 50 states in USA </code></pre>
+<pre><code>##  [1] &quot;Alabama&quot;        &quot;Alaska&quot;         &quot;Arizona&quot;        &quot;Arkansas&quot;      
+##  [5] &quot;California&quot;     &quot;Colorado&quot;       &quot;Connecticut&quot;    &quot;Delaware&quot;      
+##  [9] &quot;Florida&quot;        &quot;Georgia&quot;        &quot;Hawaii&quot;         &quot;Idaho&quot;         
+## [13] &quot;Illinois&quot;       &quot;Indiana&quot;        &quot;Iowa&quot;           &quot;Kansas&quot;        
+## [17] &quot;Kentucky&quot;       &quot;Louisiana&quot;      &quot;Maine&quot;          &quot;Maryland&quot;      
+## [21] &quot;Massachusetts&quot;  &quot;Michigan&quot;       &quot;Minnesota&quot;      &quot;Mississippi&quot;   
+## [25] &quot;Missouri&quot;       &quot;Montana&quot;        &quot;Nebraska&quot;       &quot;Nevada&quot;        
+## [29] &quot;New Hampshire&quot;  &quot;New Jersey&quot;     &quot;New Mexico&quot;     &quot;New York&quot;      
+## [33] &quot;North Carolina&quot; &quot;North Dakota&quot;   &quot;Ohio&quot;           &quot;Oklahoma&quot;      
+## [37] &quot;Oregon&quot;         &quot;Pennsylvania&quot;   &quot;Rhode Island&quot;   &quot;South Carolina&quot;
+## [41] &quot;South Dakota&quot;   &quot;Tennessee&quot;      &quot;Texas&quot;          &quot;Utah&quot;          
+## [45] &quot;Vermont&quot;        &quot;Virginia&quot;       &quot;Washington&quot;     &quot;West Virginia&quot; 
+## [49] &quot;Wisconsin&quot;      &quot;Wyoming&quot;</code></pre>
+<pre class="r"><code>names(USArrests)</code></pre>
+<pre><code>## [1] &quot;Murder&quot;   &quot;Assault&quot;  &quot;UrbanPop&quot; &quot;Rape&quot;</code></pre>
+<pre class="r"><code>summary(USArrests)</code></pre>
+<pre><code>##      Murder          Assault         UrbanPop          Rape      
+##  Min.   : 0.800   Min.   : 45.0   Min.   :32.00   Min.   : 7.30  
+##  1st Qu.: 4.075   1st Qu.:109.0   1st Qu.:54.50   1st Qu.:15.07  
+##  Median : 7.250   Median :159.0   Median :66.00   Median :20.10  
+##  Mean   : 7.788   Mean   :170.8   Mean   :65.54   Mean   :21.23  
+##  3rd Qu.:11.250   3rd Qu.:249.0   3rd Qu.:77.75   3rd Qu.:26.18  
+##  Max.   :17.400   Max.   :337.0   Max.   :91.00   Max.   :46.00</code></pre>
+<pre class="r"><code>apply(USArrests, 2, var) # column-wise </code></pre>
+<pre><code>##     Murder    Assault   UrbanPop       Rape 
+##   18.97047 6945.16571  209.51878   87.72916</code></pre>
+<pre class="r"><code>apply(USArrests, 2, mean) # column-wise </code></pre>
+<pre><code>##   Murder  Assault UrbanPop     Rape 
+##    7.788  170.760   65.540   21.232</code></pre>
+<pre class="r"><code>pr.out = prcomp(USArrests, scale = TRUE) 
+names(pr.out)</code></pre>
+<pre><code>## [1] &quot;sdev&quot;     &quot;rotation&quot; &quot;center&quot;   &quot;scale&quot;    &quot;x&quot;</code></pre>
+<pre class="r"><code>pr.out$rotation # loading vectors </code></pre>
+<pre><code>##                 PC1        PC2        PC3         PC4
+## Murder   -0.5358995  0.4181809 -0.3412327  0.64922780
+## Assault  -0.5831836  0.1879856 -0.2681484 -0.74340748
+## UrbanPop -0.2781909 -0.8728062 -0.3780158  0.13387773
+## Rape     -0.5434321 -0.1673186  0.8177779  0.08902432</code></pre>
+<pre class="r"><code>head(pr.out$x) # pc scores</code></pre>
+<pre><code>##                   PC1        PC2         PC3          PC4
+## Alabama    -0.9756604  1.1220012 -0.43980366  0.154696581
+## Alaska     -1.9305379  1.0624269  2.01950027 -0.434175454
+## Arizona    -1.7454429 -0.7384595  0.05423025 -0.826264240
+## Arkansas    0.1399989  1.1085423  0.11342217 -0.180973554
+## California -2.4986128 -1.5274267  0.59254100 -0.338559240
+## Colorado   -1.4993407 -0.9776297  1.08400162  0.001450164</code></pre>
+<pre class="r"><code>biplot(pr.out)</code></pre>
+<p><img src="D9_Unsupervised_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>pr.out$rotation = -pr.out$rotation # loading vectors 
+pr.out$x = -pr.out$x # pc scores
+biplot(pr.out) </code></pre>
+<p><img src="D9_Unsupervised_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>summary(pr.out)</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2     PC3     PC4
+## Standard deviation     1.5749 0.9949 0.59713 0.41645
+## Proportion of Variance 0.6201 0.2474 0.08914 0.04336
+## Cumulative Proportion  0.6201 0.8675 0.95664 1.00000</code></pre>
+<pre class="r"><code>pr.var = pr.out$sdev^2
+pve = pr.var/sum(pr.var)
+plot(pve, xlab = &quot;Principal component&quot;, ylab = &quot;Proportion of Variance Explained&quot;, type = &quot;b&quot;) # scree plot </code></pre>
+<p><img src="D9_Unsupervised_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Another example for PCA</p>
+<pre class="r"><code>library(ISLR) # NCI60 data in this package </code></pre>
+<pre class="r"><code>class(NCI60) # NCI60: 64개 암세포주에 대한 6830개의 유전자 발현 관측치 </code></pre>
+<pre><code>## [1] &quot;list&quot;</code></pre>
+<pre class="r"><code>nci.labs = NCI60$labs
+table(nci.labs) # 14개 유형의 암세포주 </code></pre>
+<pre><code>## nci.labs
+##      BREAST         CNS       COLON K562A-repro K562B-repro    LEUKEMIA 
+##           7           5           7           1           1           6 
+## MCF7A-repro MCF7D-repro    MELANOMA       NSCLC     OVARIAN    PROSTATE 
+##           1           1           8           9           6           2 
+##       RENAL     UNKNOWN 
+##           9           1</code></pre>
+<pre class="r"><code>nci.data = NCI60$data
+dim(nci.data)</code></pre>
+<pre><code>## [1]   64 6830</code></pre>
+<pre class="r"><code>nci_pc_out = prcomp(nci.data, scale = TRUE) </code></pre>
+<pre class="r"><code>library(ggplot2)
+pc12scores = nci_pc_out$x[,c(&quot;PC1&quot;, &quot;PC2&quot;)]
+df = data.frame(cell_lines = nci.labs, pc12scores)
+ggplot(data = df, aes(x=PC1, y=PC2, col = cell_lines)) + geom_point(size = 3)</code></pre>
+<p><img src="D9_Unsupervised_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>summary(pr.out)</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2     PC3     PC4
+## Standard deviation     1.5749 0.9949 0.59713 0.41645
+## Proportion of Variance 0.6201 0.2474 0.08914 0.04336
+## Cumulative Proportion  0.6201 0.8675 0.95664 1.00000</code></pre>
+</div>
+<div id="hierachical-clustering" class="section level2">
+<h2>Hierachical clustering</h2>
+<p>예를 들어 두 개의 관측치가 서로 유사하다는 것을 어떻게 결정할지
+생각해봅시다.</p>
+<p>유사성(similarity)의 척도가 필요한데, 이를 위해 우리는
+거리(distance)를 계산합니다.</p>
+<p>유사성의 척도(거리)</p>
+<p><em>Euclidean distance</em><br />
+<span class="math display">\[d_{euc}(x,y) = \sqrt{\sum_{i=1}^n(x_i -
+y_i)^2}\]</span></p>
+<p><em>Manhattan distance</em><br />
+<span class="math display">\[d_{man}(x,y) = \sum_{i=1}^n |{(x_i -
+y_i)|}\]</span></p>
+<p><em>pearson correlation distance</em><br />
+<span class="math display">\[d_{cor}(x, y) = 1 -
+\frac{\sum\limits_{i=1}^n (x_i - \bar{x})(y_i -
+\bar{y})}{\sqrt{\sum\limits_{i=1}^n(x_i - \bar{x})^2
+\sum\limits_{i=1}^n(y_i -\bar{y})^2}}\]</span><br />
+* correlation distance 는 관측치들의 크기보다는 그들의 모양(프로파일)에
+중점을 둔다.</p>
+<p>스케일링: 관측치간의 유사성을 계산하기 전에 각 변수에 주어진 중요도를
+동일하게 만들기 위해서 표준편차가 1이 되도록 한다. 이것은 k-mean
+clustering 에서도 동일하게 적용된다.</p>
+<blockquote>
+<p>알고리즘(aggolomerative hierachical clustering의 경우)<br />
+1. n개 관측치에서 모든 쌍별로 비유사성의 척도(예를 들어, 유클리드
+거리)를 계산한다. 각 관측치 자체를 하나의 클러스터로 취급한다.<br />
+2. 모든 클러스터들간의 쌍별 거리를 계산하여, 가장 거리가 작은(즉, 가장
+유사한) 클러스터 쌍을 융합한다. 3. 위에서 융합된 새로운 클러스터를
+포함하여, 다시 2번 과정을 반복한다.<br />
+만약, 클러스터가 두 개 이상의 관측치들을 포함하는 경우, 클러스터 사이의
+비유사성을 어떻게 정의할 것인가?</p>
+</blockquote>
+<p><em>linkage</em> 방법들<br />
+- complete linkage<br />
+클러스터 간 거리의 최대치<br />
+- average linkage<br />
+클러스터 간 거리의 평균치<br />
+- single linkage<br />
+클러스터 간 거리의 최소치 - centroid linkage<br />
+클러스터 간 무게중심사이의 거리</p>
+<p>complete, average linkage 가 좀 더 균형잡힌 클러스터들을 제공하는
+경향이 있다.</p>
+</div>
+<div id="실습hierachical-clustering" class="section level2">
+<h2>실습(Hierachical clustering)</h2>
+<pre class="r"><code>nci_scaled = scale(nci.data) # center and scale are TRUE in default  </code></pre>
+<pre class="r"><code>dist = dist(nci_scaled)
+hclust.complete = hclust(dist, method = &quot;complete&quot;)</code></pre>
+<pre class="r"><code>plot(hclust.complete, labels = nci.labs, main = &quot;complete linkage&quot;)</code></pre>
+<p><img src="D9_Unsupervised_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code>hc.clusters = cutree(hclust.complete, 5)
+hc.clusters</code></pre>
+<pre><code>##  V1  V2  V3  V4  V5  V6  V7  V8  V9 V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V20 
+##   1   1   1   1   2   2   2   2   1   1   1   1   1   1   1   1   1   2   2   2 
+## V21 V22 V23 V24 V25 V26 V27 V28 V29 V30 V31 V32 V33 V34 V35 V36 V37 V38 V39 V40 
+##   1   1   1   1   1   1   1   1   1   1   1   1   1   3   3   3   3   3   3   3 
+## V41 V42 V43 V44 V45 V46 V47 V48 V49 V50 V51 V52 V53 V54 V55 V56 V57 V58 V59 V60 
+##   3   1   4   1   4   4   4   4   4   4   4   4   1   1   5   5   5   5   1   5 
+## V61 V62 V63 V64 
+##   5   5   5   5</code></pre>
+<pre class="r"><code>table(hc.clusters, nci.labs)</code></pre>
+<pre><code>##            nci.labs
+## hc.clusters BREAST CNS COLON K562A-repro K562B-repro LEUKEMIA MCF7A-repro
+##           1      0   3     2           0           0        0           0
+##           2      3   2     0           0           0        0           0
+##           3      0   0     0           1           1        6           0
+##           4      2   0     5           0           0        0           1
+##           5      2   0     0           0           0        0           0
+##            nci.labs
+## hc.clusters MCF7D-repro MELANOMA NSCLC OVARIAN PROSTATE RENAL UNKNOWN
+##           1           0        2     7       6        2     8       1
+##           2           0        0     1       0        0     1       0
+##           3           0        0     0       0        0     0       0
+##           4           1        0     0       0        0     0       0
+##           5           0        6     1       0        0     0       0</code></pre>
+</div>
+<div id="k-means-clustering" class="section level2">
+<h2>K-means clustering</h2>
+<p>n개 관측치들을 K개 클러스터로 분할하는 방법: Kn</p>
+<blockquote>
+<p>알고리즘 1. 각 관측치에 1에서 K까지의 숫자를 랜덤하게 할당한다.
+이것은 관측체에 대한 초기 클러스터 할당으로 작용한다. 2. 클러스터 할당이
+변하지 않을 때까지 다음을 반복한다. + 2-1. 클러스터 각각에 대해 클러스터
+무게중심을 계산한다.<br />
++ 2-2. 각 관측치와 각 클러스터의 무게중심 간의 거리를 계산한다.<br />
++ 2-3. 무게 중심이 가장 가까운 클러스터로 각 관측치를 새롭게 할당한다.
+*주의<br />
+K 를 선택하는 것은 전혀 단순한 문제가 아니다.</p>
+</blockquote>
+</div>
+<div id="실습k-means-clustering" class="section level2">
+<h2>실습(K-means clustering)</h2>
+<pre class="r"><code>set.seed(2)
+km.out = kmeans(nci_scaled, centers = 5, nstart = 20)</code></pre>
+<pre class="r"><code>km.clusters = km.out$cluster
+km.clusters</code></pre>
+<pre><code>##  V1  V2  V3  V4  V5  V6  V7  V8  V9 V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V20 
+##   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+## V21 V22 V23 V24 V25 V26 V27 V28 V29 V30 V31 V32 V33 V34 V35 V36 V37 V38 V39 V40 
+##   3   3   3   4   4   3   4   3   4   3   3   4   4   2   2   2   2   2   2   2 
+## V41 V42 V43 V44 V45 V46 V47 V48 V49 V50 V51 V52 V53 V54 V55 V56 V57 V58 V59 V60 
+##   2   4   4   4   4   4   4   4   5   5   5   5   4   4   4   1   1   1   1   1 
+## V61 V62 V63 V64 
+##   1   1   1   1</code></pre>
+<pre class="r"><code>table(km.clusters, hc.clusters)</code></pre>
+<pre><code>##            hc.clusters
+## km.clusters  1  2  3  4  5
+##           1  1  0  0  0  8
+##           2  0  0  8  0  0
+##           3 20  7  0  0  0
+##           4 10  0  0  5  1
+##           5  0  0  0  4  0</code></pre>
+</div>
+<div id="heatmap" class="section level2">
+<h2>Heatmap</h2>
+<pre class="r"><code>df_scaled = scale(USArrests)
+summary(df_scaled)</code></pre>
+<pre><code>##      Murder           Assault           UrbanPop             Rape        
+##  Min.   :-1.6044   Min.   :-1.5090   Min.   :-2.31714   Min.   :-1.4874  
+##  1st Qu.:-0.8525   1st Qu.:-0.7411   1st Qu.:-0.76271   1st Qu.:-0.6574  
+##  Median :-0.1235   Median :-0.1411   Median : 0.03178   Median :-0.1209  
+##  Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000   Mean   : 0.0000  
+##  3rd Qu.: 0.7949   3rd Qu.: 0.9388   3rd Qu.: 0.84354   3rd Qu.: 0.5277  
+##  Max.   : 2.2069   Max.   : 1.9948   Max.   : 1.75892   Max.   : 2.6444</code></pre>
+<pre class="r"><code>df_dist = dist(df_scaled) # row-wise distance matrix 
+hc_out = hclust(df_dist, method = &quot;complete&quot;)
+plot(hc_out)</code></pre>
+<p><img src="D9_Unsupervised_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<pre class="r"><code>hc_clusters = cutree(hc_out, 4)
+hc_clusters</code></pre>
+<pre><code>##        Alabama         Alaska        Arizona       Arkansas     California 
+##              1              1              2              3              2 
+##       Colorado    Connecticut       Delaware        Florida        Georgia 
+##              2              3              3              2              1 
+##         Hawaii          Idaho       Illinois        Indiana           Iowa 
+##              3              4              2              3              4 
+##         Kansas       Kentucky      Louisiana          Maine       Maryland 
+##              3              3              1              4              2 
+##  Massachusetts       Michigan      Minnesota    Mississippi       Missouri 
+##              3              2              3              1              3 
+##        Montana       Nebraska         Nevada  New Hampshire     New Jersey 
+##              4              4              2              4              3 
+##     New Mexico       New York North Carolina   North Dakota           Ohio 
+##              2              2              1              4              3 
+##       Oklahoma         Oregon   Pennsylvania   Rhode Island South Carolina 
+##              3              3              3              3              1 
+##   South Dakota      Tennessee          Texas           Utah        Vermont 
+##              4              1              2              3              4 
+##       Virginia     Washington  West Virginia      Wisconsin        Wyoming 
+##              3              3              4              3              3</code></pre>
+<p>load package</p>
+<pre class="r"><code>library(pheatmap)</code></pre>
+<pre class="r"><code>mat = as.matrix(t(df_scaled))
+apply(mat, 1, sd) # 1 for row-wise </code></pre>
+<pre><code>##   Murder  Assault UrbanPop     Rape 
+##        1        1        1        1</code></pre>
+<pre class="r"><code>pheatmap(mat, 
+         cluster_rows = T,
+         # cellheight = 20,
+         annotation_col = data.frame(hc_clusters))</code></pre>
+<p><img src="D9_Unsupervised_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
