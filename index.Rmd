@@ -2,8 +2,10 @@
 title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 ---
 
-서울대학교 의과대학 2학년 2학기 선택교과4\
-2022년8월2일 - 9월20일 (총 8주) 매주 화요일, 13:00 - 17:00 융합관 1층 GDR
+**서울대학교 의과대학 2학년 2학기 선택교과4**   
+2023년8월2일-9월20일(8주) 매주 수요일, 13:00 - 17:00 연구관 7층   
+2022년8월2일-9월20일(8주) 매주 화요일, 13:00 - 17:00 융합관 1층 GDR   
+
 
 **목표와 내용**    
 
@@ -19,15 +21,15 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 
 **강의록**  
 
-* [Day 1](D1_Intro.html) 데이터 과학과 의학/의료    
-* [Day 2](D2_R_basics.html) R 프로그래밍의 기초
-* [Day 3](D3_preprocess.html) 데이터 정제와 가공, 시각화
-* [Day 4](D4_ML_basics.html) 기계학습의 기초와 통계적 모델링 
-* [Day 5](D5_Regression.html) 회귀(선형회귀)  
-* [Day 6](D6_Classification.html) 분류(로지스틱 회귀와 선형판별분석)   
-* [Day 7](D7_CV_regularization.html) 교차검증과 정규화(Ridge/Lasso)
-* [Day 8](D8_RF.html) 의사결정나무와 랜덤 포레스트     
-* [Day 9](D9_Unsupervised.html) 비지도기계학습(PCA, 클러스터링)
+* [Class 1. 데이터 과학과 의료](D1_Intro.html)  
+* [Class 2. R 프로그래밍의 기초](D2_R_basics.html) 
+* [Class 3. 데이터 정제와 가공, 시각화](D3_preprocess.html) 
+* [Class 4. 통계적 모델링과 기계학습의 기초](D4_ML_basics.html)  
+* [Class 5. 선형회귀](D5_Regression.html) 
+* [Class 6. 분류(로지스틱 회귀와 선형판별분석)](D6_Classification.html) 
+* [Class 7. 교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html) 
+* [Class 8. 의사결정나무와 랜덤 포레스트](D8_RF.html)      
+* [Class 9. 비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html) 
 
 **실습**   
 
@@ -36,3 +38,6 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 * [Exercise: r markdown](Ex_Rmarkdown.html) R markdown  
 * [Exercise: shiny](Ex_Shiny.html) Shiny  
 * [Exercise: git/github](Ex_Github.html) git/github
+
+
+
