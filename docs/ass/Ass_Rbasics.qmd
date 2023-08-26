@@ -1,0 +1,25 @@
+---
+title: "Assessment: R basics"
+format: 
+  revealjs:
+    embed-resources: true
+editor: visual
+---
+
+## How many countries in Asia?
+
+```{r}
+#| echo: true
+library(gapminder)
+library(dplyr)
+```
+
+```{r}
+asia = gapminder %>%
+  filter(continent == "Asia")
+length(unique(asia$country))
+```
+
+## Which country has the largest GDP per capita in Asia?
+
+## Code
