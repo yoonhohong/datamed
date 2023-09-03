@@ -17,53 +17,67 @@ knitr::opts_chunk$set(echo = TRUE)
 -   로지스틱회귀    
 -   선형판별분석(linear discriminant analysis)    
 
-## 로지스틱 회귀(logistic regression)   
+## 분류   
 
-로지스틱 회귀는 비록 회귀라는 이름을 가지고 있지만 분류기로 자주 사용됩니다. 분류 문제는 결국 결과 변수가 범주 변수(category)일 때 결과가 특정 범주일 확률을 구하는 문제로 볼 수 있습니다.     
+분류 문제는 결과변수가 범주형 변수(category)일 때, 결과변수가  특정 범주에 속할 확률을 구하는 문제로 볼 수 있습니다.     
 
-예를 들어 결과 변수의 범주가 2개라고 하고(편의상 1/0으로 코딩), 예측 변수를 이용하여 결과 변수의 범주를 예측하는 분류 문제를 보겠습니다. 즉, P(Y=1|X) - 편의상 P(X)로 표기 - 를 구하는 문제입니다.      
+오늘 다를 로지스틱 회귀는 비록 회귀라는 이름을 가지고 있지만, 결과변수가  특정 범주에 속할 확률을 모델링하는 것이기 때문에 분류기로 사용됩니다. 
+
+결과변수의 범주가 2개라면(편의상 0과 1이라고 합시다), 예측변수를 이용하여 결과변수의 범주를 예측하는 분류 문제는 P(Y=1|X), 즉 X 변수값이 주어졌을 때, Y=1 확률을 모델링하는 문제입니다(아래에서는 이 조건부 확률 분포를 편의상 P(X)로 표기하겠습니다.)
+
+## 로지스틱 회귀(logistic regression): 로지스틱 함수    
 
 로지스틱 함수를 살펴봅시다.    
 
 $$y = \frac{1}{1 + e^{-x}}$$
 로지스틱 함수의 출력값은 항상 0에서 1사이입니다. 시그모이드 모양을 가져서 시그모이드 함수라고도 합니다.  
 
-아래와 같이 결과 변수의 오즈(odds) - 오즈는 어떤 사건이 일어날 가능성으로 성공확률/실패확률, 즉 P/(1-P)를 말합니다 - 를 선형 함수로 모델링한다고 해봅시다.        
+
+```{r}
+curve(plogis(x), -5, 5)
+```
+
+
+## 로지스틱 회귀(logistic regression): 오즈(odds)와 로짓(logit) 
+
+오즈는 어떤 사건이 일어날 가능성으로 성공확률/실패확률, 즉 P/(1-P)를 말합니다 
+
+$$Odds = \frac{P(X)}{1-P(X)}$$
+
+오즈(odds)를 선형 함수로 모델링한다고 해봅시다.        
+
 $$\frac{P(X)}{1-P(X)} = \beta_0+\beta_1X$$
 
 위 식에서 좌변은 0에서 무한대인데 반해 우변은 모든 범위의 값이 가능합니다. 양변의 범위가 맞지 않죠. 
 
 이 문제를 해결하기 위해 좌변에 log 를 취합니다. odds의 로그 변환을 logit 변환이라고 부릅니다.   
 
+$$log(\frac{P(X)}{1-P(X)}) = \beta_0+\beta_1X$$
+
 $$\frac{P(X)}{1-P(X)} = e^{\beta_0+\beta_1X}$$
 
-$$log(\frac{P(X)}{1-P(X)}) = \beta_0 + \beta_1X$$ 
-
-
-위 식을 정리하면 다음과 같이 됩니다.   
 $$P(X) = \frac{1}{1+e^{-(\beta_0+\beta_1X)}}$$
 
 앞에서 보았던 로지스틱 함수의 형태가 됩니다.   
-logistic regression은 결국 linear model의 일반화인 것입니다.       
+
+정리하면, logistic regression은 오즈에 로그를 취한 logit값을 결과변수로 하는 선형회귀 모델인 것입니다. 
 
 
-## 예제: titanic survival classification    
+## 타이타닉호의 생존자     
 
 타이타닉호의 생존 데이터에서 생존 여부를 예측하는 분류 모델을 만들어봅시다.   
 
+carData 패키지를 설치하고, TitanicSurvival 데이터셋의 구조를 봅시다.  
 ```{r}
 library(carData)
-```
-
-```{r}
 str(TitanicSurvival)
 ```
-
+각 변수의 요약 통계치를 확인해봅시다. 
 ```{r}
 summary(TitanicSurvival)
 ```
 
-결측치(age, NA's)가 있는 레코드는 일단 제거하기로 합니다(결측치의 처리 방법에 대해서는 뒤에 좀 더 자세히 다루기로 합니다.)  
+결측치(age, NA's)가 있는 레코드는 일단 제거하기로 합니다.  
 ```{r}
 TitanicSurvival = TitanicSurvival[complete.cases(TitanicSurvival),]
 ```
@@ -78,14 +92,13 @@ glm.fit = glm(survived ~., data = TitanicSurvival, family = "binomial")
 summary(glm.fit)
 ```
 
-로지스틱 회귀에서 계수 추정은 최대가능도 추정법(maximum likelihood estimation)을  사용합니다. 이에 대한 자세한 설명은 생략하고, 우리는 모델 적합의 결과를 어떻게 해석할 것인지에 우선 집중하기로 합니다.   
-
-그러나, 가능도(우도)와 최대가능도 추정의 개념에 대해서는 스스로 공부해서 꼭  이해하시기 바랍니다.               
-
+로지스틱 회귀에서 계수 추정은 최대가능도 추정법(maximum likelihood estimation)을 사용합니다. 이에 대한 자세한 설명은 생략하고, 우리는 모델 적합의 결과를 어떻게 해석할 것인지에 우선 집중하기로 합니다.                
 남자와 여자의 생존 확률을 비교해봅시다. 어느 쪽이 얼마나 큽니까?   
 
-male의 계수 추정치는 -2.49 입니다. 로지스틱 회귀 모델의 결과 변수는 *odds의 로그변환 값*이라는 것을 기억합시다. 따라서, odds ratio는 계수 추정치의 자연지수 변환이 됩니다.  
+male의 계수 추정치는 -2.49 입니다. 로지스틱 회귀 모델의 결과 변수는 *odds의 로그 변환, 즉 로짓 값*이라는 것을 기억합시다. 즉, 이 계수 추정값은 오즈비(odds ratio)의 로짓 값입니다. 
 $$log(odds_m) - log(odds_f) = log(\frac{odds_m}{odds_f}) = \beta_x$$
+
+따라서, 오즈비는 이 계수 추정값의 자연지수 함수값입니다.      
 ```{r}
 exp(coef(glm.fit)[2])
 ```
@@ -93,13 +106,7 @@ exp(coef(glm.fit)[2])
 male의 생존 odds는 female의 생존 odds의 0.08배 입니다. 즉, 여성의 생존 오즈는 남성보다 10배 이상 큽니다.  
 
 유의성 여부에 대한 통계적 검정 결과가 z 값과 p-value로 제시되어 있습니다. 
-
-로지스틱 회귀 모델의 적합도에 대한 통계적 검정을 위해 일반적으로 가능도 비율 검정법(likelihood ratio test)을 사용합니다.    
-```{r}
-library(lmtest)
-glm.fit.null = glm(survived ~ 1, data = TitanicSurvival, family = "binomial")
-lrtest(glm.fit, glm.fit.null)
-```
+z 값은 계수와 계수의 표준 오차 간의 비율로 계산되는 검정 통계량으로 통계적 유의성에 대한 결정을 내릴 때 사용하는 p-값을 계산하기 위해 사용합니다. (귀무 가설인 계수 추정치가 0이다에 대한 통계적 검정). 
 
 
 1등칸에 비해 2등칸과 3등칸에 탄 승객들의 생존 오즈비는 얼마일까요?    
@@ -107,6 +114,21 @@ lrtest(glm.fit, glm.fit.null)
 
 ```{r}
 contrasts(TitanicSurvival$passengerClass)
+```
+
+
+
+```{r}
+library(sjPlot)
+plot_model(glm.fit, sort.est = T)
+```
+
+
+로지스틱 회귀 모델의 적합도에 대한 통계적 검정을 위해 일반적으로 가능도 비율 검정법(likelihood ratio test)을 사용합니다.    
+```{r}
+library(lmtest)
+glm.fit.null = glm(survived ~ 1, data = TitanicSurvival, family = "binomial")
+lrtest(glm.fit, glm.fit.null)
 ```
 
 ## 분류 정확도(Classification accurancy)   
@@ -125,6 +147,8 @@ pred = rep("no", length(prob))
 pred[prob>0.5] = "yes"
 mean(pred == TitanicSurvival$survived)
 ```
+
+## 예측 모델의 성능 평가   
 
 위의 예제는 training data 에서 성능을 평가한 것이고, 우리가 실제로 관심이 있는 것은 모델 훈련에 사용되지 않은 새로운 데이터셋에서의 성능일겁니다.   
 
@@ -150,29 +174,28 @@ confusion matrix를 출력하고, 정확도를 계산합니다.
 pred = rep("no", cnt-round(cnt/7))
 pred[prob>0.5] = "yes"
 table(pred, test.data$survived)
+```
+
+```{r}
 mean(pred == test.data$survived)
 ```
 
 
+
 ## 선형판별분석(Linear discrminant analysis, LDA)    
 
-로지스틱 회귀는 로지스틱 함수를 이용하여 두 개의 반응 변수 클래스에 대해 $Pr(Y=k|X=x)$를 직접 모델링하는 것입니다. 
+로지스틱 회귀는 로지스틱 함수를 이용하여 범주가 두 개인 결과변수에 대해 $Pr(Y=k|X=x)$를 직접 모델링하는 것입니다. 
 
-이제 LDA라고 불리는 대안 기법에 대해 알아봅시다.    
+이제 선형판별분석(LDA)라고 불리는 대안 기법에 대해 알아봅시다.    
 
-LDA에서는 반응 변수 Y의 각 클래스내의 관측치들이 클래스 별로 평균($\mu_k$)과 클래스 공통 분산($\sigma^2$)을 갖는 정규분포를 따른다는 가정하에 이 파라미터에 대한 추정값을 베이즈 분류기에 대입한 것입니다. 
+LDA에서는 결과변수 Y의 각 클래스내의 관측치들이 클래스 별로 평균($\mu_k$)과 클래스 공통 분산($\sigma^2$)을 갖는 정규분포를 따른다고 가정합니다. 그리고, 파라미터에 대한 추정값을 베이즈 분류기를 이용해 구합니다.  
 
-베이즈 뷘류기(Bayes classifier)는 설명변수 X가 $x$로 주어졌을 때 반응변수 Y가 $k$ 클래스일 확률을 베이즈 정리를 이용해 구하고, 이에 따라 관측치를 분류합니다.   
-
-$$P(Y=k|X=x)$$
-
-베이즈 정리(Bayes theorem)        
-$$P(B|A) = \frac{P(A|B)\times P(B)}{P(A)}$$
+베이즈 분류기(Bayes classifier)는 설명변수 X가 $x$로 주어졌을 때 반응변수 Y가 $k$ 클래스일 확률을 베이즈 정리를 이용해 구하는 것입니다.    
 
 베이즈 정리를 베이즈 분류기에 적용하면 아래 식이 된다.    
 $$P(Y=k|X=x) = \frac{P(X=x|Y=k) \times P(Y=k)}{\sum_{l=1}^k P(X=x|Y=l)}$$    
 
-위 베이즈 정리가 의미하는 것은 $P(Y=k|X=x)$ - 사후 확률이라고 한다 - 를 구하기 위해 사전 확률 $P(Y=k)$와 조건부 확률밀도 함수 $P(X=x|Y=k)$를 이용하는 것입니다.   
+위 베이즈 정리가 의미하는 것은 $P(Y=k|X=x)$(사후 확률)를 구하기 위해 사전 확률 $P(Y=k)$와 조건부 확률밀도 함수 $P(X=x|Y=k)$를 이용하는 것입니다.   
 
 $P(Y=k)$ 추정치는 k번째 클래스에 속하는 관측치들의 비율입니다.       
 
@@ -181,7 +204,7 @@ $P(X=x|Y=k)$을 구하기 위해 LDA는 아래와 같은 가정을 합니다.
 1. $P(X=x|Y=k)$은 정규 분포를 따른다.      
 2. 공통 분산을 갖는다(common variance across different k class)       
 
-우리는 위 가정과 k 클래스에 속한 관측치에서 확률밀도함수 $P(X=x|Y=k)$와 $P(Y=k)$를 추정할 수 있습니다. 
+우리는 위 가정과 k 클래스에 속한 관측치 데이터로부터 확률밀도함수 $P(X=x|Y=k)$와 $P(Y=k)$를 추정할 수 있습니다. 
 
 
 이들을 위 베이즈 정리에 대입하면 아래와 같은 선형판별함수를 얻을 수 있습니다.   
@@ -197,6 +220,8 @@ LDA 분류기는 위식에서 $\hat{\delta_k}$ 값이 최대가 되는 클래스
 
 위 식을 선형판별함수(linear disciminant function)이라고 하는 것은 위 판별함수가 x의 선형함수이기 때문입니다.     
 
+##선형판별함수에 대한 이해: 기하학적 접근법 
+
 **figure** 
 <img src="img/LDA.png" style="border: #A9A9A9 1px solid; width:75%">
 
@@ -205,7 +230,7 @@ LDA는 나중에 살펴볼 PCA (principal component analysis)와 매우 유사�
 [LDA & PCA](https://www.youtube.com/watch?v=azXCzI57Yfc)   
 
 
-## 로지스틱 회귀 vs. LDA   
+## 로지스틱 회귀 vs. LDA: 장단점 비교  
 
 로지스틱 회귀와 비교하여 LDA의 장점은 다음과 같습니다.  
 
@@ -213,7 +238,7 @@ LDA는 나중에 살펴볼 PCA (principal component analysis)와 매우 유사�
 
 클래스들이 잘 분리될 때 로지스틱 회귀모델에 대한 모수 추정치는 불안정한 경향이 있습니다. 선형판별분석은 이런 문제가 없습니다.   
 
-만약 n이 작고, 각 클래스에서 설명변수 X의 분포가 근사적으ㄹ 정규분포이면 선형판별모델이 로지스틱회귀모델보다 더 안정적입니다.    
+만약 n이 작고, 각 클래스에서 설명변수 X의 분포가 근사적으로 정규분포이면 선형판별모델이 로지스틱회귀모델보다 더 안정적입니다.    
 
 ## LDA 실습   
 
@@ -230,9 +255,9 @@ LDA fit 결과를 살펴봅시다.
 lda.fit
 ```
 
-Prior probabilities of groups, 즉, LDA 분석 이전 확률은 학습 데이터에 존재하는 비율로 no (사망), yes (생존), 각각 0.66, 0.33으로 산정됨을 알 수 있습니다.
+Prior probabilities of groups, 즉, 사전 확률은 학습 데이터에 존재하는 비율로 no (사망), yes (생존), 각각 0.64, 0.36 임을 알 수 있습니다.
 
-Group mean 은 집단별 독립변수 X의 평균을 의미합니다.
+Group mean 은 집단별(사망 vs. 생존) 예측변수(sex, age, passengerClass)의 평균을 의미합니다.    
 
 Coefficients of linear discriminants는 LDA분석으로 계산된 판별함수식의 계수가 되겠습니다. 생존 여부를 분류하는, 즉 2개의 범주를 분류하는 것이므로 1개의 판별함수식(LD1)이 만들어짐을 확인할 수 있습니다.
 
@@ -245,6 +270,7 @@ plot(lda.fit)
 
 ```{r}
 pred = predict(lda.fit, test.data)
+class(pred)
 ```
 
 ```{r message=FALSE}
@@ -252,6 +278,11 @@ names(pred)
 ```
 
 class는 예측 결과값을, posterior는 각 클래스일 확률을, x는 linear discriminant function 값을 반환합니다.   
+
+
+```{r}
+head(pred$class)
+```
 
 
 ```{r}
@@ -276,12 +307,6 @@ mean(pred$class == test.data$survived)
 이것은 임계치에 따라 confusion matrix에서 예민도와 특이도가 변화하고, 이 둘 간에는 절충 관계가 있기 때문입니다. 특이도를 희생하더라도 예민도를 높일 것인가, 아니면 예민도를 희생하더라도 특이도를 높일 것인가의 선택의 문제인 것입니다.   
 ROC 곡선은 모든 가능한 임계치에 대해 예민도와 특이도의 관계, 즉 위양성과 위음성 오류를 동시에 나타내는 그래프입니다.    
 
-**figure**
-<img src="img/ROC.png" style="border: #A9A9A9 1px solid; width:75%">
-
-분류기의 전체적인 성능은 ROC 곡선 아래의 면적(AUC)에 의해 주어집니다. AUC 가 클수록 더 좋은 분류기입니다.    
-
-[ROC](https://www.youtube.com/watch?v=4jRBRDbJemM)  
 
 ROC 분석을 위해 ROCR 패키지를 설치하고 로딩합니다.  
 ```{r}
@@ -293,9 +318,10 @@ library(ROCR)
 prob = predict(glm.fit, test.data, type = "response")
 ```
 
-예측 확률과 실제 분류 결과를 이용하여 prediction object를 생성합니다.  
+
+예측 확률(predictions)과 실제 분류 결과(labels)를 이용하여 prediction object를 생성합니다.  
 ```{r}
-pred = prediction(prob, test.data$survived)
+pred = prediction(predictions = prob, labels = test.data$survived)
 ```
 
 ROCR:performance 함수를 이용하여 performance object를 생성합니다.    
@@ -314,6 +340,7 @@ perf = performance(pred, "auc")
 str(perf)
 perf@y.values[[1]]
 ```
+
 
 
 
