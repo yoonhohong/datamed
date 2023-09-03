@@ -1,0 +1,70 @@
+---
+title: "ROC curve"
+author: "Yoon-Ho Hong"
+date: "2023-09-03"
+format: 
+  html:
+    toc: TRUE
+    embed-resources: true
+editor: visual
+---
+
+## ROC curve 
+
+일반적으로는 K 클래스일 확률이 0.5 보다 큰 경우에 관측치를 해당 클래스에 분류합니다. 그러나, 어떤 임계치가 적절할지는 분류의 목적에 따라 달라질 수 있습니다.   
+
+이것은 임계치에 따라 confusion matrix에서 예민도와 특이도가 변화하고, 이 둘 간에는 절충 관계가 있기 때문입니다.    
+
+특이도를 희생하더라도 예민도를 높일 것인가, 아니면 예민도를 희생하더라도 특이도를 높일 것인가의 선택의 문제인 것입니다.   
+
+ROC 곡선은 모든 가능한 임계치에 대해 예민도와 특이도의 관계, 즉 위양성과 위음성 오류를 동시에 나타내는 그래프입니다.    
+
+## ROCR 패키지 
+
+ROC 분석을 위해 ROCR 패키지를 설치하고 로딩합니다.  
+```{r}
+library(ROCR)
+```
+
+검정 데이터셋에 로지스틱 회귀모델을 적용하여 반응 변수의 예측 확률을 구합니다.    
+
+```{r}
+titanic_LRmodel = readRDS("data/titanic_LRmodel.rds")
+testData = readRDS("data/titanic_testData.rds")
+prob = predict(titanic_LRmodel, testData, type = "response")
+head(prob)
+```
+
+
+예측 확률(predictions)과 실제 분류 결과(labels)를 이용하여 prediction object를 생성합니다.  
+ROCR::prediction 함수를 사용합니다. 
+
+```{r}
+pred = prediction(predictions = prob, labels = testData$survived)
+class(pred)
+```
+
+ROCR:performance 함수를 이용하여 performance object를 생성합니다.    
+```{r}
+perf = performance(pred, "tpr", "fpr") # tpr = true positive rate, fpr = false positive rate 
+```
+
+ROC 곡선을 그립니다.   
+```{r}
+plot(perf)
+```
+
+AUC 값을 구합니다. 
+
+```{r}
+perf = performance(pred, "auc")
+str(perf)
+```
+
+```{r}
+perf@y.values[[1]]
+```
+
+
+
+

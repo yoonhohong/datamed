@@ -1,0 +1,140 @@
+---
+title: "선형판별분석(Linear discriminant analysis)"
+author: "Yoon-Ho Hong"
+date: "2023-09-03"
+format: 
+  html:
+    toc: TRUE
+    embed-resources: true
+editor: visual
+---
+
+
+## 선형판별분석(Linear discrminant analysis, LDA)    
+
+로지스틱 회귀는 로지스틱 함수를 이용하여 범주가 두 개인 결과변수에 대해 $Pr(Y=k|X=x)$를 직접 모델링하는 것입니다. 
+
+이제 선형판별분석(LDA)라고 불리는 대안 기법에 대해 알아봅시다.    
+
+LDA에서는 결과변수 Y의 각 클래스내의 관측치들이 클래스 별로 평균($\mu_k$)과 클래스 공통 분산($\sigma^2$)을 갖는 정규분포를 따른다고 가정합니다. 그리고, 파라미터에 대한 추정값을 베이즈 분류기를 이용해 구합니다.  
+
+베이즈 분류기(Bayes classifier)는 설명변수 X가 $x$로 주어졌을 때 반응변수 Y가 $k$ 클래스일 확률을 베이즈 정리를 이용해 구하는 것입니다.    
+
+베이즈 정리를 베이즈 분류기에 적용하면 아래 식이 된다.    
+$$P(Y=k|X=x) = \frac{P(X=x|Y=k) \times P(Y=k)}{\sum_{l=1}^k P(X=x|Y=l)}$$    
+
+위 베이즈 정리가 의미하는 것은 $P(Y=k|X=x)$(사후 확률)를 구하기 위해 사전 확률 $P(Y=k)$와 조건부 확률밀도 함수 $P(X=x|Y=k)$를 이용하는 것입니다.   
+
+$P(Y=k)$ 추정치는 k번째 클래스에 속하는 관측치들의 비율입니다.       
+
+$P(X=x|Y=k)$을 구하기 위해 LDA는 아래와 같은 가정을 합니다.   
+
+1. $P(X=x|Y=k)$은 정규 분포를 따른다.      
+2. 공통 분산을 갖는다(common variance across different k class)       
+
+우리는 위 가정과 k 클래스에 속한 관측치 데이터로부터 확률밀도함수 $P(X=x|Y=k)$와 $P(Y=k)$를 추정할 수 있습니다. 
+
+
+이들을 위 베이즈 정리에 대입하면 아래와 같은 선형판별함수를 얻을 수 있습니다.   
+     
+$$\hat{\delta_k} = x\times\frac{\hat{\mu_k}}{\hat{\sigma}^2}-\frac{\hat{\mu_k}^2}{2\hat{\sigma}^2}+log(\hat{\pi_k})$$
+
+$$\hat{\mu_k} = \frac{1}{n_k}\sum_{i:y_i=k}^{n}x_i$$
+
+$$\hat{\sigma^2} = \frac{1}{n-K}\sum_{k=1}^{K}\sum_{i:y_i=k}(x_i-\hat{\mu_k})^2$$
+$$\hat{\pi_k}=\frac{n_k}{n}$$ 
+
+LDA 분류기는 위식에서 $\hat{\delta_k}$ 값이 최대가 되는 클래스 k에 관측치($X=x$)를 할당합니다.   
+
+위 식을 선형판별함수(linear disciminant function)이라고 하는 것은 위 판별함수가 x의 선형함수이기 때문입니다.     
+
+## 선형판별함수에 대한 이해: 기하학적 접근법 
+
+**figure**   
+<img src="img/LDA.png" style="width:75%">
+
+LDA는 나중에 살펴볼 PCA (principal component analysis)와 매우 유사하다. 어떤 유사점과 차이점이 있는지 알아보자.   
+
+[LDA & PCA](https://www.youtube.com/watch?v=azXCzI57Yfc)   
+
+
+## 로지스틱 회귀 vs. LDA: 장단점 비교  
+
+로지스틱 회귀와 비교하여 LDA의 장점은 다음과 같습니다.  
+
+클래스의 수가 2보다 많은 반응 변수를 분류해야 할 때가 있습니다. 다중 로지스틱회귀 모델이 있지만 실제로는 자주 사용되지 않습니다.  
+
+클래스들이 잘 분리될 때 로지스틱 회귀모델에 대한 모수 추정치는 불안정한 경향이 있습니다. 선형판별분석은 이런 문제가 없습니다.   
+
+만약 n이 작고, 각 클래스에서 설명변수 X의 분포가 근사적으로 정규분포이면 선형판별모델이 로지스틱회귀모델보다 더 안정적입니다.    
+
+## LDA 실습   
+
+titanic 예제에서 LDA 실습을 해봅시다.    
+
+```{r}
+library(carData)
+TitanicSurvival = TitanicSurvival[complete.cases(TitanicSurvival),]
+set.seed(1)
+cnt = dim(TitanicSurvival)[1]
+index = sample(cnt, round(cnt/7), replace = F) 
+train.data = TitanicSurvival[-index,]
+test.data = TitanicSurvival[index,]
+```
+
+lda 함수를 위해 필요한 패키지를 로딩하고 lda 함수로 training 데이터에 모델을 적합합니다.     
+```{r}
+library(MASS) 
+lda.fit = lda(survived~., data = train.data)
+```
+
+LDA fit 결과를 살펴봅시다.   
+```{r}
+lda.fit
+```
+
+Prior probabilities of groups, 즉, 사전 확률은 학습 데이터에 존재하는 비율로 no (사망), yes (생존), 각각 0.64, 0.36 임을 알 수 있습니다.
+
+Group mean 은 집단별(사망 vs. 생존) 예측변수(sex, age, passengerClass)의 평균을 의미합니다.    
+
+Coefficients of linear discriminants는 LDA분석으로 계산된 판별함수식의 계수가 되겠습니다. 생존 여부를 분류하는, 즉 2개의 범주를 분류하는 것이므로 1개의 판별함수식(LD1)이 만들어짐을 확인할 수 있습니다.
+
+각 클래스에서 LD 값의 분포를 알고 싶다면...    
+```{r}
+plot(lda.fit)
+```
+
+위에서 만든 LDA 모델을 이용해 test data에서 생존 결과를 예측해봅시다.   
+
+```{r message=FALSE, warning=FALSE}
+pred = predict(lda.fit, test.data)
+class(pred)
+```
+
+```{r message=FALSE}
+names(pred)
+```
+
+class는 예측 결과값을, posterior는 각 클래스일 확률을, x는 linear discriminant function 값을 반환합니다.   
+
+
+```{r}
+head(pred$class)
+```
+
+
+```{r}
+head(pred$posterior)
+```
+
+실제 관측치와 예측치가 얼마나 일치하는지 알아보기 위해 confusion matrix 를 구해봅시다.   
+
+```{r}
+table(pred$class, test.data$survived)
+```
+
+예측 정확도는? 로지스틱회귀모델과 비교하여 분류 정확도는?          
+```{r}
+mean(pred$class == test.data$survived)
+```
+
