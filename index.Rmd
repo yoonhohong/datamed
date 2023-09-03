@@ -21,12 +21,20 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 
 **강의록**  
 
-* [Class 1. 데이터 과학과 의료](D1_Intro.html)  
-* [Class 2. R 프로그래밍의 기초](D2_R_basics.html) 
-* [Class 3. 데이터 정제와 가공, 시각화](D3_preprocess.html) 
-* [Class 4. 통계적 모델링과 기계학습의 기초](D4_ML_basics.html)  
-* [Class 5. 선형회귀](D5_Regression.html) 
-* [Class 6. 분류(로지스틱 회귀와 선형판별분석)](D6_Classification.html) 
+* [데이터 과학과 의료](Intro.html)     
+
+* [R 프로그래밍의 기초](R_basics.html) 
+* [데이터 전처리(Data preprocessing](Preprocessing.html)    
+* [시각화(Visualization)](Visualization.html)
+
+* [Class 4. 통계적 모델링과 기계학습의 기초](D4_ML_basics.html)   
+
+* [선형회귀 모델(Linear regression model)](LinearRegression.html) 
+* [선형혼합효과 모델(Linear mixed effects model)](LME.html)   
+
+* [로지스틱회귀 모델(Logistic regression model)](LogisticRegression.html)
+* [선형판별분석(Linear discriminant analysis)](LDA.html)   
+
 * [Class 7. 교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html) 
 * [Class 8. 의사결정나무와 랜덤 포레스트](D8_RF.html)      
 * [Class 9. 비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html) 

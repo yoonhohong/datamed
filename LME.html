@@ -3025,7 +3025,8 @@ vertical-align: -.125em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#선형혼합효과-모델linear-mixed-effects-model" id="toc-선형혼합효과-모델linear-mixed-effects-model" class="nav-link active" data-scroll-target="#선형혼합효과-모델linear-mixed-effects-model">선형혼합효과 모델(Linear mixed effects model)</a></li>
+  <li><a href="#선형혼합효과모델linear-mixed-effects-model" id="toc-선형혼합효과모델linear-mixed-effects-model" class="nav-link active" data-scroll-target="#선형혼합효과모델linear-mixed-effects-model">선형혼합효과모델(Linear mixed effects model)</a></li>
+  <li><a href="#패키지" id="toc-패키지" class="nav-link" data-scroll-target="#패키지">패키지</a></li>
   <li><a href="#고정-효과와-랜덤-효과" id="toc-고정-효과와-랜덤-효과" class="nav-link" data-scroll-target="#고정-효과와-랜덤-효과">고정 효과와 랜덤 효과</a></li>
   <li><a href="#랜덤-절편" id="toc-랜덤-절편" class="nav-link" data-scroll-target="#랜덤-절편">랜덤 절편</a></li>
   <li><a href="#랜덤-기울기" id="toc-랜덤-기울기" class="nav-link" data-scroll-target="#랜덤-기울기">랜덤 기울기</a></li>
@@ -3064,8 +3065,9 @@ vertical-align: -.125em;
 
 </header>
 
-<section id="선형혼합효과-모델linear-mixed-effects-model" class="level2">
-<h2 class="anchored" data-anchor-id="선형혼합효과-모델linear-mixed-effects-model">선형혼합효과 모델(Linear mixed effects model)</h2>
+<p>선형회귀모델에서 이어집니다. 선형회귀모델을 먼저 보고 오세요.</p>
+<section id="선형혼합효과모델linear-mixed-effects-model" class="level2">
+<h2 class="anchored" data-anchor-id="선형혼합효과모델linear-mixed-effects-model">선형혼합효과모델(Linear mixed effects model)</h2>
 <p>gdpPercap_log10과 continent 변수, 그리고 두 변수간의 교호작용을 예측변수로 하고, 기대수명을 결과변수로 하는 다변량 선형회귀 모델에서 다음과 같은 사실을 알 수 있었습니다.</p>
 <ul>
 <li>continent에 따라 기대수명이 다름<br>
@@ -3077,19 +3079,25 @@ vertical-align: -.125em;
 <p>그렇다면, 두 변수간의 교호작용을 예측변수로 포함한 것과 그렇지 않은 모델 중에서 어떤 것을 선택해야 할까요?</p>
 <ul>
 <li><ol type="1">
-<li>lifeExp ~ gdpPercap_log10 + continent</li>
+<li>lifeExp ~ gdpPercap_log10 + continent<br>
+</li>
 </ol></li>
 <li><ol start="2" type="1">
-<li>lifeExp ~ gdpPercap_log10*continent</li>
+<li>lifeExp ~ gdpPercap_log10*continent </li>
 </ol></li>
 </ul>
-<p>첫번째 모델은 두 변수간의 교호작용을 고려하지 못하고 있고, 두번째 모델은 아래와 같이 continent 와 gdpPercap_log10:continent 변수의 공선성이 매우 크다는 것을 알 수 있습니다.</p>
+<p>첫번째 모델은 두 변수간의 교호작용을 고려하지 못하고 있습니다.<br>
+두번째 모델은 continent와 gdpPercap_log10:continent 변수의 공선성이 매우 큰 것 같습니다. 공선성을 아래에서 확인해봅시다.</p>
+</section>
+<section id="패키지" class="level2">
+<h2 class="anchored" data-anchor-id="패키지">패키지</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gapminder)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car) <span class="co"># car::vif() </span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>1952년 gapminder 데이터셋에서 gdpPercap_log10과 continent 간의 교호작용을 예측변수 항으로 포함하는 선형회귀 모델을 적합해봅시다.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_1952 <span class="ot">=</span> gapminder <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">1952</span>) <span class="sc">%&gt;%</span></span>
@@ -3126,6 +3134,7 @@ Multiple R-squared:  0.7715,    Adjusted R-squared:  0.7559
 F-statistic: 49.52 on 9 and 132 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
+<p>VIF(variance inflation factor)를 확인해봅시다.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(lm3_1952)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -3139,6 +3148,7 @@ continent                 2.771206e+11  4       26.936031
 gdpPercap_log10:continent 3.249760e+11  4       27.477766</code></pre>
 </div>
 </div>
+<p>GVIF가 4보다 크면 공선성이 있는 것으로 간주하고, 10보다 크면 이 문제를 해결하기 위해 반드시 조치를 취해야 합니다. 이러한 경험 법칙을 스케일링된 GVIF에 사용하려면, 규칙을 적용하기 전에 스케일링된 GVIF 값을 제곱합니다.</p>
 </section>
 <section id="고정-효과와-랜덤-효과" class="level2">
 <h2 class="anchored" data-anchor-id="고정-효과와-랜덤-효과">고정 효과와 랜덤 효과</h2>
@@ -3148,7 +3158,8 @@ gdpPercap_log10:continent 3.249760e+11  4       27.477766</code></pre>
 </li>
 <li>반복 측정 데이터인 경우(예를 들면, longitudinal data)</li>
 </ul>
-<p>먼저 고정 효과와 랜덤 효과의 차이에 대해 이야기해 보겠습니다. 이 차이는 변수 자체와는 거의 관련이 없으며 연구 질문과 더 관련이 있다는 점을 꼭 기억하시기 바랍니다. 많은 경우 동일한 변수가 랜덤 효과 또는 고정 효과로 간주될 수 있으므로, 항상 연구 질문(즉, 가설)이 무엇인지를 참조하여 그에 따라 모델을 구성해야합니다.</p>
+<p>먼저 고정 효과와 랜덤 효과의 차이에 대해 이야기해 보겠습니다. 이 차이는 변수 자체와는 거의 관련이 없으며 연구 질문과 더 관련이 있다는 점을 꼭 기억하시기 바랍니다.</p>
+<p>많은 경우 동일한 변수가 랜덤 효과 또는 고정 효과로 간주될 수 있으므로, 항상 연구 질문(즉, 가설)이 무엇인지를 참조하여 그에 따라 모델을 구성해야합니다.</p>
 <p>넓은 의미에서 고정 효과는 결과 변수에 영향을 미칠 것으로 예상되는 변수로, 선형회귀 분석에서 설명 변수라고 부르는 것입니다. gapminder 사례에서 우리는 일인당 국민소득이 기대수명에 어떤 영향을 미치는지에 대한 결론을 내리는 데 관심이 있습니다. 따라서 일인당 국민소득은 고정 효과 변수입니다.</p>
 <p>반면에 랜덤 효과는 일반적으로 우리가 통제하고자 하는 요인을 그룹화하는 것으로 항상 범주형입니다. 대부분의 경우 우리는 랜덤 효과 변수가 결과 변수에 미치는 영향에 특별히 관심이 없지만, 우리가 보는 고정 효과 변수가 결과 변수에 미치는 효과에 영향을 미칠 수 있다는 것을 알고 있습니다.</p>
 <p>우리는 continent에 따라 기대수명이 얼마나 달라지는지를 추정하는 데는 관심이 없지만, continent가 기대수명이 다른 이유일 수 있다는 것을 알고 있으며, 각 continent에서 기대수명을 예측할 때 이로 인한 변동이 얼마나 되는지 알고 싶습니다.</p>
@@ -3187,15 +3198,15 @@ Correlation of Fixed Effects:
 gdpPrcp_l10 -0.837</code></pre>
 </div>
 </div>
-<p>먼저 랜덤 효과에 대한 결과를 살펴보겠습니다. continent에 대한 분산과 표준 편차를 살펴보겠습니다. 이는 continent로 인해 기대수명에 얼마나 많은 변동성이 있는지를 측정한 값입니다. 그 아래에 contiennt에 기인하지 않은 변동성을 나타내는 “residual”이 표시됩니다. 이것은 continent 인한 것이 아닌 기대수명의 랜덤 편차입니다. 여기에는 기대수명에 영향을 미치는 다른 요인이 있다는 사실이 반영되어 있습니다.</p>
+<p>먼저 랜덤 효과에 대한 결과를 살펴보겠습니다. continent에 대한 분산과 표준 편차를 살펴보겠습니다. 이는 continent로 인해 기대수명에 얼마나 많은 변동성이 있는지를 측정한 값입니다. 그 아래에 contiennt에 기인하지 않은 변동성을 나타내는 “residual”이 표시됩니다. 이것은 continent 인한 것이 아닌 기대수명의 편차입니다. 여기에는 기대수명에 영향을 미치는 다른 요인이 있다는 사실이 반영되어 있습니다.</p>
 <p>고정 효과에 대한 결과는 선형 모델 분석 결과를 설명할 때 고려했던 계수 표와 유사합니다.<br>
 계수 “gdpPercap_log10”은 일인당 국민소득의 효과에 대한 기울기입니다. 그리고, 이 추정치를 표준 오차로 나눈 값인 t값이 있습니다.</p>
 </section>
 <section id="랜덤-기울기" class="level2">
 <h2 class="anchored" data-anchor-id="랜덤-기울기">랜덤 기울기</h2>
 <p>다음으로, continent에 대해 random intercept에 random slope 효과까지 도입한 모형을 살펴보겠습니다.</p>
-<p>random intercept 모델에서는 기준값의 차이를 고려하지만, gdpPercap_log10의 효과가 어떻든 모든 continent에 동일하게 적용될 것이라고 가정합니다. 하지만 이것이 유효한 가정일까요?</p>
-<p>실제로는 그렇지 않은 경우가 많으며, gdpPercap_log10의 효과는 continent에 따라 다를 수 있습니다.따라서 continent에 서로 다른 intercept가 허용될 뿐만 아니라 gdpPercap_log10의 효과에 대해서도 서로 다른 기울기를 가질 수 있는 random slopes 모델이 필요합니다.</p>
+<p>random intercept 모델에서는 기준값의 차이를 고려하지만, gdpPercap_log10의 효과에 대해서는 모든 continent에서 동일할 것으로 가정합니다. 이것이 유효한 가정일까요?</p>
+<p>우리는 이미 gdpPercap_log10의 효과가 continent에 따라 다르다는 것을 알고 있습니다. 따라서, continent에 서로 다른 intercept가 허용될 뿐만 아니라 gdpPercap_log10의 효과에 대해서도 서로 다른 기울기를 가질 수 있는 random slopes 모델이 필요합니다.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lme_mod2 <span class="ot">=</span> <span class="fu">lmer</span>(lifeExp <span class="sc">~</span> gdpPercap_log10 <span class="sc">+</span> (<span class="dv">1</span><span class="sc">+</span>gdpPercap_log10<span class="sc">|</span>continent), <span class="at">data =</span> df_1952)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lme_mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3265,7 +3276,11 @@ lme_mod2    6 941.18 958.91 -464.59   929.18 9.1046  1    0.00255 **
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
 </div>
-<p>이상을 정리하면, 일인당 국민소득과 기대수명 사이의 관계에 대한 linear mixed effects model 분석을 수행하였고, 고정 효과로 gdpPercap_log10을 입력하였고 랜덤 효과로는 continent의 효과에 대한 random slope와 random intercept를 사용했습니다. 해당 효과가 있는 전체 모델과 고정 효과로 gdpPercap_log10가 없는 모델을 비교하여 likelihood ratio test로 검정한 결과, 일인당 국민소득이 기대수명에 유의한 효과가 있음을 확인할 수 있었습니다.</p>
+<p>이상을 정리하면…<br>
+- 일인당 국민소득과 기대수명 사이의 관계에 대한 linear mixed effects model 분석을 수행하였고,<br>
+- 고정 효과로 gdpPercap_log10을 입력하였고<br>
+- 랜덤 효과로는 continent의 효과에 대한 random slope와 random intercept를 사용했습니다.<br>
+- 해당 효과가 있는 전체 모델과 고정 효과로 gdpPercap_log10가 없는 모델을 비교하여 likelihood ratio test로 검정한 결과, 일인당 국민소득이 기대수명에 유의한 효과가 있음을 확인할 수 있었습니다.</p>
 </section>
 
 </main>

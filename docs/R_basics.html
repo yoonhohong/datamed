@@ -11,11 +11,11 @@
 
 <meta name="author" content="Yoon-Ho Hong" />
 
-<meta name="date" content="2022-08-09" />
+<meta name="date" content="2023-08-09" />
 
 <title>R 프로그래밍의 기초</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23.4/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -31,14 +31,14 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -149,11 +149,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -182,8 +186,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -191,16 +195,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -347,11 +344,13 @@ div.tocify {
 
 <h1 class="title toc-ignore">R 프로그래밍의 기초</h1>
 <h4 class="author">Yoon-Ho Hong</h4>
-<h4 class="date">2022-08-09</h4>
+<h4 class="date">2023-08-09</h4>
 
 </div>
 
 
+<div id="내용" class="section level2">
+<h2>내용</h2>
 <p>R과 RStudio를 설치하고, R의 기본 문법에 대해 학습합니다.</p>
 <ul>
 <li>변수(variable)<br />
@@ -366,18 +365,13 @@ div.tocify {
 </li>
 <li>패키지(packages)</li>
 </ul>
-<p>프로그래밍 경험이 없어도 R의 기초 문법을 이해하는 것은 어렵지
-않습니다. 그러나, 일반적인 언어와 마찬가지로 프로그래밍 언어도 반복적인
-사용을 통해 익숙해지는 것이 무엇보다 중요합니다.</p>
-<p>처음엔 이해가 안되는 용어도 반복해서 사용하다보면 익숙해지고, 차차
-개념이 이해가 되기도 하니 너무 조급해하지 않았으면 좋겠습니다.</p>
+</div>
 <div id="r-설치" class="section level2">
 <h2>R 설치</h2>
 <p>R은 “통계와 데이터 분석을 위한 프로그래밍 언어” 입니다.</p>
 <p>다음 웹사이트에 가서 R을 다운로드하고 설치합시다.<br />
 <a href="https://www.r-project.org/">R 다운로드 및 설치</a></p>
 <p>R (GUI 프로그램)을 실행해봅시다.</p>
-<p><img src="img/R_console.png" style="border: #A9A9A9 1px solid; width:75%"></p>
 <p><strong>연산자</strong><br />
 R은 간단한 계산기로도 사용될 수 있습니다. 다음 산술 연산자(arithmetic
 operators)를 사용해보세요.</p>
@@ -389,7 +383,6 @@ operators)를 사용해보세요.</p>
 <li>Exponentiation: ^</li>
 <li>Modulo: %%</li>
 </ul>
-<p><img src="img/Arithmetic_R.png" style="border: #A9A9A9 1px solid; width:75%"></p>
 <p><strong>변수</strong><br />
 변수(variable)를 사용하여 숫자 혹은 문자(열) 데이터를 저장할 수
 있습니다. 나중에 이 변수를 호출하여 이 변수에 저장된 데이터에 접근할 수
@@ -405,10 +398,8 @@ development environment, IDE)입니다.</p>
 <p>다음 웹사이트에 가서 Rstudio를 다운로드하고 설치합시다.<br />
 <a href="https://www.rstudio.com/">Rstudio 다운로드 및 설치</a></p>
 </div>
-<div id="데이터-유형type과-구조structure" class="section level2">
-<h2>데이터 유형(type)과 구조(structure)</h2>
-<div id="데이터-유형basic-data-types" class="section level3">
-<h3>데이터 유형(Basic data types)</h3>
+<div id="데이터-유형basic-data-types" class="section level2">
+<h2>데이터 유형(Basic data types)</h2>
 <p>R의 기본 데이터 유형은 다음과 같습니다.</p>
 <ul>
 <li>Numeric 숫자<br />
@@ -418,8 +409,8 @@ development environment, IDE)입니다.</p>
 <li>Boolean 논리값(TRUE or FALSE)</li>
 </ul>
 </div>
-<div id="데이터-구조data-structures" class="section level3">
-<h3>데이터 구조(data structures)</h3>
+<div id="데이터-구조data-structures" class="section level2">
+<h2>데이터 구조(data structures)</h2>
 <p>R의 기본 데이터 구조에는 다음과 같은 것들이 있습니다.</p>
 <ul>
 <li>Vector<br />
@@ -431,8 +422,9 @@ development environment, IDE)입니다.</p>
 </li>
 <li>List</li>
 </ul>
-<div id="벡터vector" class="section level4">
-<h4>벡터(vector)</h4>
+</div>
+<div id="벡터vector" class="section level2">
+<h2>벡터(vector)</h2>
 <p>벡터(vector)는 1차원 배열(ᆼarray)입니다.다음 예를 봅시다.</p>
 <pre class="r"><code>my_vec1 = c(2, 4, 6, 8)  </code></pre>
 <p>c 는 combine 함수입니다(함수에 대해서는 아래에서 더 자세히 다룹니다).
@@ -456,9 +448,8 @@ my_vec2[-c(2,4)] # exclude the 2nd and 4th elements </code></pre>
 <pre class="r"><code>my_vec1[my_vec1 == 6] # equal 
 my_vec1[my_vec1 &lt; 10] # less than 
 my_vec1[my_vec1 %in% c(1, 2, 5)] # membership  </code></pre>
-</div>
-<div id="팩터factor" class="section level4">
-<h4>팩터(Factor)</h4>
+<div id="팩터factor" class="section level3">
+<h3>팩터(Factor)</h3>
 <p>Factor는 vector의 한 형태인데, 제한된 값, 즉, 범주형(categorical)
 값을 갖는 벡터형 데이터 구조입니다. vector 를 factor 로 전환하기 위해
 <em>factor()</em> 함수를 사용하며, 범주를 <em>levels</em> 라고
@@ -486,8 +477,8 @@ fmon1 = factor(mon) </code></pre>
                      Autumn = c(&quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;),
                      Winter = c(&quot;Dec&quot;, &quot;Jan&quot;, &quot;Feb&quot;)) # list 에 대해서는 아래에서 다룹니다. </code></pre>
 </div>
-<div id="매트릭스matrix" class="section level4">
-<h4>매트릭스(Matrix)</h4>
+<div id="매트릭스matrix" class="section level3">
+<h3>매트릭스(Matrix)</h3>
 <p>Matrix 는 2차원 array 입니다. 다음 코드 블럭은 (1) matrix 를 만드는
 방법, (2) 특정 행(row)이나 열(column)에 해당하는 요소(element)를
 추출하는 방법, (3) matrix의 전치(transpose)와 곱(multiplication)
@@ -502,8 +493,8 @@ mat[3,2]
 t(mat) # transpose 
 mat %*% t(mat) # matrix multiplication</code></pre>
 </div>
-<div id="리스트list" class="section level4">
-<h4>리스트(List)</h4>
+<div id="리스트list" class="section level3">
+<h3>리스트(List)</h3>
 <p>List도 벡터형 데이터 구조입니다. 그러나, 벡터와 달리, 요소(element)로
 여러 유형의 데이터와 데이터 구조를 포함할 수 있습니다. List 객체는
 list() 함수로 생성합니다.<br />
@@ -522,8 +513,9 @@ lst[&quot;y&quot;] # select elements by name</code></pre>
 <pre class="r"><code>lst[[1]]  
 lst$x</code></pre>
 </div>
-<div id="데이터프레임data-frame" class="section level4">
-<h4>데이터프레임(Data frame)</h4>
+</div>
+<div id="데이터프레임data-frame" class="section level2">
+<h2>데이터프레임(Data frame)</h2>
 <p>data frame은 테이블 형식을 갖는 데이터입니다. 기본적으로 list의
 elements를 열로 (column-wise) 조직한 데이터 구조입니다. list와 다른 점은
 matrix와 같은 배열(array) 구조를 가지고 있다는 것과, 각 elements(data
@@ -543,12 +535,8 @@ df[,1:2]</code></pre>
 dim(df)
 summary(df)</code></pre>
 </div>
-</div>
-</div>
-<div id="반복문과-조건문" class="section level2">
-<h2>반복문과 조건문</h2>
-<div id="반복문" class="section level3">
-<h3>반복문</h3>
+<div id="반복문" class="section level2">
+<h2>반복문</h2>
 <p>프로그래밍은 컴퓨터에게 원하는 일련의 작업을 지시(instruction) 하는
 것을 말합니다.이를 위해 프로그래밍 언어로 지시문(script)을 작성하는 것을
 코딩이라고 합니다. 지시문(script)은 순차적으로 실행되는 명령문, 반복문,
@@ -570,8 +558,8 @@ while (i &lt; 10){
 <em>for</em>: execute a loop a fixed number of times<br />
 <em>while</em>: execute a loop while a condition is true</p>
 </div>
-<div id="조건문" class="section level3">
-<h3>조건문</h3>
+<div id="조건문" class="section level2">
+<h2>조건문</h2>
 <p>다음은 조건문의 예입니다.</p>
 <pre class="r"><code>i = 4
 if (i &gt; 3){
@@ -579,7 +567,6 @@ if (i &gt; 3){
 } else {
   print(&quot;i less than 3&quot;)
 }</code></pre>
-</div>
 </div>
 <div id="함수function" class="section level2">
 <h2>함수(Function)</h2>
@@ -610,8 +597,7 @@ max(x)
 min(x)
 round(1.8734, 2)
 exp(x)</code></pre>
-<div id="사용자-정의-함수" class="section level3">
-<h3>사용자 정의 함수</h3>
+<p><strong>사용자 정의 함수</strong></p>
 <p>필요에 따라 함수를 새로 만들어서 사용하기도 합니다. 다음은 어떤 값의
 제곱값을 계산하는 함수를 만드는 예입니다.</p>
 <pre class="r"><code>square = function(x){
@@ -619,7 +605,6 @@ exp(x)</code></pre>
   return(squared)
 }
 square(4) # 4^2, 물론 이렇게 하면 됩니다. ^^ </code></pre>
-</div>
 </div>
 <div id="환경environment" class="section level2">
 <h2>환경(Environment)</h2>
@@ -629,8 +614,9 @@ square(4) # 4^2, 물론 이렇게 하면 됩니다. ^^ </code></pre>
 ls() # list R objects
 rm() # remove R objects
 ?ls</code></pre>
-<div id="패키지-설치와-로딩" class="section level3">
-<h3>패키지 설치와 로딩</h3>
+</div>
+<div id="패키지" class="section level2">
+<h2>패키지</h2>
 <p>R에서 패키지(package)는 함수, 데이터, 코드, 문서 등을 묶어놓은 것을
 말합니다. R을 설치하면 자동으로 기본 패키지들이 설치되는데, 이들이
 제공하지 못하는 기능들은 새로운 패키지를 설치해서 사용합니다. 현재
@@ -641,8 +627,8 @@ repository에 저장되어 있습니다.<br />
 <pre class="r"><code>install.packages(&quot;dplyr&quot;)
 library(dplyr)</code></pre>
 </div>
-<div id="데이터-불러오기와-쓰기" class="section level3">
-<h3>데이터 불러오기와 쓰기</h3>
+<div id="데이터-불러오기와-쓰기" class="section level2">
+<h2>데이터 불러오기와 쓰기</h2>
 <p>데이터 작업을 위해 외부 데이터를 불러들이는 방법에 대해서
 알아봅시다.</p>
 <pre class="r"><code># read a comma separated value (csv) file
@@ -658,14 +644,13 @@ str(df_import)</code></pre>
   select(-Race)
 write.csv(temp, file = &quot;data/demographic_temp.csv&quot;, row.names = F, quote = F) </code></pre>
 </div>
-<div id="r-종료하기" class="section level3">
-<h3>R 종료하기</h3>
+<div id="r-종료하기" class="section level2">
+<h2>R 종료하기</h2>
 <pre class="r"><code>q() </code></pre>
 <p>위와 같이 console에 입력하고 enter 키를 치면 R을 종료합니다. 종료할
 때 현재 작업공간(workspace)을 저장하는 옵션을 선택하면, 해당 세션에서
 생성되었던 모든 객체들을 저장하고(.RData) 다음 세션에서 이를 로딩하여
 사용할 수 있습니다.</p>
-</div>
 </div>
 
 
