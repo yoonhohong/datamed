@@ -2,56 +2,44 @@
 title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 ---
 
-**서울대학교 의과대학 2학년 2학기 선택교과4**\
-2023년8월2일-9월20일(8주) 매주 수요일, 13:00 - 17:00 연구관 7층\
-2022년8월2일-9월20일(8주) 매주 화요일, 13:00 - 17:00 융합관 1층 GDR
+## 선택교과4
 
-**목표와 내용**
+서울대학교 의과대학 2학년 2학기\  
+2023년8월2일-9월20일(8주) 매주 수요일, 13:00 - 17:00 연구관 7층\ 
+2022년8월2일-9월20일(8주) 매주 화요일, 13:00 - 17:00 융합관 1층 GDR\ 
 
-1.  데이터 과학이 의학 연구와 의료의 디지털 전환에 어떻게 활용되고 기여할 수 있는지 이해한다.\
-2.  R의 기본 문법을 이해하고, 데이터 정제와 가공, 시각화를 할 수 있다.\
-3.  협업과 재현가능한 연구(reproducible research)를 위한 데이터 과학의 도구들을 활용할 수 있다(Git/Github, Rmarkdown/Quarto, Shiny).\
-4.  기계학습의 기본 개념과 작업 과정을 설명할 수 있다.\
-5.  기계학습의 주요 알고리즘을 이해하고, 분류(classification)와 회귀(regression), 비지도 기계학습에 적용할 수 있다.
+## 목표와 내용 
 
-**교재**
+1.  데이터 과학이 의학 연구와 의료의 디지털 전환에 어떻게 활용되고 기여할 수 있는지 이해한다.\ 
+2.  R의 기본 문법을 이해하고, 데이터 정제와 가공, 시각화를 할 수 있다.\ 
+3.  협업과 재현가능한 연구(reproducible research)를 위한 데이터 과학의 도구들을 활용할 수 있다(Git/Github, Rmarkdown/Quarto, Shiny).\ 
+4.  기계학습의 기본 개념과 작업 과정을 설명할 수 있다.\ 
+5.  기계학습의 주요 알고리즘을 이해하고, 분류(classification)와 회귀(regression), 비지도 기계학습에 적용할 수 있다.\ 
+
+## 교재
 
 -   [An Introduction to Statistical Learning (with Applications in R), Springer (Gareth James, Daniel Witten, Trevor Hastie, Robert Tibshirani, 2013)](https://www-bcf.usc.edu/~gareth/ISL/)
 
-**강의록**
+## 강의록 
 
--   [데이터 과학과 의료](Intro.html)
+-   [데이터 과학과 의료](Intro.html)\ 
+-   [R 프로그래밍의 기초](R_basics.html)\ 
+-   [데이터 전처리(Data preprocessing)](Preprocessing.html)\ 
+-   [시각화(Visualization)](Visualization.html)\ 
+-   [통계적 모델링과 기계학습의 기초](ML_basics.html)\ 
+-   [부트스트래핑(Bootstrapping)](Bootstrapping.html)\ 
+-   [선형회귀 모델(Linear regression model)](LinearRegression.html)\ 
+-   [선형혼합효과 모델(Linear mixed effects model)](LME.html)\ 
+-   [로지스틱회귀 모델(Logistic regression model)](LogisticRegression.html)\ 
+-   [선형판별분석(Linear discriminant analysis)](LDA.html)\ 
+-   [ROC curve](ROC.html)\ 
 
--   [R 프로그래밍의 기초](R_basics.html)
+-   [Class 7. 교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html)\ 
+-   [Class 8. 의사결정나무와 랜덤 포레스트](D8_RF.html)\ 
+-   [Class 9. 비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html)\ 
 
--   [데이터 전처리(Data preprocessing)](Preprocessing.html)
+## 실습 
 
--   [시각화(Visualization)](Visualization.html)
+- [SDG](SDG.html)\ 
+- [분류](Classification_problem.html)\ 
 
--   [통계적 모델링과 기계학습의 기초](ML_basics.html)
-
--   [부트스트래핑(Bootstrapping)](Bootstrapping.html)
-
--   [선형회귀 모델(Linear regression model)](LinearRegression.html)
-
--   [선형혼합효과 모델(Linear mixed effects model)](LME.html)
-
--   [로지스틱회귀 모델(Logistic regression model)](LogisticRegression.html)
-
--   [선형판별분석(Linear discriminant analysis)](LDA.html)
-
--   [ROC curve](ROC.html)
-
--   [Class 7. 교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html)
-
--   [Class 8. 의사결정나무와 랜덤 포레스트](D8_RF.html)
-
--   [Class 9. 비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html)
-
-**실습**
-
--   [Exercise: preprocessing](Ex_preprocess.html) 데이터 정제와 가공, 시각화
--   [Exercise: missing data imputation](Ex_Missing.html) 결측치(missing data) imputation
--   [Exercise: r markdown](Ex_Rmarkdown.html) R markdown
--   [Exercise: shiny](Ex_Shiny.html) Shiny
--   [Exercise: git/github](Ex_Github.html) git/github

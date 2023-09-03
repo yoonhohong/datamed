@@ -1,0 +1,540 @@
+---
+title: "지속가능발전목표(SDG): 데이터 분석"
+format: 
+  revealjs:
+    embed-resources: true
+editor: visual
+---
+
+## SDG 소개
+
+한국의 SDG 데이터 플랫폼\
+<https://kostat-sdg-kor.github.io/sdg-indicators/goals/>
+
+-   인류의 보편적인 발전을 위해 전 세계 모든 국가가 2030년까지 달성하기로 합의한 변혁적인 목표
+-   2015년 제70차 UN 총회에서 회원국 만장일치로 「세계의 변혁: 지속가능발전을 위한 2030 의제(Transforming Our World: The 2030 Agenda for Sustainable Development)」를 채택
+-   사람, 지구, 번영, 평화, 파트너십에 기반한 17개의 목표와 169개 세부목표
+
+## SDG에 대해 얼마나 잘 알고 있나요?
+
+SD misconception study (gapminder.org)\
+<https://upgrader.gapminder.org/t/2020-sustainable-development-misconception-study>
+
+18 questions related to UN Sustainable Development Goals (SDGs)
+
+## 2015년 이후 얼마나 진척되었는가?
+
+2020년 UN SDG 미팅에서 Gapminder의 발표 영상\
+<https://youtu.be/v7WUpgPZzpI>.
+
+SDGS are **all related** and when we think of one thing at a time we get an illusion of conflict between different goals.
+
+<q>Children in poverty can't do their homework if they don't have electricity. It's all related and when we think of one thing at a time we get an illusion of conflict between different goals</q>
+
+## SDG 데이터 분석에 앞서 가설 설정하기
+
+-   산업화에 따른 경제, 교육, 건강 수준의 발전은 지속가능한 형태로 이루어지고 있는가?
+-   환경 문제\
+-   예) 플라스틱 폐기량과 인간개발지수(human development index; 경제, 교육, 건강 수준의 통합 지표)의 관계
+
+## R의 기초
+
+-   R & RStudio\
+-   자료형, 자료구조\
+-   함수, 반복문, 조건문\
+-   패키지
+
+## 작업 디렉토리 설정하기
+
+```{r}
+#| echo: true
+
+setwd("~/Dropbox/Github/sdg")
+```
+
+## 데이터 다운로드
+
+<https://www.gapminder.org/data/>\
+Choose individual indicators\
+- Environment \> Plastic percent of waste composition\
+- Society \> Human development index
+
+또는,\
+<https://github.com/yoonhohong/sdg/tree/main/data>
+
+## 데이터 불러오기
+
+폐기물 중 플라스틱 비율
+
+```{r}
+#| echo: true 
+#| eval: false
+plastic = read.csv("data/compt_plastic_wst.csv")
+head(plastic)
+```
+
+## 데이터 불러오기
+
+폐기물 중 플라스틱 비율
+
+```{r}
+#| echo: true 
+
+plastic = read.csv("data/compt_plastic_wst.csv")
+head(plastic)
+```
+
+## 데이터프레임 구조 변경하기
+
+wide 포맷 -\> long 포맷
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "2"
+library(tidyr)
+temp = gather(plastic, key = "year", value = "plastic", X1993:X2017)
+head(temp)
+```
+
+## 데이터프레임 구조 변경하기
+
+wide 포맷 -\> long 포맷
+
+```{r}
+#| echo: true
+library(tidyr)
+temp = gather(plastic, key = "year", value = "plastic", X1993:X2017)
+head(temp)
+```
+
+## 년도 앞에 있는 "X" 문자를 떼어내기
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "2"
+library(stringr)
+temp$year = str_remove(temp$year, "^X")
+head(temp)
+```
+
+## 년도 앞에 있는 "X" 문자를 떼어내기
+
+```{r}
+#| echo: true
+library(stringr)
+temp$year = str_remove(temp$year, "^X")
+head(temp)
+```
+
+## 년도를 수치 자료형으로 변경하기
+
+```{r}
+#| echo: true
+temp$year = as.numeric(temp$year) 
+plastic <- temp 
+```
+
+## 데이터 시각화하기: 산점도
+
+```{r}
+#| echo: true 
+#| eval: false
+library(ggplot2)
+ggplot(plastic, aes(x = year, y = plastic)) + 
+  geom_point()
+```
+
+## 데이터 시각화하기: 산점도
+
+```{r}
+#| echo: true 
+library(ggplot2)
+ggplot(plastic, aes(x = year, y = plastic)) + 
+  geom_point()
+```
+
+## 데이터 불러오기
+
+인간개발지수(human development index)
+
+```{r}
+#| echo: true
+#| eval: false
+hdi = read.csv("data/hdi_human_development_index.csv") 
+head(hdi)
+```
+
+## 데이터 불러오기
+
+인간개발지수(human development index)
+
+```{r}
+#| echo: true
+hdi = read.csv("data/hdi_human_development_index.csv") 
+head(hdi)
+```
+
+## 데이터 전처리
+
+-   데이터프레임 구조 변경하기: wide 포맷 -\> long 포맷
+-   년도 앞에 "X"자 떼어내기\
+-   년도를 수치 자료형으로 변환하기\
+
+```{r}
+#| echo: true 
+temp = gather(hdi, key = "year", value = "hdindex", X1990:X2021)
+temp$year = str_remove(temp$year, "^X")
+temp$year = as.numeric(temp$year) 
+hdi <- temp 
+```
+
+## 데이터 병합하기
+
+```{r}
+#| echo: true 
+#| eval: false
+#| code-line-numbers: "3"
+library(dplyr)
+plastic_hdi = plastic %>%
+  inner_join(hdi, by = c("country", "year")) 
+head(plastic_hdi)
+```
+
+## 데이터 병합하기
+
+```{r}
+#| echo: true 
+library(dplyr)
+plastic_hdi = plastic %>%
+  inner_join(hdi, by = c("country", "year")) 
+head(plastic_hdi)
+```
+
+## 결측치를 포함한 관측치는 제외시키기
+
+```{r}
+#| echo: true
+#| eval: false
+ph = plastic_hdi[complete.cases(plastic_hdi),]
+head(ph)
+```
+
+## 결측치를 포함한 관측치는 제외시키기
+
+```{r}
+#| echo: true
+ph = plastic_hdi[complete.cases(plastic_hdi),]
+head(ph)
+```
+
+## 인간개발지수와 플라스틱 폐기율의 관계: 산점도.
+
+```{r}
+#| echo: true
+#| eval: false 
+ggplot(ph, aes(x = hdindex, y=plastic)) + 
+  geom_point()
+```
+
+## 인간개발지수와 플라스틱 폐기율의 관계: 산점도.
+
+```{r}
+#| echo: true
+ggplot(ph, aes(x = hdindex, y=plastic)) + 
+  geom_point()
+```
+
+## 중간 정리
+
+-   예상대로 생활수준이 높은 나라일수록 폐기물 중 플라스틱 비율이 높은 경향이 있다.\
+-   그런데, 생활수준이 높은 나라들 가운데 플라스틱 페기률에 편차가 크다. 이유가 뭘까?\
+-   혹시... 부의 불평등, 성 불평등이 관련이 있지 않을까?\
+-   불평등 지표: 지니 지수(Gini index), 여성 국회의원 비율
+
+## 가설
+
+생활수준이 높은 나라에서 폐기물중 플라스틱 비율이 여성 국회의원 비율(남녀 정치적 평등) 혹은 Gini index (경제적 불평등)와 관련이 있지 않을까?
+
+## 데이터 불러오기 & 전처리
+
+-   여성 국회의원 비율 데이터(Society \> Governance \> Percentage of women in national parliaments)
+-   데이터 구조 변경(wide -\> long)
+-   자료형 변경(년도를 수치형으로)
+-   기존 데이터와 병합, 결측 관측치 제외
+
+## 데이터 불러오기 & 전처리
+
+```{r}
+#| echo: true
+wn = read.csv("data/wn_bothhouses_c.csv")
+temp = gather(wn, key = "year", value = "wnparl", X1945:X2021)
+temp$year = str_remove(temp$year, "^X")
+temp$year = as.numeric(temp$year) 
+phw = ph %>%
+  inner_join(temp, by = c("country", "year"))
+phw = phw[complete.cases(phw),]
+```
+
+## 시각화: 산점도
+
+```{r}
+#| echo: true 
+#| eval: false
+#| code-line-numbers: "2"
+# hindex와 plastic 관계에 대한 산점도에서 여성 국회의원 비율을 점의 크기로 표현     
+ggplot(phw, aes(x = hdindex, y=plastic, size = wnparl)) + 
+  geom_point(alpha = 0.5) + 
+  scale_size_continuous() 
+```
+
+## 시각화: 산점도
+
+```{r}
+#| echo: true 
+#| eval: false
+#| code-line-numbers: "3"
+# hindex와 plastic 관계에 대한 산점도에서 여성 국회의원 비율을 점의 크기로 표현    
+ggplot(phw, aes(x = hdindex, y=plastic, size = wnparl)) + 
+  geom_point(alpha = 0.5) + 
+  scale_size_continuous() 
+```
+
+## 시각화: 산점도
+
+```{r}
+#| echo: true 
+#| eval: false
+#| code-line-numbers: "4"
+# hindex와 plastic 관계에 대한 산점도에서 여성 국회의원 비율을 점의 크기로 표현    
+ggplot(phw, aes(x = hdindex, y=plastic, size = wnparl)) + 
+  geom_point(alpha = 0.5) + 
+  scale_size_continuous() 
+```
+
+## 시각화: 산점도
+
+```{r}
+#| echo: true 
+# hindex와 plastic 관계에 대한 산점도에서 여성 국회의원 비율을 점의 크기로 표현    
+ggplot(phw, aes(x = hdindex, y=plastic, size = wnparl)) + 
+  geom_point(alpha = 0.5) + 
+  scale_size_continuous() 
+```
+
+## 다시 중간 정리, 그리고 새로운 가설
+
+-   예상대로 생활수준이 높은 나라들에서 플라스틱 폐기률이 낮은 나라들은 높은 나라들에 비해 여성 국회의원 비율이 높아 보인다.
+-   반면, 생활수준이 높지 않은 나라들에서는 이러한 상관 관계가 뚜렷해 보이지 않는다.\
+-   가설: 생활수준에 따라 두 부분으로 나누어 볼 때, 여성 국회의원의 비율과 플라스틱 폐기율간의 상관관계에는 차이가 있을 것이다.
+
+## 새로운 변수 만들기: 생활수준에 따라 그룹 나누기
+
+```{r}
+#| echo: true 
+#| eval: false
+#| code-line-numbers: "2"
+phwg = phw %>%
+  mutate(hdi_gr = ifelse(hdindex < median(hdindex), "low", "high"))
+head(phwg)
+```
+
+## 새로운 변수 만들기: 생활수준에 따라 그룹 나누기
+
+```{r}
+#| echo: true 
+phwg = phw %>%
+  mutate(hdi_gr = ifelse(hdindex < median(hdindex), "low", "high"))
+head(phwg)
+```
+
+## 부분(그룹)으로 나누어 시각화하기
+
+```{r}
+#| echo: true 
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(phwg, aes(x = wnparl, y=plastic)) + 
+  geom_point() + 
+  facet_wrap(~ hdi_gr)
+```
+
+## 부분(그룹)으로 나누어 시각화하기
+
+```{r}
+#| echo: true 
+ggplot(phwg, aes(x = wnparl, y=plastic)) + 
+  geom_point() + 
+  facet_wrap(~ hdi_gr)
+```
+
+## 통계적 추론: 추정과 검정
+
+-   둘 사이에 상관관계가 있는가?(양/음) 얼마나 큰가?\
+-   둘 사이에 어떤 관련성이 있는가?\
+-   추론의 불확실성은 얼마인가?
+
+## 상관분석: 전체
+
+```{r}
+#| echo: true
+#| eval: false 
+cor.test(phwg$plastic, phwg$wnparl)
+```
+
+## 상관분석: 전체
+
+```{r}
+#| echo: true
+cor.test(phwg$plastic, phwg$wnparl)
+```
+
+## 상관분석: 부분
+
+인간개발지수가 낮은 그룹
+
+```{r}
+#| echo: true
+#| eval: false
+phwg_lo = phwg %>% filter(hdi_gr == "low")  
+cor.test(phwg_lo$plastic, phwg_lo$wnparl)
+```
+
+## 상관분석: 부분
+
+인간개발지수가 낮은 그룹
+
+```{r}
+#| echo: true
+phwg_lo = phwg %>% filter(hdi_gr == "low")  
+cor.test(phwg_lo$plastic, phwg_lo$wnparl)
+```
+
+## 상관분석: 부분
+
+인간개발지수가 높은 그룹
+
+```{r}
+#| echo: true
+#| eval: false 
+phwg_hi = phwg %>% filter(hdi_gr == "high")  
+cor.test(phwg_hi$plastic, phwg_hi$wnparl)
+```
+
+## 상관분석: 부분
+
+인간개발지수가 높은 그룹
+
+```{r}
+#| echo: true
+phwg_hi = phwg %>% filter(hdi_gr == "high")  
+cor.test(phwg_hi$plastic, phwg_hi$wnparl)
+```
+
+## 선형회귀 분석: 전체
+
+전체
+
+```{r}
+#| echo: true 
+#| eval: false 
+lm_all = lm(plastic ~ wnparl, data = phwg)
+summary(lm_all)
+```
+
+## 선형회귀 분석: 전체
+
+전체
+
+```{r}
+#| echo: true 
+lm_all = lm(plastic ~ wnparl, data = phwg)
+summary(lm_all)
+```
+
+## 선형회귀 분석: 부분
+
+인간개발지수가 낮은 그룹
+
+```{r}
+#| echo: true 
+#| eval: false 
+lm_lo = lm(plastic ~ wnparl, data = phwg_lo)
+summary(lm_lo)
+```
+
+## 선형회귀 분석: 부분
+
+인간개발지수가 낮은 그룹
+
+```{r}
+#| echo: true 
+lm_lo = lm(plastic ~ wnparl, data = phwg_lo)
+summary(lm_lo)
+```
+
+## 선형회귀 분석: 부분
+
+인간개발지수가 높은 그룹
+
+```{r}
+#| echo: true 
+#| eval: false 
+lm_hi = lm(plastic ~ wnparl, data = phwg_hi)
+summary(lm_hi)
+```
+
+## 선형회귀 분석: 부분
+
+인간개발지수가 높은 그룹
+
+```{r}
+#| echo: true 
+lm_hi = lm(plastic ~ wnparl, data = phwg_hi)
+summary(lm_hi)
+```
+
+## 산점도에 선형회귀식을 추가하기
+
+인간개발지수가 높은 vs. 낮은 그룹: 여성 국회의원 비율 & 플라스틱 폐기률의 관련성에 대한 선형회귀식
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(phwg, aes(x = wnparl, y=plastic)) + 
+  geom_point() + 
+  geom_smooth(method = "lm") + 
+  facet_wrap(~ hdi_gr)
+```
+
+## 산점도에 선형회귀식을 추가하기
+
+인간개발지수가 높은 vs. 낮은 그룹: 여성 국회의원 비율 & 플라스틱 폐기률의 관련성에 대한 선형회귀식
+
+```{r}
+#| echo: false
+#| code-fold: true 
+# 단순 선형 회귀식 
+ggplot(phwg, aes(x = wnparl, y=plastic)) + 
+  geom_point() + 
+  geom_smooth(method = "lm") + 
+  facet_wrap(~ hdi_gr)
+```
+
+## 결론
+
+-   UN 지속가능발전목표(SDG)에서 산업화에 따른 발전이 환경적 측면에서 지속가능한 형태로 이루어지고 있는지 문제 의식을 가짐
+
+-   인간개발지수가 높아짐에 따라 플라스틱 폐기량이 증가하고 있는 가운데, 산업화 수준이 높은 나라 중에 플라스틱 폐기량에 큰 편차가 있음을 발견
+
+-   인간개발지수가 높은 나라에서 여성 국회의원 비율과 플라스틱 폐기량의 관련성을 통계 분석으로 확인하고, 성평등이 산업화와 환경의 균형적 발전에 중요할 수 있음을 제안
+
+## R 데이터 분석 자료
+
+R 프로그래밍 기초 3일만에 끝내기\
+<https://youtube.com/playlist?list=PLaqQvlCBe8vL739pc-jESsucndheGmQIZ>.
+
+R for data science - 한국어\
+<https://bookdown.org/sulgi/r4ds/>
