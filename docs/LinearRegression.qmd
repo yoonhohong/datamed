@@ -6,7 +6,6 @@ format:
   html:
     toc: TRUE
     embed-resources: true
-    output-dir: /docs
 ---
 
 
