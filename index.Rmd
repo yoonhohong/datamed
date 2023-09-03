@@ -22,16 +22,12 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 **강의록**  
 
 * [데이터 과학과 의료](Intro.html)     
-
 * [R 프로그래밍의 기초](R_basics.html) 
 * [데이터 전처리(Data preprocessing)](Preprocessing.html)    
 * [시각화(Visualization)](Visualization.html)
-
 * [Class 4. 통계적 모델링과 기계학습의 기초](D4_ML_basics.html)   
-
 * [선형회귀 모델(Linear regression model)](LinearRegression.html) 
 * [선형혼합효과 모델(Linear mixed effects model)](LME.html)   
-
 * [로지스틱회귀 모델(Logistic regression model)](LogisticRegression.html)
 * [선형판별분석(Linear discriminant analysis)](LDA.html)   
 

@@ -5,7 +5,7 @@ navbar:
   left:
     - text: "by Yoon H. Hong"
     - icon: fa-github fa-lg
-      href: http://www.github.com/yoonhohong/SnuDataMed
+      href: http://www.github.com/yoonhohong/datamed 
 output:
   html_document:
     theme: paper
