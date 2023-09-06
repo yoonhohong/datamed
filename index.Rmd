@@ -42,3 +42,4 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 
 -   [SDG](SDG.html) 
 -   [분류](Classification_problem.html) 
+-   [Sample size calculation](sampleSize.html)
