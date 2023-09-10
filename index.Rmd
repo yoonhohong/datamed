@@ -2,20 +2,14 @@
 title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 ---
 
-### 선택교과4
-
-서울대학교 의과대학 2학년 2학기 
-
--   2023년8월2일-9월20일(8주) 매주 수요일, 13:00 - 17:00 연구관 7층 
--   2022년8월2일-9월20일(8주) 매주 화요일, 13:00 - 17:00 융합관 1층 GDR 
-
 ### 목표와 내용
 
--   데이터 과학이 의학 연구와 의료의 디지털 전환에 어떻게 활용되고 기여할 수 있는지 이해한다. 
 -   R의 기본 문법을 이해하고, 데이터 정제와 가공, 시각화를 할 수 있다. 
--   협업과 재현가능한 연구(reproducible research)를 위한 데이터 과학의 도구들을 활용할 수 있다(Git/Github, Rmarkdown/Quarto, Shiny). 
+-   통계적 검정과 추정을 이해하고, 데이터 분석에 적용할 수 있다. 
 -   기계학습의 기본 개념과 작업 과정을 설명할 수 있다. 
 -   기계학습의 주요 알고리즘을 이해하고, 분류(classification)와 회귀(regression), 비지도 기계학습에 적용할 수 있다. 
+-   협업과 재현가능한 연구(reproducible research)를 위한 데이터 과학의 도구들을 활용할 수 있다(Git/Github, Rmarkdown/Quarto, Shiny). 
+-   데이터 과학이 의학 연구와 의료의 디지털 전환에 어떻게 활용되고 기여할 수 있는지 이해한다. 
 
 ### 교재
 
@@ -40,6 +34,16 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 
 ### 실습
 
--   [SDG](SDG.html) 
+-   [Sustainable Development Goals](SDG.html) 
 -   [분류](Classification_problem.html) 
--   [Sample size calculation](sampleSize.html)
+-   [Wisconsin breast cancer dataset](breast_cancer.html) 
+-   [Pima indians diabetes dataset](diabetes.html)
+-   [Principal component analysis](PCA.html) 
+-   [Sample size calculation](sampleSize.html) 
+
+### 강좌
+
+**서울대학교 의과대학 2학년 2학기**\
+- 2023년8월2일-9월20일(8주)\
+- 2022년8월2일-9월20일(8주)\
+- 2019년8월6일-10월1일(8주)

@@ -1,0 +1,141 @@
+---
+title: "PIma indians diabetes"
+format: 
+  revealjs:
+    embed-resources: true
+    code-fold: true
+editor: visual
+execute:
+  echo: true
+---
+
+## Pima indians diabetes dataset
+
+Target (dependent) variable, Outcome.
+
+Independent variables include the followings\
+- Number of times pregnant\
+- Plasma glucose concentration after 2 hours in an oral glucose tolerance test\
+- Diastolic blood pressure (mm Hg)\
+- Body mass index (weight in kg/(height in m)\^2)\
+- Triceps skin fold thickness (mm)\
+- 2-Hour serum insulin (mu U/ml)\
+- Diabetes pedigree function
+
+## Import data
+
+```{r}
+df = read.csv("data/diabetes.csv")
+head(df)
+```
+
+## Exploration
+
+```{r}
+df$Outcome = factor(df$Outcome)
+summary(df)
+```
+
+## Replace zero w/ mean (I)
+
+replace zero w/ NA, then replace NA w/ mean\
+first, replace zero w/ NA\
+- dplyr::mutate, across, na_if
+
+```{r}
+library(dplyr) 
+df2 = df %>% 
+  mutate(across(2:6, ~na_if(.x, 0))) 
+summary(df2)
+```
+
+## Replace zero w/ mean (II)
+
+then, replace NA w/ mean\
+- dplyr::mutate, across, replace_na - mean
+
+```{r}
+library(tidyr)
+df3 = df2 %>% 
+  mutate(across(2:6, ~replace_na(.x, round(mean(.x, na.rm = T)))))
+summary(df3)
+```
+
+## EDA: distribution
+
+```{r message=FALSE}
+library(GGally) 
+ggpairs(df3)
+```
+
+## EDA: correlation coefficients
+
+```{r}
+library(ggcorrplot) 
+r = cor(df3[,-9]) 
+pmat = cor_pmat(r) 
+ggcorrplot(r, hc.order = TRUE, type = "lower", lab = TRUE, p.mat = pmat)
+```
+
+## Fit logistic regression
+
+```{r}
+lr_fit = glm(Outcome ~ ., data = df3, family = "binomial") 
+summary(lr_fit)
+```
+
+## Stepwise feature selection
+
+to find the subset of variables for the best performing model\
+- forward selection\
+- backward elimination\
+- stepwise selection(mixed)
+
+```{r}
+library(MASS)
+step_model = stepAIC(lr_fit, direction = "both", trace = F) 
+summary(step_model)
+```
+
+## Forest plot
+
+```{r}
+library(sjPlot) 
+plot_model(step_model, sort.est = T)
+```
+
+## Visualize regression model
+
+```{r}
+library(visreg) 
+library(ggpubr) 
+p = visreg(step_model, scale = "response", gg = T) # gg = T; ggplot2 as the engine 
+ggarrange(plotlist = p)
+```
+
+## Evalulate model performance
+
+```{r}
+prob = predict(step_model, newdata = df3, type = "response")
+pred = rep(0, length(prob))
+pred[prob > 0.5] = 1
+mean(pred == df3$Outcome); table(pred, df3$Outcome)
+```
+
+## Linear discriminant analysis
+
+```{r}
+lda_fit = lda(Outcome ~ ., data = df3) 
+plot(lda_fit)
+```
+
+## Evaluate model performance
+
+-   accuracy = 1- error rate\
+-   confusion matrix
+
+```{r}
+pred = predict(lda_fit, newdata = df3) 
+pred = pred$class
+mean(pred == df3$Outcome); table(pred, df3$Outcome)
+```

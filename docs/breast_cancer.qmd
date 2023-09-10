@@ -1,0 +1,100 @@
+---
+title: "Wisconsin breast cancer dataset"
+format: 
+  revealjs:
+    embed-resources: true
+    code-fold: true
+editor: visual
+execute: 
+  echo: true
+---
+
+## Wisconsin breast cancer dataset
+
+dataset 불러오기
+
+```{r}
+df = read.csv("data/wisconsin_data.csv")
+df = df[,2:12]
+df$diagnosis = factor(df$diagnosis)
+```
+
+## Logistic regression
+
+Note warning message!
+
+```{r, warning=TRUE}
+lr_fit = glm(diagnosis ~ ., data = df, family = "binomial")
+```
+
+## Logistic regression
+
+```{r}
+summary(lr_fit)
+```
+
+## Logistic regression: to extract odds ratios
+
+```{r}
+exp(coef(lr_fit))
+```
+
+## LR model: to predict
+
+```{r}
+prob = predict(lr_fit, newdata = df, type = "response") # type = "response" to obtain probability output 
+head(prob)
+```
+
+## LR model: to evaluate model performance
+
+-   accuracy = 1- error rate\
+-   confusion matrix
+
+```{r}
+pred_class = rep("B", length(prob))
+pred_class[prob > 0.5] = "M"
+mean(pred_class == df$diagnosis); table(pred_class, df$diagnosis)
+```
+
+```{r message=FALSE}
+library(sjPlot)
+plot_model(lr_fit, sort.est = T)
+```
+
+## To fit linear discriminant fxn
+
+```{r}
+library(MASS)
+lda_fit = lda(diagnosis ~ ., data = df)
+lda_fit
+```
+
+## LDA: LD fxn values
+
+```{r}
+plot(lda_fit)
+```
+
+## LDA: to predict
+
+```{r}
+pred = predict(lda_fit, newdata = df)
+pred = pred$class
+head(pred)
+```
+
+## LDA: to evaluate model performance
+
+-   accuracy = 1- error rate\
+-   confusion matrix
+
+```{r}
+mean(pred == df$diagnosis); table(pred, df$diagnosis)
+```
+
+## 로지스틱 회귀 vs. LDA
+
+로지스틱 회귀와 비교하여 LDA의 장점  - Multi-class classification (\> 2 classes).\
+- **클래스들이 잘 분리될 때 로지스틱 회귀모델에 대한 모수 추정치는 불안정한 경향**\
+- 만약 n이 작고, 각 클래스에서 설명변수 X의 분포가 근사적으로 정규분포이면 LDA가 로지스틱 회귀모델보다 더 안정적

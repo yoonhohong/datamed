@@ -1,0 +1,102 @@
+---
+title: "PCA"
+format: 
+  revealjs:
+    embed-resources: true
+    code-fold: true
+editor: visual
+execute: 
+  echo: true
+---
+
+```{r}
+df = read.csv("data/wisconsin_data.csv")
+# 주성분 분석을 할 설명변수 데이터만 분리 
+feature = df[,3:12] # 1,2 열은 각각 환자 ID, 진단
+head(feature)
+```
+
+## 주성분 분석 
+
+```{r}
+pca = prcomp(feature, scale = T) # scale=T; 변수값 표준화(평균을 빼고, 표준편차로 나누어줌) 
+pca
+```
+
+## 주성분 분석의 결과   
+
+```{r}
+attributes(pca)
+```
+
+## 주성분 변환 계수(loading vectors)  
+
+```{r}
+pca$rotation
+```
+
+## 주성분 변환 값(scores)
+
+```{r}
+head(pca$x)
+```
+
+## Scree plot (I)
+
+To visualize the percentage of variation explained by each principal component  
+
+```{r}
+plot(pca) 
+```
+
+## Scree plot (II)
+```{r}
+var_explained = pca$sdev^2 / sum(pca$sdev^2)
+var_explained_df = data.frame(num = 1:10, var = var_explained)
+library(ggplot2)
+ggplot(var_explained_df, aes(num, var)) + 
+  geom_point() + 
+  geom_line() + 
+  xlab("Principal Component") + 
+  ylab("Variance Explained") +
+  ggtitle("Scree Plot") +
+  ylim(0, 1)
+```
+
+
+## 주성분값 추출 
+
+```{r}
+pc = pca$x # 각 환자별 주성분(PC1, PC2, ... PC10) 값 
+pc12 = pc[,1:2] # PC1, PC2 선택 
+df12 = data.frame(diagnosis = df$diagnosis, pc12) 
+head(df12)
+```
+
+## 시각화 
+```{r}
+library(ggplot2)
+ggplot(df12, aes(x = PC1, y = PC2, col = diagnosis)) + 
+  geom_point() 
+```
+
+
+## Biplot (I) 
+
+Biplot = PCA score plot + loading plot 
+- Data points.  
+- Arrows. 
+
+```{r}
+biplot(pca)
+```
+
+## Biplot (II) 
+
+```{r}
+library(factoextra)
+fviz_pca_biplot(pca, label = "var", habillage = df$diagnosis) 
+```
+
+
+

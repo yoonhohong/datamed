@@ -9,6 +9,13 @@ execute:
   echo: true
 ---
 
+## Abuse of p-value  
+
+How to avoid?  
+
+![p-hacking](img/p_hacking_LME.png) 
+
+
 ## Effect size
 
 -   두 군에서(치료군과 대조군) 결과변수(Y)의 평균치를 구해 그 차이를 계산\

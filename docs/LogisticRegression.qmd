@@ -173,10 +173,8 @@ table(pred, test.data$survived)
 ```{r}
 mean(pred == test.data$survived)
 ```
+
 ```{r}
 saveRDS(glm.fit, "data/titanic_LRmodel.rds")
 saveRDS(test.data, "data/titanic_testData.rds")
 ```
-
-
-
