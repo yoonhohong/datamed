@@ -1,0 +1,140 @@
+---
+title: "Random forest"
+format: 
+  revealjs:
+    embed-resources: true
+    code-fold: true
+editor: visual
+execute: 
+  echo: true
+---
+
+## 실습 데이터  
+
+보스턴 주택가격 데이터셋    
+medv: median value of owner-occupied homes in $1K  
+
+```{r message=FALSE}
+library(MASS)
+head(Boston)
+```
+
+## 필요한 패키지 로딩 
+
+```{r message=FALSE}
+library(caret) # classification and regression training 
+library(dplyr)
+library(ggplot2)
+```
+
+
+## 데이터 분할 
+
+Training vs. Test dataset  
+caret::createDataPartition() 
+
+```{r}
+set.seed(1) # quasi-randomization for reproducible result 
+train_index = createDataPartition(1:nrow(Boston), p=0.75, list = FALSE) # return index vector 
+train_boston = Boston[train_index,]
+test_boston = Boston[-train_index,]
+```
+
+
+## Tuning parameters of random-forest model 
+
+- ntree: number of trees (default, 500). 
+- mtry: number of features randomly selected at each split    
+
+
+## Fit predictive models over different tuning parameters 
+
+```{r, message=FALSE}
+trctrl = trainControl(method = "repeatedcv", number = 10, repeats = 2) # 
+tunegrid = expand.grid(.mtry = c(2,7,13))
+rf_model = train(medv ~ ., data = train_boston, method = "rf", trControl = trctrl, tuneGrid = tunegrid, importance = TRUE)  
+rf_model
+```
+
+## Model performance in training set 
+
+```{r}
+plot(rf_model)
+```
+
+
+## Model performance in test set (I)
+
+```{r}
+pred = predict(rf_model, newdata = test_boston)
+df = data.frame(prd = pred, obs =test_boston$medv)
+df %>% 
+  ggplot(aes(obs, prd)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1)
+```
+
+## Model performance in test set (II)
+
+rmse 
+```{r}
+sqrt(mean((pred - test_boston$medv)^2))
+```
+
+## variable importance 
+
+```{r}
+rf_imp = varImp(rf_model, scale = F)
+plot(rf_imp)
+```
+
+
+## Gradient boosting 
+
+```{r}
+set.seed(9)
+gbmGrid <-  expand.grid(interaction.depth = c(1,5,10), n.trees = c(50*(1:10)), shrinkage = 0.1, n.minobsinnode = 10) # interaction.depth: max. tree depth 
+gbm_model = train(medv~., data = train_boston, trControl = trctrl, method = "gbm", tuneGrid = gbmGrid, verbose = F) 
+```
+
+## Gradient boosting 
+```{r}
+gbm_model
+```
+
+## Model performance in training set 
+```{r}
+plot(gbm_model)
+```
+
+## Variable importance  
+
+```{r}
+summary(gbm_model, las = 1)
+```
+
+## Evaluate performance in test dataset  
+```{r}
+gbm_pred = predict(gbm_model, newdata = test_boston)
+sqrt(mean(gbm_pred - test_boston$medv)^2)
+```
+
+## Comparison btw RF vs. GBM performance 
+```{r}
+resamps = resamples(list(RF = rf_model, 
+               GBM = gbm_model))
+resamps
+```
+
+## Comparison btw RF vs. GBM performance 
+```{r}
+summary(resamps)
+```
+
+## Comparison btw RF vs. GBM performance 
+```{r}
+bwplot(resamps)
+```
+
+
+

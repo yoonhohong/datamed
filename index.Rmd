@@ -29,7 +29,7 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 -   [선형판별분석(Linear discriminant analysis)](LDA.html) 
 -   [ROC curve](ROC.html) 
 -   [Class 7. 교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html) 
--   [Class 8. 의사결정나무와 랜덤 포레스트](D8_RF.html) 
+-   [의사결정나무와 랜덤 포레스트, Gradient Boosting](RandomForest_GradientBoosting.html) 
 -   [Class 9. 비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html) 
 
 ### 실습
@@ -40,6 +40,7 @@ title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 -   [Pima indians diabetes dataset](diabetes.html)
 -   [Principal component analysis](PCA.html) 
 -   [Sample size calculation](sampleSize.html) 
+-   [Random forest & gradient boosting](RandomForest.html).        
 
 ### 강좌
 
