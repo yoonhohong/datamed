@@ -1,7 +1,7 @@
 ---
 title: "임상 데이터 의학 (Clinical Data Medicine with R)"
 author: "홍윤호" 
-output: pdf_document
+output: word_document
 ---
 
 ### 목표와 내용
