@@ -1,7 +1,9 @@
 ---
 title: "임상 데이터 의학 (Clinical Data Medicine with R)"
-author: "홍윤호" 
-output: word_document
+author: "Pf. 홍윤호 (신경과학교실)"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ### 목표와 내용
@@ -47,6 +49,7 @@ output: word_document
 ### 강좌
 
 **서울대학교 의과대학 2학년 2학기**\
+- 2025년8월6일-9월24일(전반 4주 기초, 후반 4주 심화)  
 - 2023년8월2일-9월20일(8주)\
 - 2022년8월2일-9월20일(8주)\
 - 2019년8월6일-10월1일(8주)

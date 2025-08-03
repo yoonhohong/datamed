@@ -1,6 +1,6 @@
 ---
 title: "Random forest & Gradient boosting"
-format: docx
+format: html
 editor: visual
 ---
 
