@@ -1,55 +1,80 @@
 ---
 title: "임상 데이터 의학 (Clinical Data Medicine with R)"
-author: "Pf. 홍윤호 (신경과학교실)"
+author: ""
 output:
   html_document:
     df_print: paged
 ---
 
-### 목표와 내용
+### 강좌 소개
+인공지능과 정밀의료 시대에 접어들면서 의료현장과 의학 연구에서 **데이터 분석 능력**과 **비판적 사고능력**은 필수적 역량이 되었다. 본 선택 교과목에서는 강의와 실습을 병행하며, 임상 데이터를 이해하고 분석하기 위한 **통계적 추론** 및 **기계학습**을 다룬다. 학생들은 프로그래밍 언어인 R을 활용하여 임상연구 데이터를 다루고 분석 과정을 직접 구현해보는 **경험**을 하게 된다.   
+과정은 기초편(4주)과 심화편(4주), 두 단계로 구성된다. 기초편은 프로그래밍 경험이 없는 학생도 수강 가능하며, 데이터 분석을 위한 R의 기본 문법과 데이터 가공 및 시각화, 기초적인 통계적 추론(가설 검정과 모수 추정)을 학습한다. 심화편은 기초편을 수강했거나, 기존에 R 또는 Python 등의 프로그래밍 경험이 있는 학생을 대상으로 하며, 통계적 모델링과 기계학습을 중심으로 심화된 학습을 진행한다.
 
--   R의 기본 문법을 이해하고, 데이터 정제와 가공, 시각화를 할 수 있다. 
--   통계적 검정과 추정을 이해하고, 데이터 분석에 적용할 수 있다. 
--   기계학습의 기본 개념과 작업 과정을 설명할 수 있다. 
--   기계학습의 주요 알고리즘을 이해하고, 분류(classification)와 회귀(regression), 비지도 기계학습에 적용할 수 있다. 
--   협업과 재현가능한 연구(reproducible research)를 위한 데이터 과학의 도구들을 활용할 수 있다(Git/Github, Rmarkdown/Quarto, Shiny). 
--   데이터 과학이 의학 연구와 의료의 디지털 전환에 어떻게 활용되고 기여할 수 있는지 이해한다. 
+### 목표
+수강생들은 의학/의료 문제해결을 위한 양적 추론과 데이터 분석, 비판적 사고력 및 협업/소통 역량을 갖추는 것을 목표로 한다. 
+
+### 강의와 실습 계획 
+#### 전반(기초편)
+1주: **데이터 의학**     
+의학과 의료에서 데이터 분석과 양적 추론의 중요성을 이해하고, 데이터 분석을 통한 양적 추론 과정의 전반적 흐름에서 비판적 사고력의 중요성과 기술적, 윤리적 고려사항을 이해한다. 
+
+2주: **R 기초**    
+R 기본 문법과 작업 환경, 사용법을 익힌다: 데이터 유형과 구조, 데이터 입출력, 프로그래밍(조건문과 반복문, 함수)
+
+3주: **탐색적 데이터 분석**    
+R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 데이터 분석을 할 수 있다. 
+
+4주: **통계적 추론**     
+통계적 추론의 기본 개념들을 이해하고, R을 활용하여 가설 검정과 모수 추정을 구현할 수 있다.
+
+#### 후반(심화편) 
+1주: **회귀 및 분류**      
+선형회귀, 로지스틱회귀를 통해 회귀와 분류 문제에 대한 통계적 모델링을 이해하고, R을 이용해 구현할 수 있다.  
+
+2주: **생존 분석**     
+생존분석에 대한 통계적 모델링을 이해하고, R을 이용해 구현할 수 있다.  
+
+3주: **지도 기계학습**      
+지도 기계학습의 개념과 주요 알고리즘, 편향과 분산 절충(bias-variance trade-off), 교차검증(cross validation)을 이해하고, 모델 성능을 평가할 수 있다. 
+
+4주: **비지도 기계학습**    
+비지도 기계학습의 개념, 주성분분석, 군집분석을 이해하고, 활용할 수 있다.
+
 
 ### 교재
-
--   [An Introduction to Statistical Learning (with Applications in R), Springer (Gareth James, Daniel Witten, Trevor Hastie, Robert Tibshirani, 2013)](https://www-bcf.usc.edu/~gareth/ISL/)
+[R for Data Science, Hadley Wickham and Garrett Grolemund, 2017](https://r4ds.had.co.nz/)    
+[An Introduction to Statistical Learning (with Applications in R), Springer (Gareth James, Daniel Witten, Trevor Hastie, Robert Tibshirani, 2013)](https://www-bcf.usc.edu/~gareth/ISL/)
 
 ### 강의록
-
--   [데이터 과학과 의료](Intro.html) 
--   [R 프로그래밍의 기초](R_basics.html) 
--   [데이터 전처리(Data preprocessing)](Preprocessing.html) 
--   [시각화(Visualization)](Visualization.html) 
--   [통계적 모델링과 기계학습의 기초](ML_basics.html) 
--   [부트스트래핑(Bootstrapping)](Bootstrapping.html) 
--   [선형회귀 모델(Linear regression model)](LinearRegression.html) 
--   [선형혼합효과 모델(Linear mixed effects model)](LME.html) 
--   [로지스틱회귀 모델(Logistic regression model)](LogisticRegression.html) 
--   [선형판별분석(Linear discriminant analysis)](LDA.html) 
--   [ROC curve](ROC.html) 
--   [Class 7. 교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html) 
--   [의사결정나무와 랜덤 포레스트, Gradient Boosting](RandomForest_GradientBoosting.html) 
--   [Class 9. 비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html) 
+- [데이터 의학](Intro.html)   
+- [R의 기초](R_basics.html)   
+- [데이터 전처리(Data preprocessing)](Preprocessing.html)   
+- [시각화(Visualization)](Visualization.html)   
+- [통계적 모델링과 기계학습의 기초](ML_basics.html)   
+- [부트스트래핑(Bootstrapping)](Bootstrapping.html)   
+- [선형회귀 모델(Linear regression model)](LinearRegression.html)   
+- [선형혼합효과 모델(Linear mixed effects model)](LME.html)   
+- [로지스틱회귀 모델(Logistic regression model)](LogisticRegression.html)   
+- [선형판별분석(Linear discriminant analysis)](LDA.html)   
+- [ROC curve](ROC.html)   
+- [교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html)   
+- [의사결정나무, Random forest, Gradient Boosting](RandomForest_GradientBoosting.html)   
+- [비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html)   
 
 ### 실습
+- [Sustainable Development Goals](SDG.html)   
+- [분류](Classification_problem.html)   
+- [Wisconsin breast cancer dataset](breast_cancer.html)    
+- [Pima indians diabetes dataset](diabetes.html)    
+- [Principal component analysis](PCA.html)    
+- [Sample size calculation](sampleSize.html)    
+- [Random forest & gradient boosting](RandomForest.html)      
 
--   [Sustainable Development Goals](SDG.html) 
--   [분류](Classification_problem.html) 
--   [Wisconsin breast cancer dataset](breast_cancer.html) 
--   [Pima indians diabetes dataset](diabetes.html)
--   [Principal component analysis](PCA.html) 
--   [Sample size calculation](sampleSize.html) 
--   [Random forest & gradient boosting](RandomForest.html).        
+### 강좌 연혁    
+**서울대학교 의과대학 2학년 2학기**   
+- 2025년8월6일-9월24일(전반 4주 기초, 후반 4주 심화)   
+- 2023년8월2일-9월20일(8주)   
+- 2022년8월2일-9월20일(8주)   
+- 2019년8월6일-10월1일(8주)   
 
-### 강좌
 
-**서울대학교 의과대학 2학년 2학기**\
-- 2025년8월6일-9월24일(전반 4주 기초, 후반 4주 심화)  
-- 2023년8월2일-9월20일(8주)\
-- 2022년8월2일-9월20일(8주)\
-- 2019년8월6일-10월1일(8주)
