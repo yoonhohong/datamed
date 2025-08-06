@@ -12,8 +12,6 @@ output:
 knitr::opts_chunk$set(echo = T, eval = F)
 ```
 
-## Week 1: R의 기초
-
 ### 강의 목표
 
 - R과 RStudio 설치
