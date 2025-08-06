@@ -47,7 +47,7 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 
 ### 강의록
 - [데이터 의학](Intro.html)   
-- [R의 기초](R_basics.html)   
+- [R의 기초](week1_R_basics.html)   
 - [데이터 전처리(Data preprocessing)](Preprocessing.html)   
 - [시각화(Visualization)](Visualization.html)   
 - [통계적 모델링과 기계학습의 기초](ML_basics.html)   
