@@ -1,7 +1,7 @@
 ---
-title: "R 프로그래밍의 기초"  
+title: "Clinical Data Medicine with R - Week 1: R의 기초"  
 author: "Yoon-Ho Hong" 
-date: "2023-08-09"
+date: "2023-08-06"
 output: 
   html_document:
     toc: yes
@@ -12,359 +12,203 @@ output:
 knitr::opts_chunk$set(echo = T, eval = F)
 ```
 
-## 내용    
+## Week 1: R의 기초
 
-R과 RStudio를 설치하고, R의 기본 문법에 대해 학습합니다.  
+### 강의 목표
 
-- 변수(variable)  
-- 데이터 유형(data type)  
-- 데이터 구조(structure) 
-- 함수(function)   
-- 반복문과 조건문 
-- 환경 설정    
-- 패키지(packages)   
+- R과 RStudio 설치
+- R의 기본 문법 및 구조 이해
+- 변수, 데이터 유형과 구조 학습
+- 반복문, 조건문, 함수 등 기초 제어 구조 익히기
+- 데이터 입출력 및 패키지 활용
 
-## R 설치          
+## 1. R 설치          
 
 R은 "통계와 데이터 분석을 위한 프로그래밍 언어" 입니다.  
+먼저 공식 웹사이트에서 R을 설치합니다.
 
-다음 웹사이트에 가서 R을 다운로드하고 설치합시다.  
 [R 다운로드 및 설치](https://www.r-project.org/)    
 
-R (GUI 프로그램)을 실행해봅시다.   
-
-**연산자**     
-R은 간단한 계산기로도 사용될 수 있습니다. 다음 산술 연산자(arithmetic operators)를 사용해보세요.  
-
-* Addition: +
-* Subtraction: -
-* Multiplication: *
-* Division: /
-* Exponentiation: ^
-* Modulo: %%
-
-
-**변수**    
-변수(variable)를 사용하여 숫자 혹은 문자(열) 데이터를 저장할 수 있습니다. 나중에 이 변수를 호출하여 이 변수에 저장된 데이터에 접근할 수 있습니다.   
+R은 계산기로도 활용 가능합니다.   
 
 ```{r}
-my_var <- 4 # <- 대신에 = 를 사용할 수도 있습니다.   
+2 + 2
+3^2
+10 %% 3
 ```
 
-위에서 <- 는 할당 연산자(assignment operator)로 우측에 있는 데이터를 좌측의 변수로 "할당(assign)" 합니다.    
+---
 
 
-## Rstudio 설치      
+## 2. 변수와 연산자
 
-Rstudio는 R을 효과적으로 사용하게 해주는 통합개발환경(integrated development environment, IDE)입니다. 
-
-다음 웹사이트에 가서 Rstudio를 다운로드하고 설치합시다.   
-[Rstudio 다운로드 및 설치](https://www.rstudio.com/)   
-
-## 데이터 유형(Basic data types)
-
-R의 기본 데이터 유형은 다음과 같습니다. 
-
-* Numeric 숫자    
-* Character 문자(열)   
-* Boolean 논리값(TRUE or FALSE)    
-
-
-## 데이터 구조(data structures)   
-
-R의 기본 데이터 구조에는 다음과 같은 것들이 있습니다. 
-
-* Vector  
-* Factor  
-* Matrix 
-* Data frame  
-* List 
-
-
-## 벡터(vector) 
-
-벡터(vector)는 1차원 배열(ᆼarray)입니다.다음 예를 봅시다.   
 
 ```{r}
-my_vec1 = c(2, 4, 6, 8)  
+my_var <- 4  # 또는 my_var = 4
 ```
 
-c 는 combine 함수입니다(함수에 대해서는 아래에서 더 자세히 다룹니다). 괄호 사이에 쉼표로 구분된 요소(elements)를 배치합니다. 벡터(vector) 내의 요소(elements)의 데이터 유형(data type)은 항상 같아야 합니다. 
+- `<-`는 할당 연산자(assignment operator)입니다.
+- 산술 연산자 예시:
 
 ```{r}
-my_vec2 = c("apple", "orange", "banana", "grape")
-my_vec3 = c(TRUE, FALSE, TRUE, FALSE)
-my_vec4 = c(1,"a", TRUE) # 문자 데이터로 간주합니다.   
+1 + 2
+3 * 5
+2^4
 ```
 
-벡터(vector)를 구성하는 요소(elements)의 위치(position)를 인덱스(index)라고 합니다.첫번째 요소의 인덱스(index)는 1 입니다. 인덱스(index)를 이용해서 특정 위치의 요소(elements)만 추출할 수 있습니다. 이를 인덱싱(indexing)이라고 하며, 대괄호( square bracket)을 사용합니다.     
+---
+
+
+
+## 3. RStudio 설치
+
+[RStudio 다운로드 및 설치](https://www.rstudio.com/)
+
+RStudio는 R 프로그래밍을 위한 통합 개발 환경(IDE)입니다.
+
+---
+
+
+## 4. 데이터 유형 (Data Types)
 
 ```{r}
-my_vec2[2] 
-my_vec2[-2] # the second from the last 
-my_vec2[c(1,3)] 
-my_vec2[2:4] # from the second through to the 4th element
-my_vec2[-c(2,4)] # exclude the 2nd and 4th elements 
+numeric_data <- 10.5
+character_data <- "R is fun!"
+boolean_data <- TRUE
 ```
 
-square bracket 안에서 표현식(expression)을 사용하여 어떤 조건을 만족하는 요소(elements)만을 추출할 수 있습니다.   
+---
+
+## 5. 데이터 구조 (Data Structures)
+
+### Vector
 
 ```{r}
-my_vec1[my_vec1 == 6] # equal 
-my_vec1[my_vec1 < 10] # less than 
-my_vec1[my_vec1 %in% c(1, 2, 5)] # membership  
+my_vec <- c(1, 2, 3)
+my_vec[2]  # indexing
 ```
 
-
-### 팩터(Factor)    
-
-Factor는 vector의 한 형태인데, 제한된 값, 즉, 범주형(categorical) 값을 갖는 벡터형 데이터 구조입니다. vector 를 factor 로 전환하기 위해 *factor()* 함수를 사용하며, 범주를 *levels* 라고 합니다.   
+### Factor
 
 ```{r}
-vec = c(1,2,3,1,1,2,2,3,2,3)
-fvec1 = factor(vec) # convert numeric vector to factor  
+f <- factor(c("low", "medium", "high", "low"))
+levels(f)
 ```
 
-함수에는 인자(ᆼarguments)라고 하는 것이 있는데, 이는 함수의 어떤  작동 방식을 특정하기 위해 사용합니다. 예를 들면, factor 함수의 labels 인자(argument)를 사용해서 범주(levels)의 이름을 변경할 수 있습니다. 
+### Matrix
 
 ```{r}
-fvec2 = factor(vec, labels = c("mild", "moderate", "severe"))
+m <- matrix(1:6, nrow=2)
+m[1, 2]
 ```
 
-levels() 함수를 이용해서 범주의 이름을 변경할 수도 있습니다. 
+### List
 
 ```{r}
-levels(fvec1) = c("I", "II", "III")
+lst <- list(name = "Kim", age = 30, scores = c(90, 95))
+lst$age
 ```
 
-factor 함수는 숫자(numeric)에 대해서는 오름차순으로, 문자(character)에 대해서는 alphabet 순으로 범주(level)를 정렬합니다. 상황에 따라 범주(level)의 순서를 새로 정의해주어야 할 필요가 발생합니다.  
+### Data Frame
 
 ```{r}
-mon = c("Jan", "Feb", "Jan", "Mar", "Feb", "Jan", "Jul", "Aug", "Nov", "Dec", "Apr", "May", "Jun", "Oct", "Sep")
-fmon1 = factor(mon) 
+df <- data.frame(name = c("Kim", "Lee"), age = c(30, 40))
+df[1, ]
 ```
 
-위의 예에서, factor 함수의 levels 인자(argument)를 이용해서 순서를 정해주어야 합니다. 
+---
+
+## 6. 반복문과 조건문
+
+### for loop
+
 ```{r}
-fmon2 = factor(mon, levels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")) 
+sum_val <- 0
+for (i in 1:10) {
+  sum_val <- sum_val + i
+}
+sum_val
 ```
 
-서로 다른 범주를 묶어서 새로운 범주로 조직할 수도 있습니다. 
-```{r}
-levels(fmon2) = list(Spring = c("Mar", "Apr", "May"), 
-                     Summer = c("Jun", "Jul", "Aug"),
-                     Autumn = c("Sep", "Oct", "Nov"),
-                     Winter = c("Dec", "Jan", "Feb")) # list 에 대해서는 아래에서 다룹니다. 
-```
-
-
-  
-### 매트릭스(Matrix)    
-
-Matrix 는 2차원 array 입니다. 다음 코드 블럭은 (1) matrix 를 만드는 방법, (2) 특정 행(row)이나 열(column)에 해당하는 요소(element)를 추출하는 방법, (3) matrix의 전치(transpose)와 곱(multiplication) 연산자들의 사용예입니다. 
+### while loop
 
 ```{r}
-# create a matrix from x
-x = 1:12
-mat = matrix(x, ncol = 3)
-# select rows/columns/elements
-mat[1,]
-mat[,3]
-mat[3,2]
-t(mat) # transpose 
-mat %*% t(mat) # matrix multiplication
-```
-
-  
-### 리스트(List)   
-
-List도 벡터형 데이터 구조입니다. 그러나, 벡터와 달리, 요소(element)로 여러 유형의 데이터와 데이터 구조를 포함할 수 있습니다. List 객체는 list() 함수로 생성합니다.  
-다음 예는 숫자형 벡터와 문자 벡터를 각각 첫번째와 두번째 요소로 갖는 list 를 만드는 예입니다. 
-
-```{r}
-lst <- list(1:5, c('a', 'b'))
-names(lst) <- c("x", "y") # name list elements (vector에서의 element naming 방식과 동일합니다.)
-```
-
-List에서 특정 요소(elements)를 선택(selection)하는 방법은 아래와 같습니다. 반환(Return) 값의 데이터 구조가 list라는 것에 주의해야 합니다.  
-
-```{r}
-lst[1] # select elements by position (indexing)
-lst["y"] # select elements by name
-```
-
-만약, 반환(return) 값을 list가 아닌 해당 요소(elements)의 데이터 구조로 받고자 한다면, 다음과 같이 double square brackets[[]]를 사용하거나 $ 연산자를 사용해야 합니다.  
-
-```{r}
-lst[[1]]  
-lst$x
-```
-
-
-## 데이터프레임(Data frame)   
-
-data frame은 테이블 형식을 갖는 데이터입니다. 기본적으로 list의 elements를 열로 (column-wise) 조직한 데이터 구조입니다. list와 다른 점은 matrix와 같은 배열(array) 구조를 가지고 있다는 것과, 각 elements(data frame에서는 columns)의 길이가 같아야 한다는 것입니다. data frame 데이터 구조는 data.frame() 함수를 이용해서 생성합니다. 
-
-```{r}
-name = c("Kim", "Park", "Lee")
-age = c(30, 38, 42)
-child = c(TRUE, FALSE, TRUE)
-df <- data.frame(name, age, child)
-```
-
-data frame의 행(row), 열(column), 특정 원소를 selection하는 방법은 아래와 같습니다.  
-```{r}
-df[1,]
-df[3,2]
-df[,1:2]
-```
-
-다음은 data frame의 구조, 크기, 요약을 반환하는 함수입니다.  
-```{r}
-str(df)
-dim(df)
-summary(df)
-```
-
-## 반복문      
-
-프로그래밍은 컴퓨터에게 원하는 일련의 작업을 지시(instruction) 하는 것을 말합니다.이를 위해 프로그래밍 언어로 지시문(script)을 작성하는 것을 코딩이라고 합니다. 지시문(script)은 순차적으로 실행되는 명령문, 반복문, 조건문으로 이루어집니다. 
-
-다음은 1에서 10까지 숫자를 더하는 반복문의 예입니다.    
-
-for loop    
-```{r}
-j = 0
-for (i in 1:10){
-  j = i + j
+i <- 1
+while (i <= 5) {
+  print(i)
+  i <- i + 1
 }
 ```
 
-
-while loop     
-```{r}
-i = 0
-j = 0
-while (i < 10){
-  i = i + 1
-  j = j + i
-}
-```
-
-*for loop vs. while loop 차이점*          
-*for*: execute a loop a fixed number of times    
-*while*: execute a loop while a condition is true    
-
-## 조건문  
-
-다음은 조건문의 예입니다. 
+### 조건문
 
 ```{r}
-i = 4
-if (i > 3){
-  print("i larger than 3")
+i <- 3
+if (i > 2) {
+  print("크다")
 } else {
-  print("i less than 3")
+  print("작다")
 }
 ```
 
-## 함수(Function)
+---
 
-프로그래밍을 하다보면 반복적으로 하게 되는 작업이 있습니다. 함수를 사용하면 이러한 작업을 위해 매번 같은 코드를 작성할 필요가 없어집니다.  
+## 7. 함수
 
-R에는 기본적으로 자주 사용되는 함수들이 내장되어 있습니다. 다음은 몇 가지 내장 함수(built-in functions)의 예입니다. 몇 가지 내장 함수들은 이미 위에서 살펴보았습니다.     
+### 내장 함수
 
 ```{r}
-# create vectors
-seq(2, 10, by=0.5)  
-x = rep(1:3, times=3) 
-# sorting 
-sort(x)
-sort(x, decreasing = TRUE) # argument, 함수의 실행 방식을 특정하는  파라미터 변수(parameter variable) 값을 지칭합니다.   
-rev(x)
-# summary
-length(x)
-range(x)
-table(x) # counts of values
-# subset
-unique(x) # unique values
-# Math functions 
-sum(x)
+x <- c(1, 3, 5, 7)
 mean(x)
-median(x)
-max(x)
-min(x)
-round(1.8734, 2)
-exp(x)
+sort(x, decreasing = TRUE)
 ```
 
-**사용자 정의 함수**      
-
-필요에 따라 함수를 새로 만들어서 사용하기도 합니다. 다음은 어떤 값의 제곱값을 계산하는 함수를 만드는 예입니다.   
+### 사용자 정의 함수
 
 ```{r}
-square = function(x){
-  squared = x*x
-  return(squared)
+square <- function(x) {
+  return(x^2)
 }
-square(4) # 4^2, 물론 이렇게 하면 됩니다. ^^ 
+square(4)
 ```
 
+---
 
-## 환경(Environment)    
-
-다음은 작업공간(working directory) 설정, R 객체의 조회와 제거, 도움말에 대한 함수입니다. 
+## 8. 환경 설정
 
 ```{r}
-getwd() # setwd() 
-ls() # list R objects
-rm() # remove R objects
-?ls
+getwd()      # 현재 작업 경로 확인
+setwd("./data") # 작업 경로 설정
+ls()         # 현재 환경의 객체 보기
+rm(list = ls()) # 객체 모두 삭제
 ```
 
+---
 
-## 패키지 
-
-R에서 패키지(package)는 함수, 데이터, 코드, 문서 등을 묶어놓은 것을 말합니다. R을 설치하면 자동으로 기본 패키지들이 설치되는데, 이들이 제공하지 못하는 기능들은 새로운 패키지를 설치해서 사용합니다. 현재 10,000여개 이상의 패키지들이 CRAN, Bioconductor, GitHub 등의 repository에 저장되어 있습니다.     
-다음은 다음에 다룰 데이터 가공에 필요한 *dplyr* 패키지를 설치하고 로딩하는 코드입니다.      
+## 9. 패키지 사용
 
 ```{r eval=FALSE}
 install.packages("dplyr")
 library(dplyr)
 ```
 
+---
 
-## 데이터 불러오기와 쓰기  
-
-데이터 작업을 위해 외부 데이터를 불러들이는 방법에 대해서 알아봅시다.     
-```{r}
-# read a comma separated value (csv) file
-demograph = read.csv("data/demographic.csv") # csv 파일을 data frame 으로 불러들입니다. 
-head(demograph) # show the first 6 rows
-```
-
-다음은 일반 text 파일을 불러들이는 함수입니다. 
-```{r}
-# read a delimited text file 
-df_import = read.delim("data/all_forms_PROACT_training2.txt", sep="|") # sep은 delimiter를 가리키는 argument 입니다.  
-str(df_import)
-```
-
-R에서 생성하거나 가공한 data frame 등의 데이터구조 객체를 파일로 외부에 저장하는 방법입니다.  
-```{r}
-temp = demograph %>% 
-  select(-Race)
-write.csv(temp, file = "data/demographic_temp.csv", row.names = F, quote = F) 
-```
-
-## R 종료하기   
+## 10. 데이터 불러오기와 저장
 
 ```{r}
-q() 
+df_csv <- read.csv("data/sample.csv")
+head(df_csv)
+
+write.csv(df_csv, "data/sample_output.csv", row.names = FALSE)
 ```
 
-위와 같이 console에 입력하고 enter 키를 치면 R을 종료합니다. 종료할 때 현재 작업공간(workspace)을 저장하는 옵션을 선택하면, 해당 세션에서 생성되었던 모든 객체들을 저장하고(.RData) 다음 세션에서 이를 로딩하여 사용할 수 있습니다.      
+---
 
+## 11. R 종료하기
 
+```{r eval=FALSE}
+q()
+```
 
-
+작업 공간을 저장할지 묻는 창이 뜹니다. "Yes"를 선택하면 `.RData` 파일로 저장됩니다.

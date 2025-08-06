@@ -11,11 +11,11 @@
 
 <meta name="author" content="Yoon-Ho Hong" />
 
-<meta name="date" content="2023-08-09" />
+<meta name="date" content="2023-08-06" />
 
-<title>R 프로그래밍의 기초</title>
+<title>Clinical Data Medicine with R - Week 1: R의 기초</title>
 
-<script src="site_libs/header-attrs-2.23.4/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -37,8 +37,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -325,7 +325,7 @@ div.tocify {
       <ul class="nav navbar-nav">
         <li class="dropdown-header">by Yoon H. Hong</li>
 <li>
-  <a href="http://www.github.com/yoonhohong/SnuDataMed">
+  <a href="http://www.github.com/yoonhohong/datamed">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -342,315 +342,165 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">R 프로그래밍의 기초</h1>
+<h1 class="title toc-ignore">Clinical Data Medicine with R - Week 1: R의
+기초</h1>
 <h4 class="author">Yoon-Ho Hong</h4>
-<h4 class="date">2023-08-09</h4>
+<h4 class="date">2023-08-06</h4>
 
 </div>
 
 
-<div id="내용" class="section level2">
-<h2>내용</h2>
-<p>R과 RStudio를 설치하고, R의 기본 문법에 대해 학습합니다.</p>
+<div id="week-1-r의-기초" class="section level2">
+<h2>Week 1: R의 기초</h2>
+<div id="강의-목표" class="section level3">
+<h3>강의 목표</h3>
 <ul>
-<li>변수(variable)<br />
-</li>
-<li>데이터 유형(data type)<br />
-</li>
-<li>데이터 구조(structure)</li>
-<li>함수(function)<br />
-</li>
-<li>반복문과 조건문</li>
-<li>환경 설정<br />
-</li>
-<li>패키지(packages)</li>
+<li>R과 RStudio 설치</li>
+<li>R의 기본 문법 및 구조 이해</li>
+<li>변수, 데이터 유형과 구조 학습</li>
+<li>반복문, 조건문, 함수 등 기초 제어 구조 익히기</li>
+<li>데이터 입출력 및 패키지 활용</li>
 </ul>
+</div>
 </div>
 <div id="r-설치" class="section level2">
-<h2>R 설치</h2>
-<p>R은 “통계와 데이터 분석을 위한 프로그래밍 언어” 입니다.</p>
-<p>다음 웹사이트에 가서 R을 다운로드하고 설치합시다.<br />
-<a href="https://www.r-project.org/">R 다운로드 및 설치</a></p>
-<p>R (GUI 프로그램)을 실행해봅시다.</p>
-<p><strong>연산자</strong><br />
-R은 간단한 계산기로도 사용될 수 있습니다. 다음 산술 연산자(arithmetic
-operators)를 사용해보세요.</p>
+<h2>1. R 설치</h2>
+<p>R은 “통계와 데이터 분석을 위한 프로그래밍 언어” 입니다.<br />
+먼저 공식 웹사이트에서 R을 설치합니다.</p>
+<p><a href="https://www.r-project.org/">R 다운로드 및 설치</a></p>
+<p>R은 계산기로도 활용 가능합니다.</p>
+<pre class="r"><code>2 + 2
+3^2
+10 %% 3</code></pre>
+<hr />
+</div>
+<div id="변수와-연산자" class="section level2">
+<h2>2. 변수와 연산자</h2>
+<pre class="r"><code>my_var &lt;- 4  # 또는 my_var = 4</code></pre>
 <ul>
-<li>Addition: +</li>
-<li>Subtraction: -</li>
-<li>Multiplication: *</li>
-<li>Division: /</li>
-<li>Exponentiation: ^</li>
-<li>Modulo: %%</li>
+<li><code>&lt;-</code>는 할당 연산자(assignment operator)입니다.</li>
+<li>산술 연산자 예시:</li>
 </ul>
-<p><strong>변수</strong><br />
-변수(variable)를 사용하여 숫자 혹은 문자(열) 데이터를 저장할 수
-있습니다. 나중에 이 변수를 호출하여 이 변수에 저장된 데이터에 접근할 수
-있습니다.</p>
-<pre class="r"><code>my_var &lt;- 4 # &lt;- 대신에 = 를 사용할 수도 있습니다.   </code></pre>
-<p>위에서 &lt;- 는 할당 연산자(assignment operator)로 우측에 있는
-데이터를 좌측의 변수로 “할당(assign)” 합니다.</p>
+<pre class="r"><code>1 + 2
+3 * 5
+2^4</code></pre>
+<hr />
 </div>
 <div id="rstudio-설치" class="section level2">
-<h2>Rstudio 설치</h2>
-<p>Rstudio는 R을 효과적으로 사용하게 해주는 통합개발환경(integrated
-development environment, IDE)입니다.</p>
-<p>다음 웹사이트에 가서 Rstudio를 다운로드하고 설치합시다.<br />
-<a href="https://www.rstudio.com/">Rstudio 다운로드 및 설치</a></p>
+<h2>3. RStudio 설치</h2>
+<p><a href="https://www.rstudio.com/">RStudio 다운로드 및 설치</a></p>
+<p>RStudio는 R 프로그래밍을 위한 통합 개발 환경(IDE)입니다.</p>
+<hr />
 </div>
-<div id="데이터-유형basic-data-types" class="section level2">
-<h2>데이터 유형(Basic data types)</h2>
-<p>R의 기본 데이터 유형은 다음과 같습니다.</p>
-<ul>
-<li>Numeric 숫자<br />
-</li>
-<li>Character 문자(열)<br />
-</li>
-<li>Boolean 논리값(TRUE or FALSE)</li>
-</ul>
+<div id="데이터-유형-data-types" class="section level2">
+<h2>4. 데이터 유형 (Data Types)</h2>
+<pre class="r"><code>numeric_data &lt;- 10.5
+character_data &lt;- &quot;R is fun!&quot;
+boolean_data &lt;- TRUE</code></pre>
+<hr />
 </div>
-<div id="데이터-구조data-structures" class="section level2">
-<h2>데이터 구조(data structures)</h2>
-<p>R의 기본 데이터 구조에는 다음과 같은 것들이 있습니다.</p>
-<ul>
-<li>Vector<br />
-</li>
-<li>Factor<br />
-</li>
-<li>Matrix</li>
-<li>Data frame<br />
-</li>
-<li>List</li>
-</ul>
+<div id="데이터-구조-data-structures" class="section level2">
+<h2>5. 데이터 구조 (Data Structures)</h2>
+<div id="vector" class="section level3">
+<h3>Vector</h3>
+<pre class="r"><code>my_vec &lt;- c(1, 2, 3)
+my_vec[2]  # indexing</code></pre>
 </div>
-<div id="벡터vector" class="section level2">
-<h2>벡터(vector)</h2>
-<p>벡터(vector)는 1차원 배열(ᆼarray)입니다.다음 예를 봅시다.</p>
-<pre class="r"><code>my_vec1 = c(2, 4, 6, 8)  </code></pre>
-<p>c 는 combine 함수입니다(함수에 대해서는 아래에서 더 자세히 다룹니다).
-괄호 사이에 쉼표로 구분된 요소(elements)를 배치합니다. 벡터(vector) 내의
-요소(elements)의 데이터 유형(data type)은 항상 같아야 합니다.</p>
-<pre class="r"><code>my_vec2 = c(&quot;apple&quot;, &quot;orange&quot;, &quot;banana&quot;, &quot;grape&quot;)
-my_vec3 = c(TRUE, FALSE, TRUE, FALSE)
-my_vec4 = c(1,&quot;a&quot;, TRUE) # 문자 데이터로 간주합니다.   </code></pre>
-<p>벡터(vector)를 구성하는 요소(elements)의 위치(position)를
-인덱스(index)라고 합니다.첫번째 요소의 인덱스(index)는 1 입니다.
-인덱스(index)를 이용해서 특정 위치의 요소(elements)만 추출할 수
-있습니다. 이를 인덱싱(indexing)이라고 하며, 대괄호( square bracket)을
-사용합니다.</p>
-<pre class="r"><code>my_vec2[2] 
-my_vec2[-2] # the second from the last 
-my_vec2[c(1,3)] 
-my_vec2[2:4] # from the second through to the 4th element
-my_vec2[-c(2,4)] # exclude the 2nd and 4th elements </code></pre>
-<p>square bracket 안에서 표현식(expression)을 사용하여 어떤 조건을
-만족하는 요소(elements)만을 추출할 수 있습니다.</p>
-<pre class="r"><code>my_vec1[my_vec1 == 6] # equal 
-my_vec1[my_vec1 &lt; 10] # less than 
-my_vec1[my_vec1 %in% c(1, 2, 5)] # membership  </code></pre>
-<div id="팩터factor" class="section level3">
-<h3>팩터(Factor)</h3>
-<p>Factor는 vector의 한 형태인데, 제한된 값, 즉, 범주형(categorical)
-값을 갖는 벡터형 데이터 구조입니다. vector 를 factor 로 전환하기 위해
-<em>factor()</em> 함수를 사용하며, 범주를 <em>levels</em> 라고
-합니다.</p>
-<pre class="r"><code>vec = c(1,2,3,1,1,2,2,3,2,3)
-fvec1 = factor(vec) # convert numeric vector to factor  </code></pre>
-<p>함수에는 인자(ᆼarguments)라고 하는 것이 있는데, 이는 함수의 어떤 작동
-방식을 특정하기 위해 사용합니다. 예를 들면, factor 함수의 labels
-인자(argument)를 사용해서 범주(levels)의 이름을 변경할 수 있습니다.</p>
-<pre class="r"><code>fvec2 = factor(vec, labels = c(&quot;mild&quot;, &quot;moderate&quot;, &quot;severe&quot;))</code></pre>
-<p>levels() 함수를 이용해서 범주의 이름을 변경할 수도 있습니다.</p>
-<pre class="r"><code>levels(fvec1) = c(&quot;I&quot;, &quot;II&quot;, &quot;III&quot;)</code></pre>
-<p>factor 함수는 숫자(numeric)에 대해서는 오름차순으로,
-문자(character)에 대해서는 alphabet 순으로 범주(level)를 정렬합니다.
-상황에 따라 범주(level)의 순서를 새로 정의해주어야 할 필요가
-발생합니다.</p>
-<pre class="r"><code>mon = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Jan&quot;, &quot;Mar&quot;, &quot;Feb&quot;, &quot;Jan&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Nov&quot;, &quot;Dec&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Oct&quot;, &quot;Sep&quot;)
-fmon1 = factor(mon) </code></pre>
-<p>위의 예에서, factor 함수의 levels 인자(argument)를 이용해서 순서를
-정해주어야 합니다.</p>
-<pre class="r"><code>fmon2 = factor(mon, levels = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;)) </code></pre>
-<p>서로 다른 범주를 묶어서 새로운 범주로 조직할 수도 있습니다.</p>
-<pre class="r"><code>levels(fmon2) = list(Spring = c(&quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;), 
-                     Summer = c(&quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;),
-                     Autumn = c(&quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;),
-                     Winter = c(&quot;Dec&quot;, &quot;Jan&quot;, &quot;Feb&quot;)) # list 에 대해서는 아래에서 다룹니다. </code></pre>
+<div id="factor" class="section level3">
+<h3>Factor</h3>
+<pre class="r"><code>f &lt;- factor(c(&quot;low&quot;, &quot;medium&quot;, &quot;high&quot;, &quot;low&quot;))
+levels(f)</code></pre>
 </div>
-<div id="매트릭스matrix" class="section level3">
-<h3>매트릭스(Matrix)</h3>
-<p>Matrix 는 2차원 array 입니다. 다음 코드 블럭은 (1) matrix 를 만드는
-방법, (2) 특정 행(row)이나 열(column)에 해당하는 요소(element)를
-추출하는 방법, (3) matrix의 전치(transpose)와 곱(multiplication)
-연산자들의 사용예입니다.</p>
-<pre class="r"><code># create a matrix from x
-x = 1:12
-mat = matrix(x, ncol = 3)
-# select rows/columns/elements
-mat[1,]
-mat[,3]
-mat[3,2]
-t(mat) # transpose 
-mat %*% t(mat) # matrix multiplication</code></pre>
+<div id="matrix" class="section level3">
+<h3>Matrix</h3>
+<pre class="r"><code>m &lt;- matrix(1:6, nrow=2)
+m[1, 2]</code></pre>
 </div>
-<div id="리스트list" class="section level3">
-<h3>리스트(List)</h3>
-<p>List도 벡터형 데이터 구조입니다. 그러나, 벡터와 달리, 요소(element)로
-여러 유형의 데이터와 데이터 구조를 포함할 수 있습니다. List 객체는
-list() 함수로 생성합니다.<br />
-다음 예는 숫자형 벡터와 문자 벡터를 각각 첫번째와 두번째 요소로 갖는
-list 를 만드는 예입니다.</p>
-<pre class="r"><code>lst &lt;- list(1:5, c(&#39;a&#39;, &#39;b&#39;))
-names(lst) &lt;- c(&quot;x&quot;, &quot;y&quot;) # name list elements (vector에서의 element naming 방식과 동일합니다.)</code></pre>
-<p>List에서 특정 요소(elements)를 선택(selection)하는 방법은 아래와
-같습니다. 반환(Return) 값의 데이터 구조가 list라는 것에 주의해야
-합니다.</p>
-<pre class="r"><code>lst[1] # select elements by position (indexing)
-lst[&quot;y&quot;] # select elements by name</code></pre>
-<p>만약, 반환(return) 값을 list가 아닌 해당 요소(elements)의 데이터
-구조로 받고자 한다면, 다음과 같이 double square brackets[[]]를
-사용하거나 $ 연산자를 사용해야 합니다.</p>
-<pre class="r"><code>lst[[1]]  
-lst$x</code></pre>
+<div id="list" class="section level3">
+<h3>List</h3>
+<pre class="r"><code>lst &lt;- list(name = &quot;Kim&quot;, age = 30, scores = c(90, 95))
+lst$age</code></pre>
+</div>
+<div id="data-frame" class="section level3">
+<h3>Data Frame</h3>
+<pre class="r"><code>df &lt;- data.frame(name = c(&quot;Kim&quot;, &quot;Lee&quot;), age = c(30, 40))
+df[1, ]</code></pre>
+<hr />
 </div>
 </div>
-<div id="데이터프레임data-frame" class="section level2">
-<h2>데이터프레임(Data frame)</h2>
-<p>data frame은 테이블 형식을 갖는 데이터입니다. 기본적으로 list의
-elements를 열로 (column-wise) 조직한 데이터 구조입니다. list와 다른 점은
-matrix와 같은 배열(array) 구조를 가지고 있다는 것과, 각 elements(data
-frame에서는 columns)의 길이가 같아야 한다는 것입니다. data frame 데이터
-구조는 data.frame() 함수를 이용해서 생성합니다.</p>
-<pre class="r"><code>name = c(&quot;Kim&quot;, &quot;Park&quot;, &quot;Lee&quot;)
-age = c(30, 38, 42)
-child = c(TRUE, FALSE, TRUE)
-df &lt;- data.frame(name, age, child)</code></pre>
-<p>data frame의 행(row), 열(column), 특정 원소를 selection하는 방법은
-아래와 같습니다.</p>
-<pre class="r"><code>df[1,]
-df[3,2]
-df[,1:2]</code></pre>
-<p>다음은 data frame의 구조, 크기, 요약을 반환하는 함수입니다.</p>
-<pre class="r"><code>str(df)
-dim(df)
-summary(df)</code></pre>
-</div>
-<div id="반복문" class="section level2">
-<h2>반복문</h2>
-<p>프로그래밍은 컴퓨터에게 원하는 일련의 작업을 지시(instruction) 하는
-것을 말합니다.이를 위해 프로그래밍 언어로 지시문(script)을 작성하는 것을
-코딩이라고 합니다. 지시문(script)은 순차적으로 실행되는 명령문, 반복문,
-조건문으로 이루어집니다.</p>
-<p>다음은 1에서 10까지 숫자를 더하는 반복문의 예입니다.</p>
-<p>for loop</p>
-<pre class="r"><code>j = 0
-for (i in 1:10){
-  j = i + j
-}</code></pre>
-<p>while loop</p>
-<pre class="r"><code>i = 0
-j = 0
-while (i &lt; 10){
-  i = i + 1
-  j = j + i
-}</code></pre>
-<p><em>for loop vs. while loop 차이점</em><br />
-<em>for</em>: execute a loop a fixed number of times<br />
-<em>while</em>: execute a loop while a condition is true</p>
-</div>
-<div id="조건문" class="section level2">
-<h2>조건문</h2>
-<p>다음은 조건문의 예입니다.</p>
-<pre class="r"><code>i = 4
-if (i &gt; 3){
-  print(&quot;i larger than 3&quot;)
-} else {
-  print(&quot;i less than 3&quot;)
-}</code></pre>
-</div>
-<div id="함수function" class="section level2">
-<h2>함수(Function)</h2>
-<p>프로그래밍을 하다보면 반복적으로 하게 되는 작업이 있습니다. 함수를
-사용하면 이러한 작업을 위해 매번 같은 코드를 작성할 필요가
-없어집니다.</p>
-<p>R에는 기본적으로 자주 사용되는 함수들이 내장되어 있습니다. 다음은 몇
-가지 내장 함수(built-in functions)의 예입니다. 몇 가지 내장 함수들은
-이미 위에서 살펴보았습니다.</p>
-<pre class="r"><code># create vectors
-seq(2, 10, by=0.5)  
-x = rep(1:3, times=3) 
-# sorting 
-sort(x)
-sort(x, decreasing = TRUE) # argument, 함수의 실행 방식을 특정하는  파라미터 변수(parameter variable) 값을 지칭합니다.   
-rev(x)
-# summary
-length(x)
-range(x)
-table(x) # counts of values
-# subset
-unique(x) # unique values
-# Math functions 
-sum(x)
-mean(x)
-median(x)
-max(x)
-min(x)
-round(1.8734, 2)
-exp(x)</code></pre>
-<p><strong>사용자 정의 함수</strong></p>
-<p>필요에 따라 함수를 새로 만들어서 사용하기도 합니다. 다음은 어떤 값의
-제곱값을 계산하는 함수를 만드는 예입니다.</p>
-<pre class="r"><code>square = function(x){
-  squared = x*x
-  return(squared)
+<div id="반복문과-조건문" class="section level2">
+<h2>6. 반복문과 조건문</h2>
+<div id="for-loop" class="section level3">
+<h3>for loop</h3>
+<pre class="r"><code>sum_val &lt;- 0
+for (i in 1:10) {
+  sum_val &lt;- sum_val + i
 }
-square(4) # 4^2, 물론 이렇게 하면 됩니다. ^^ </code></pre>
+sum_val</code></pre>
 </div>
-<div id="환경environment" class="section level2">
-<h2>환경(Environment)</h2>
-<p>다음은 작업공간(working directory) 설정, R 객체의 조회와 제거,
-도움말에 대한 함수입니다.</p>
-<pre class="r"><code>getwd() # setwd() 
-ls() # list R objects
-rm() # remove R objects
-?ls</code></pre>
+<div id="while-loop" class="section level3">
+<h3>while loop</h3>
+<pre class="r"><code>i &lt;- 1
+while (i &lt;= 5) {
+  print(i)
+  i &lt;- i + 1
+}</code></pre>
 </div>
-<div id="패키지" class="section level2">
-<h2>패키지</h2>
-<p>R에서 패키지(package)는 함수, 데이터, 코드, 문서 등을 묶어놓은 것을
-말합니다. R을 설치하면 자동으로 기본 패키지들이 설치되는데, 이들이
-제공하지 못하는 기능들은 새로운 패키지를 설치해서 사용합니다. 현재
-10,000여개 이상의 패키지들이 CRAN, Bioconductor, GitHub 등의
-repository에 저장되어 있습니다.<br />
-다음은 다음에 다룰 데이터 가공에 필요한 <em>dplyr</em> 패키지를 설치하고
-로딩하는 코드입니다.</p>
+<div id="조건문" class="section level3">
+<h3>조건문</h3>
+<pre class="r"><code>i &lt;- 3
+if (i &gt; 2) {
+  print(&quot;크다&quot;)
+} else {
+  print(&quot;작다&quot;)
+}</code></pre>
+<hr />
+</div>
+</div>
+<div id="함수" class="section level2">
+<h2>7. 함수</h2>
+<div id="내장-함수" class="section level3">
+<h3>내장 함수</h3>
+<pre class="r"><code>x &lt;- c(1, 3, 5, 7)
+mean(x)
+sort(x, decreasing = TRUE)</code></pre>
+</div>
+<div id="사용자-정의-함수" class="section level3">
+<h3>사용자 정의 함수</h3>
+<pre class="r"><code>square &lt;- function(x) {
+  return(x^2)
+}
+square(4)</code></pre>
+<hr />
+</div>
+</div>
+<div id="환경-설정" class="section level2">
+<h2>8. 환경 설정</h2>
+<pre class="r"><code>getwd()      # 현재 작업 경로 확인
+setwd(&quot;./data&quot;) # 작업 경로 설정
+ls()         # 현재 환경의 객체 보기
+rm(list = ls()) # 객체 모두 삭제</code></pre>
+<hr />
+</div>
+<div id="패키지-사용" class="section level2">
+<h2>9. 패키지 사용</h2>
 <pre class="r"><code>install.packages(&quot;dplyr&quot;)
 library(dplyr)</code></pre>
+<hr />
 </div>
-<div id="데이터-불러오기와-쓰기" class="section level2">
-<h2>데이터 불러오기와 쓰기</h2>
-<p>데이터 작업을 위해 외부 데이터를 불러들이는 방법에 대해서
-알아봅시다.</p>
-<pre class="r"><code># read a comma separated value (csv) file
-demograph = read.csv(&quot;data/demographic.csv&quot;) # csv 파일을 data frame 으로 불러들입니다. 
-head(demograph) # show the first 6 rows</code></pre>
-<p>다음은 일반 text 파일을 불러들이는 함수입니다.</p>
-<pre class="r"><code># read a delimited text file 
-df_import = read.delim(&quot;data/all_forms_PROACT_training2.txt&quot;, sep=&quot;|&quot;) # sep은 delimiter를 가리키는 argument 입니다.  
-str(df_import)</code></pre>
-<p>R에서 생성하거나 가공한 data frame 등의 데이터구조 객체를 파일로
-외부에 저장하는 방법입니다.</p>
-<pre class="r"><code>temp = demograph %&gt;% 
-  select(-Race)
-write.csv(temp, file = &quot;data/demographic_temp.csv&quot;, row.names = F, quote = F) </code></pre>
+<div id="데이터-불러오기와-저장" class="section level2">
+<h2>10. 데이터 불러오기와 저장</h2>
+<pre class="r"><code>df_csv &lt;- read.csv(&quot;data/sample.csv&quot;)
+head(df_csv)
+
+write.csv(df_csv, &quot;data/sample_output.csv&quot;, row.names = FALSE)</code></pre>
+<hr />
 </div>
 <div id="r-종료하기" class="section level2">
-<h2>R 종료하기</h2>
-<pre class="r"><code>q() </code></pre>
-<p>위와 같이 console에 입력하고 enter 키를 치면 R을 종료합니다. 종료할
-때 현재 작업공간(workspace)을 저장하는 옵션을 선택하면, 해당 세션에서
-생성되었던 모든 객체들을 저장하고(.RData) 다음 세션에서 이를 로딩하여
-사용할 수 있습니다.</p>
+<h2>11. R 종료하기</h2>
+<pre class="r"><code>q()</code></pre>
+<p>작업 공간을 저장할지 묻는 창이 뜹니다. “Yes”를 선택하면
+<code>.RData</code> 파일로 저장됩니다.</p>
 </div>
 
 
