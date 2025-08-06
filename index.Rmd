@@ -72,7 +72,8 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 
 
 ### 워크시트 
-[워크시트](https://forms.gle/wVeoYM24ZmcL8VvV7) 
+[워크시트](https://forms.gle/zmXDRVitdZMHpxtx5)
+
 
 ### 성찰 일지 
 [오늘의 성찰 일지](https://forms.gle/1977oRBrniAaJ57y6) 
