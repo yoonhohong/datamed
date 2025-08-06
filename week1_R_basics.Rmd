@@ -1,5 +1,5 @@
 ---
-title: "Clinical Data Medicine with R - Week 1: R의 기초"  
+title: "R의 기초"  
 author: "Yoon-Ho Hong" 
 date: "2023-08-06"
 output: 
