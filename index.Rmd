@@ -70,6 +70,14 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 - [Sample size calculation](sampleSize.html)    
 - [Random forest & gradient boosting](RandomForest.html)      
 
+
+### 워크시트 
+[워크시트](https://forms.gle/wVeoYM24ZmcL8VvV7) 
+
+### 성찰 일지 
+[오늘의 성찰 일지](https://forms.gle/1977oRBrniAaJ57y6) 
+
+
 ### 강좌 연혁    
 **서울대학교 의과대학 2학년 2학기**   
 - 2025년8월6일-9월24일(전반 4주 기초, 후반 4주 심화)   
