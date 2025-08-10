@@ -113,6 +113,7 @@ df[1, ]
 
 ------------------------------------------------------------------------
 
+
 ## 6. 반복문과 조건문
 
 ### for loop
@@ -207,3 +208,18 @@ q()
 ```
 
 작업 공간을 저장할지 묻는 창이 뜹니다. "Yes"를 선택하면 `.RData` 파일로 저장됩니다.
+
+
+## Note 
+
+[matrix vs. dataframe 비교](matrix_vs_dataframe_revealjs.html).    
+
+
+## Exercise 
+
+[exercise_week1_R_basics](exercise_week1_R_basics.html).   
+
+
+
+
+

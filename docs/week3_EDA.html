@@ -9,11 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Yoon-Ho Hong" />
 
-<meta name="date" content="2025-08-13" />
+<meta name="date" content="2025-08-20" />
 
-<title>R의 기초</title>
+<title>탐색적 데이터 분석</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -341,172 +340,237 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">R의 기초</h1>
-<h4 class="author">Yoon-Ho Hong</h4>
-<h4 class="date">2025-08-13</h4>
+<h1 class="title toc-ignore">탐색적 데이터 분석</h1>
+<h4 class="date">2025-08-20</h4>
 
 </div>
 
 
-<div id="강의-목표" class="section level3">
-<h3>강의 목표</h3>
+<div id="학습-목표" class="section level2">
+<h2>학습 목표</h2>
+<p>이 강의에서는 데이터 분석 전처리 → 가공 → 탐색적 분석의 흐름을
+따라가며, 다음 주요 내용을 실습합니다.</p>
 <ul>
-<li>R과 RStudio 설치</li>
-<li>R의 기본 문법 및 구조 이해</li>
-<li>변수, 데이터 유형과 구조 학습</li>
-<li>반복문, 조건문, 함수 등 기초 제어 구조 익히기</li>
-<li>데이터 입출력 및 패키지 활용</li>
+<li>데이터 정제 (Cleaning) – 오류, 결측치, 이상치 처리<br />
+</li>
+<li>데이터 가공 (Wrangling) – 변수 선택, 필터링, 정렬, 생성</li>
+<li>데이터 병합 &amp; 재구조화 (Merging &amp; Reshaping)</li>
+<li>탐색적 데이터 분석 (EDA) – 요약 통계, 시각화</li>
 </ul>
 </div>
-<div id="r-설치" class="section level2">
-<h2>1. R 설치</h2>
-<p>R은 “통계와 데이터 분석을 위한 프로그래밍 언어” 입니다.<br />
-먼저 공식 웹사이트에서 R을 설치합니다.</p>
-<p><a href="https://www.r-project.org/">R 다운로드 및 설치</a></p>
-<p>R은 계산기로도 활용 가능합니다.</p>
-<pre class="r"><code>2 + 2
-3^2
-10 %% 3</code></pre>
-<hr />
+<div id="준비" class="section level2">
+<h2>0. 준비</h2>
+<p>필요한 패키지 설치 &amp; 로딩</p>
+<pre class="r"><code>install.packages(c(&quot;gapminder&quot;, &quot;dplyr&quot;, &quot;tidyr&quot;, &quot;ggplot2&quot;))
+library(gapminder)
+library(dplyr)
+library(tidyr)
+library(ggplot2)</code></pre>
 </div>
-<div id="rstudio-설치" class="section level2">
-<h2>2. RStudio 설치</h2>
-<p><a href="https://posit.co/download/rstudio-desktop/">RStudio 다운로드
-및 설치</a></p>
-<p>RStudio는 R 프로그래밍을 위한 통합 개발 환경(IDE)입니다.</p>
-<hr />
-</div>
-<div id="변수와-연산자" class="section level2">
-<h2>3. 변수와 연산자</h2>
-<pre class="r"><code>my_var &lt;- 4  # 또는 my_var = 4</code></pre>
-<ul>
-<li><code>&lt;-</code>는 할당 연산자(assignment operator)입니다.</li>
-<li>산술 연산자 예시:</li>
-</ul>
-<pre class="r"><code>1 + 2
-3 * 5
-2^4</code></pre>
-<hr />
-</div>
-<div id="데이터-유형-data-types" class="section level2">
-<h2>4. 데이터 유형 (Data Types)</h2>
-<pre class="r"><code>numeric_data &lt;- 10.5
-character_data &lt;- &quot;R is fun!&quot;
-boolean_data &lt;- TRUE</code></pre>
-<hr />
-</div>
-<div id="데이터-구조-data-structures" class="section level2">
-<h2>5. 데이터 구조 (Data Structures)</h2>
-<div id="vector" class="section level3">
-<h3>Vector</h3>
-<pre class="r"><code>my_vec &lt;- c(1, 2, 3)
-my_vec[2]  # indexing</code></pre>
-</div>
-<div id="factor" class="section level3">
-<h3>Factor</h3>
-<pre class="r"><code>f &lt;- factor(c(&quot;low&quot;, &quot;medium&quot;, &quot;high&quot;, &quot;low&quot;))
-levels(f)</code></pre>
-</div>
-<div id="matrix" class="section level3">
-<h3>Matrix</h3>
-<pre class="r"><code>m &lt;- matrix(1:6, nrow=2)
-m[1, 2]</code></pre>
-</div>
-<div id="list" class="section level3">
-<h3>List</h3>
-<pre class="r"><code>lst &lt;- list(name = &quot;Kim&quot;, age = 30, scores = c(90, 95))
-lst$age</code></pre>
-</div>
-<div id="data-frame" class="section level3">
-<h3>Data Frame</h3>
-<pre class="r"><code>df &lt;- data.frame(name = c(&quot;Kim&quot;, &quot;Lee&quot;), age = c(30, 40))
-df[1, ]</code></pre>
-<hr />
-</div>
-</div>
-<div id="반복문과-조건문" class="section level2">
-<h2>6. 반복문과 조건문</h2>
-<div id="for-loop" class="section level3">
-<h3>for loop</h3>
-<pre class="r"><code>sum_val &lt;- 0
-for (i in 1:10) {
-  sum_val &lt;- sum_val + i
-}
-sum_val</code></pre>
-</div>
-<div id="while-loop" class="section level3">
-<h3>while loop</h3>
-<pre class="r"><code>i &lt;- 1
-while (i &lt;= 5) {
-  print(i)
-  i &lt;- i + 1
-}</code></pre>
-</div>
-<div id="조건문" class="section level3">
-<h3>조건문</h3>
-<pre class="r"><code>i &lt;- 3
-if (i &gt; 2) {
-  print(&quot;크다&quot;)
-} else {
-  print(&quot;작다&quot;)
-}</code></pre>
-<hr />
-</div>
-</div>
-<div id="함수" class="section level2">
-<h2>7. 함수</h2>
-<div id="내장-함수" class="section level3">
-<h3>내장 함수</h3>
-<pre class="r"><code>x &lt;- c(1, 3, 5, 7)
-mean(x)
-sort(x, decreasing = TRUE)</code></pre>
-</div>
-<div id="사용자-정의-함수" class="section level3">
-<h3>사용자 정의 함수</h3>
-<pre class="r"><code>square &lt;- function(x) {
-  return(x^2)
-}
-square(4)</code></pre>
-<hr />
-</div>
-</div>
-<div id="환경-설정" class="section level2">
-<h2>8. 환경 설정</h2>
-<pre class="r"><code>getwd()      # 현재 작업 경로 확인
-setwd(&quot;./data&quot;) # 작업 경로 설정
-ls()         # 현재 환경의 객체 보기
-rm(list = ls()) # 객체 모두 삭제</code></pre>
-<hr />
-</div>
-<div id="패키지-사용" class="section level2">
-<h2>9. 패키지 사용</h2>
-<pre class="r"><code>install.packages(&quot;dplyr&quot;)
-library(dplyr)</code></pre>
-<hr />
-</div>
-<div id="데이터-불러오기와-저장" class="section level2">
-<h2>10. 데이터 불러오기와 저장</h2>
-<pre class="r"><code>df_csv &lt;- read.csv(&quot;data/sample.csv&quot;)
-head(df_csv)
+<div id="데이터-정제-data-cleaning" class="section level2">
+<h2>1. 데이터 정제 (Data Cleaning)</h2>
+<p>정의: 데이터의 오류를 찾아 제거하거나 수정하는 과정 주요 작업 -
+중복값 제거 (Duplicates) - 잘못된 값 수정 (Irrelevant/Inconsistent
+values) - 결측치 처리 (Missing values) - 이상치 탐색 (Outliers) 및
+처리</p>
+<p>실제 분석에서는 정제에 80%의 시간이 걸린다는 말이 있을 정도로
+중요합니다.</p>
+<pre class="r"><code># 중복 확인
+gapminder %&gt;% distinct()
 
-write.csv(df_csv, &quot;data/sample_output.csv&quot;, row.names = FALSE)</code></pre>
-<hr />
+# 결측치 개수 확인
+colSums(is.na(gapminder))</code></pre>
 </div>
-<div id="r-종료하기" class="section level2">
-<h2>11. R 종료하기</h2>
-<pre class="r"><code>q()</code></pre>
-<p>작업 공간을 저장할지 묻는 창이 뜹니다. “Yes”를 선택하면
-<code>.RData</code> 파일로 저장됩니다.</p>
+<div id="데이터-가공-data-wrangling" class="section level2">
+<h2>2. 데이터 가공 (Data Wrangling)</h2>
+<p>정의: 분석이 가능하도록 데이터를 적절한 형식으로 변환하는 과정</p>
+<div id="변수-선택-select" class="section level3">
+<h3>2.1. 변수 선택: select</h3>
+<pre class="r"><code>gapminder %&gt;%
+  select(continent, country) %&gt;%
+  distinct() </code></pre>
+<p>%&gt;% 는 pipe 연산자(operator)이며, 이전(좌측) 결과를 받아서
+다음(우측)으로 넘겨 주는 역할을 합니다.</p>
 </div>
-<div id="note" class="section level2">
-<h2>Note</h2>
-<p><a href="matrix_vs_dataframe_revealjs.html">matrix vs. dataframe
-비교</a>.</p>
+<div id="조건-추출-filter" class="section level3">
+<h3>2.2. 조건 추출: filter</h3>
+<pre class="r"><code>gapminder %&gt;%
+  filter(year == 1957) 
+gapminder %&gt;%
+  filter(country == &quot;Korea, Rep.&quot;) </code></pre>
 </div>
-<div id="exercise" class="section level2">
-<h2>Exercise</h2>
-<p><a
-href="exercise_week1_R_basics.html">exercise_week1_R_basics</a>.</p>
+<div id="정렬-arrange" class="section level3">
+<h3>2.3. 정렬: arrange</h3>
+<pre class="r"><code>gapminder %&gt;%
+  arrange(gdpPercap) 
+gapminder %&gt;%
+  arrange(desc(gdpPercap)) </code></pre>
+</div>
+<div id="새로운-변수-생성-mutate" class="section level3">
+<h3>2.4. 새로운 변수 생성: mutate</h3>
+<pre class="r"><code>gapminder %&gt;%
+  mutate(pop = pop/1000000)
+gapminder %&gt;%
+  mutate(gdp = gdpPercap*pop)</code></pre>
+</div>
+<div id="요약-통계-summarize-group_by" class="section level3">
+<h3>2.5. 요약 통계: summarize + group_by</h3>
+<pre class="r"><code>gapminder %&gt;%
+  filter(year == 2007) %&gt;%
+  summarize(meanLifeExp = mean(lifeExp))
+
+gapminder %&gt;%
+  group_by(year) %&gt;%
+  summarise(meanLifeExp = mean(lifeExp))
+
+gapminder %&gt;%
+  group_by(continent, year) %&gt;%
+  summarize(meanLifeExp = mean(lifeExp))</code></pre>
+</div>
+</div>
+<div id="데이터-병합join" class="section level2">
+<h2>3. 데이터 병합(join)</h2>
+<pre class="r"><code>df1 &lt;- data.frame(
+  country=c(&quot;Korea&quot;,&quot;Japan&quot;,&quot;China&quot;),
+  life_exp=c(80,83,67))
+df2 &lt;- data.frame(
+  country=c(&quot;Korea&quot;,&quot;Japan&quot;,&quot;Taiwan&quot;),
+  pop_mil=c(50,100,10))
+
+inner_join(df1, df2, by=&quot;country&quot;)
+left_join(df1, df2, by=&quot;country&quot;)
+right_join(df1, df2, by=&quot;country&quot;)
+full_join(df1, df2, by=&quot;country&quot;)</code></pre>
+<pre class="r"><code>x = c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
+y = c(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;)
+intersect(x, y) # 교집합   
+setdiff(x, y) # 여집합  
+union(x, y) # 합집합    </code></pre>
+</div>
+<div id="데이터-재구조화-reshaping-data" class="section level2">
+<h2>4. 데이터 재구조화: reshaping data</h2>
+<pre class="r"><code>continent_gapminder &lt;- gapminder %&gt;%
+  group_by(continent, year) %&gt;%
+  summarize(lifeExp = mean(lifeExp),
+            pop = mean(pop),
+            gdpPercap = mean(gdpPercap))
+
+# Wide → Long
+long_data &lt;- continent_gapminder %&gt;%
+  pivot_longer(cols = lifeExp:gdpPercap,
+               names_to = &quot;variable&quot;,
+               values_to = &quot;value&quot;)
+
+# Long → Wide
+long_data %&gt;%
+  pivot_wider(names_from = variable, 
+              values_from = value)</code></pre>
+</div>
+<div id="데이터-시각화data-visualization" class="section level2">
+<h2>5. 데이터 시각화(Data visualization)</h2>
+<div id="산점도-scatter-plot" class="section level3">
+<h3>5.1. 산점도: scatter plot</h3>
+<pre class="r"><code>gapminder %&gt;%
+  filter(year == 2007) %&gt;% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point()</code></pre>
+<pre class="r"><code>gapminder %&gt;%
+  filter(year == 2007) %&gt;% 
+  ggplot(aes(x=gdpPercap, y=lifeExp, 
+             color = continent, 
+             size = pop)) + 
+  geom_point() </code></pre>
+<pre class="r"><code>gapminder %&gt;%
+  filter(year == 2007) %&gt;% 
+  ggplot(aes(x=gdpPercap, y=lifeExp, 
+             color = continent, 
+             size = pop)) + 
+  geom_point() +
+  facet_grid(.~continent)</code></pre>
+</div>
+<div id="꺾은-선-그래프-line-plot" class="section level3">
+<h3>5.2. 꺾은 선 그래프: line plot</h3>
+<pre class="r"><code>gapminder %&gt;%
+  group_by(continent, year) %&gt;%
+  summarize(meanLifeExp = mean(lifeExp)) %&gt;% 
+  ggplot(aes(x=year, y=meanLifeExp, 
+             color=continent)) + 
+  geom_line()</code></pre>
+</div>
+<div id="막대-그래프-bar-plot" class="section level3">
+<h3>5.3. 막대 그래프: bar plot</h3>
+<pre class="r"><code>gapminder %&gt;%
+  select(continent, country) %&gt;%
+  distinct() %&gt;% 
+  ggplot(aes(continent, fill = continent)) + 
+  geom_bar()</code></pre>
+</div>
+<div id="히스토그램-histogram" class="section level3">
+<h3>5.4. 히스토그램: histogram</h3>
+<pre class="r"><code>ggplot(gapminder, aes(x=lifeExp)) + 
+  geom_histogram()</code></pre>
+<pre class="r"><code>ggplot(gapminder, aes(x=lifeExp)) + geom_histogram(binwidth = 5)</code></pre>
+</div>
+<div id="박스-플롯-box-plot" class="section level3">
+<h3>5.5. 박스 플롯: box plot</h3>
+<pre class="r"><code>ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_boxplot()</code></pre>
+<pre class="r"><code>ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_violin()</code></pre>
+</div>
+<div id="제목-축" class="section level3">
+<h3>5.6. 제목, 축</h3>
+<pre class="r"><code>ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_boxplot() + 
+  labs(title = &quot;Distribution of life expectancy across different continents&quot;, 
+       x = &quot;Continent&quot;, 
+       y = &quot;Life expectancy (years)&quot;) </code></pre>
+<pre class="r"><code>ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_boxplot() + 
+  labs(title = &quot;Distribution of life expectancy across different continents&quot;, 
+       x = &quot;Continent&quot;, 
+       y = &quot;Life expectancy (years)&quot;) +
+  theme(text = element_text(size = 16))</code></pre>
+</div>
+<div id="ggplot2-plot의-기본-성분과-구조" class="section level3">
+<h3>5.7. ggplot2 plot의 기본 성분과 구조</h3>
+<p><strong>기본 성분</strong><br />
+- Data: 주로 data frame 형태의 데이터 (data)<br />
+- Aesthetics: 데이터를 축, 색상, 점의 크기 등으로 매핑 (mapping) -
+Geometric objects: 점, 선, 도형과 같은 기하학적 객체<br />
+- Scales: 데이터의 스케일(x축, y축, 점의 크기, 투명도 등)을 동적으로
+조정하여 어떤 시각적 요소를 사용할 것인가 정의<br />
+- Coordinate system: 좌표계<br />
+- Facetting: 조건부 플롯을 위해 패널을 분할하여 표현하는 방법 -
+Statistical transformation: Binning, quantiles, smoothing 등의 통계
+변환<br />
+- Position adjustment: 위치의 조정</p>
+<p><strong>구조</strong> - ggplot = layers + scales + coordinate system
+- layers = data + mapping + geom + stat + position</p>
+<p><strong>함수군</strong>. - Plot creation: ggplot 클래스 객체를
+생성하는 함수군 - Geoms: graphic의 geometric (기하학적인 형태)을
+지정하는 함수군 - Statistics: 데이터를 통계적인 관점으로 변환하는 함수군
+- Scales: 축의 스케일 변환과 라벨, 범례 등을 변경하는 함수군 -
+Coordinate systems: 좌표계를 설정하는 함수군 - Faceting: 그래픽 facet
+layout 을 정의하는 함수군 - Position adjustment: geometric 의 위치를
+지정하는 함수군 - Others</p>
+</div>
+</div>
+<div id="연습" class="section level2">
+<h2>6. 연습</h2>
+<ul>
+<li>gapminder에서 한국 데이터만 뽑아 GDP 변화를 시각화하세요.</li>
+<li>대륙별 평균 기대수명을 2000년 이후만 필터링해서 꺾은선 그래프로
+그리세요.</li>
+</ul>
+</div>
+<div id="실습" class="section level2">
+<h2>7. 실습</h2>
+<p><a href="exercise_week3_EDA.html">Exercise_week3_EDA</a>.</p>
 </div>
 
 

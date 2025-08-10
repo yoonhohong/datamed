@@ -1,0 +1,290 @@
+---
+title: "탐색적 데이터 분석"   
+date: "2025-08-20"
+output: 
+  html_document:
+    toc: yes
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = F)
+```
+
+## 학습 목표
+
+이 강의에서는 데이터 분석 전처리 → 가공 → 탐색적 분석의 흐름을 따라가며, 다음 주요 내용을 실습합니다.
+
+- 데이터 정제 (Cleaning) -- 오류, 결측치, 이상치 처리   
+- 데이터 가공 (Wrangling) -- 변수 선택, 필터링, 정렬, 생성 
+- 데이터 병합 & 재구조화 (Merging & Reshaping) 
+- 탐색적 데이터 분석 (EDA) -- 요약 통계, 시각화
+
+## 0. 준비
+필요한 패키지 설치 & 로딩
+
+```{r}
+install.packages(c("gapminder", "dplyr", "tidyr", "ggplot2"))
+library(gapminder)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+
+## 1. 데이터 정제 (Data Cleaning)
+정의: 데이터의 오류를 찾아 제거하거나 수정하는 과정
+주요 작업
+- 중복값 제거 (Duplicates)
+- 잘못된 값 수정 (Irrelevant/Inconsistent values)
+- 결측치 처리 (Missing values)
+- 이상치 탐색 (Outliers) 및 처리 
+
+실제 분석에서는 정제에 80%의 시간이 걸린다는 말이 있을 정도로 중요합니다.
+
+```{r}
+# 중복 확인
+gapminder %>% distinct()
+
+# 결측치 개수 확인
+colSums(is.na(gapminder))
+```
+
+
+## 2. 데이터 가공 (Data Wrangling)
+정의: 분석이 가능하도록 데이터를 적절한 형식으로 변환하는 과정
+
+### 2.1. 변수 선택: select
+
+```{r}
+gapminder %>%
+  select(continent, country) %>%
+  distinct() 
+```
+
+%\>% 는 pipe 연산자(operator)이며, 이전(좌측) 결과를 받아서 다음(우측)으로 넘겨 주는 역할을 합니다.
+
+### 2.2. 조건 추출: filter
+
+```{r}
+gapminder %>%
+  filter(year == 1957) 
+gapminder %>%
+  filter(country == "Korea, Rep.") 
+```
+
+### 2.3. 정렬: arrange
+
+```{r eval=FALSE}
+gapminder %>%
+  arrange(gdpPercap) 
+gapminder %>%
+  arrange(desc(gdpPercap)) 
+```
+
+### 2.4. 새로운 변수 생성: mutate
+
+```{r eval=FALSE}
+gapminder %>%
+  mutate(pop = pop/1000000)
+gapminder %>%
+  mutate(gdp = gdpPercap*pop)
+```
+
+### 2.5. 요약 통계: summarize + group_by 
+
+```{r eval=FALSE}
+gapminder %>%
+  filter(year == 2007) %>%
+  summarize(meanLifeExp = mean(lifeExp))
+
+gapminder %>%
+  group_by(year) %>%
+  summarise(meanLifeExp = mean(lifeExp))
+
+gapminder %>%
+  group_by(continent, year) %>%
+  summarize(meanLifeExp = mean(lifeExp))
+```
+
+## 3. 데이터 병합(join) 
+
+```{r}
+df1 <- data.frame(
+  country=c("Korea","Japan","China"),
+  life_exp=c(80,83,67))
+df2 <- data.frame(
+  country=c("Korea","Japan","Taiwan"),
+  pop_mil=c(50,100,10))
+
+inner_join(df1, df2, by="country")
+left_join(df1, df2, by="country")
+right_join(df1, df2, by="country")
+full_join(df1, df2, by="country")
+```
+
+
+```{r}
+x = c("a", "b", "c")
+y = c("b", "c", "d")
+intersect(x, y) # 교집합   
+setdiff(x, y) # 여집합  
+union(x, y) # 합집합    
+```
+
+## 4. 데이터 재구조화: reshaping data
+
+```{r}
+continent_gapminder <- gapminder %>%
+  group_by(continent, year) %>%
+  summarize(lifeExp = mean(lifeExp),
+            pop = mean(pop),
+            gdpPercap = mean(gdpPercap))
+
+# Wide → Long
+long_data <- continent_gapminder %>%
+  pivot_longer(cols = lifeExp:gdpPercap,
+               names_to = "variable",
+               values_to = "value")
+
+# Long → Wide
+long_data %>%
+  pivot_wider(names_from = variable, 
+              values_from = value)
+```
+
+
+## 5. 데이터 시각화(Data visualization)
+
+### 5.1. 산점도: scatter plot
+
+```{r}
+gapminder %>%
+  filter(year == 2007) %>% 
+  ggplot(aes(x=gdpPercap, y=lifeExp)) + 
+  geom_point()
+```
+
+
+```{r}
+gapminder %>%
+  filter(year == 2007) %>% 
+  ggplot(aes(x=gdpPercap, y=lifeExp, 
+             color = continent, 
+             size = pop)) + 
+  geom_point() 
+```
+
+```{r}
+gapminder %>%
+  filter(year == 2007) %>% 
+  ggplot(aes(x=gdpPercap, y=lifeExp, 
+             color = continent, 
+             size = pop)) + 
+  geom_point() +
+  facet_grid(.~continent)
+```
+
+### 5.2. 꺾은 선 그래프: line plot
+
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarize(meanLifeExp = mean(lifeExp)) %>% 
+  ggplot(aes(x=year, y=meanLifeExp, 
+             color=continent)) + 
+  geom_line()
+```
+
+
+### 5.3. 막대 그래프: bar plot
+
+```{r}
+gapminder %>%
+  select(continent, country) %>%
+  distinct() %>% 
+  ggplot(aes(continent, fill = continent)) + 
+  geom_bar()
+```
+
+### 5.4. 히스토그램: histogram
+
+
+```{r}
+ggplot(gapminder, aes(x=lifeExp)) + 
+  geom_histogram()
+```
+
+```{r}
+ggplot(gapminder, aes(x=lifeExp)) + geom_histogram(binwidth = 5)
+```
+
+### 5.5. 박스 플롯: box plot
+
+```{r}
+ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_boxplot()
+```
+
+```{r}
+ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_violin()
+```
+
+### 5.6. 제목, 축 
+
+```{r}
+ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_boxplot() + 
+  labs(title = "Distribution of life expectancy across different continents", 
+       x = "Continent", 
+       y = "Life expectancy (years)") 
+```
+
+
+```{r}
+ggplot(gapminder, 
+       aes(x=continent, y=lifeExp)) +
+  geom_boxplot() + 
+  labs(title = "Distribution of life expectancy across different continents", 
+       x = "Continent", 
+       y = "Life expectancy (years)") +
+  theme(text = element_text(size = 16))
+```
+
+### 5.7. ggplot2 plot의 기본 성분과 구조
+
+**기본 성분**   
+-   Data: 주로 data frame 형태의 데이터 (data)\
+-   Aesthetics: 데이터를 축, 색상, 점의 크기 등으로 매핑 (mapping)
+-   Geometric objects: 점, 선, 도형과 같은 기하학적 객체\
+-   Scales: 데이터의 스케일(x축, y축, 점의 크기, 투명도 등)을 동적으로 조정하여 어떤 시각적 요소를 사용할 것인가 정의\
+-   Coordinate system: 좌표계\
+-   Facetting: 조건부 플롯을 위해 패널을 분할하여 표현하는 방법
+-   Statistical transformation: Binning, quantiles, smoothing 등의 통계 변환\
+-   Position adjustment: 위치의 조정
+
+**구조**
+-   ggplot = layers + scales + coordinate system
+-   layers = data + mapping + geom + stat + position
+
+**함수군**. 
+-   Plot creation: ggplot 클래스 객체를 생성하는 함수군
+-   Geoms: graphic의 geometric (기하학적인 형태)을 지정하는 함수군
+-   Statistics: 데이터를 통계적인 관점으로 변환하는 함수군
+-   Scales: 축의 스케일 변환과 라벨, 범례 등을 변경하는 함수군
+-   Coordinate systems: 좌표계를 설정하는 함수군
+-   Faceting: 그래픽 facet layout 을 정의하는 함수군
+-   Position adjustment: geometric 의 위치를 지정하는 함수군
+-   Others
+
+## 6. 연습    
+- gapminder에서 한국 데이터만 뽑아 GDP 변화를 시각화하세요.
+- 대륙별 평균 기대수명을 2000년 이후만 필터링해서 꺾은선 그래프로 그리세요.
+
+## 7. 실습   
+[Exercise_week3_EDA](exercise_week3_EDA.html). 

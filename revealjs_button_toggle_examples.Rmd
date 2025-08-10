@@ -1,0 +1,118 @@
+---
+title: "Revealjs 슬라이드: 버튼으로 R 결과 보이기"
+author: "Yoon-Ho Hong"
+date: "2025-08-10"
+output:
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: slide
+    center: true
+    reveal_options:
+      slideNumber: true
+      hash: true
+      controls: true
+      progress: true
+---
+
+## 안내
+- 이 슬라이드는 **버튼 클릭으로 R 실행 결과를 토글(보이기/숨기기)** 하는 예제를 담고 있습니다.  
+- R 코드는 **렌더링 시 실행**되며, 슬라이드에서는 결과의 **표시 여부만 버튼으로 제어**합니다.
+
+<!-- 토글 스크립트 & 스타일 -->
+<script>
+function toggle(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  if (el.style.display === 'none' || el.style.display === ''){
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+</script>
+
+<style>
+button.toggle-btn {
+  padding: 8px 14px; border: 0; border-radius: 8px;
+  background: #2b6cb0; color: white; cursor: pointer; font-size: 16px;
+}
+button.toggle-btn:hover { background: #2c5282; }
+pre.hidden, div.hidden { display: none; }
+.reveal section pre { max-height: 420px; overflow: auto; }
+</style>
+
+## 1) 텍스트/숫자 결과 토글 (버튼)
+
+```{r setup, include=FALSE}
+# 결과를 <pre id="..."> 블록으로 내보내는 helper
+show_result <- function(id, x){
+  cat(sprintf('<pre id="%s" class="hidden">%s</pre>',
+              id, paste(capture.output(print(x)), collapse='\n')))
+}
+```
+
+다음은 1부터 100까지의 합을 계산한 뒤, **버튼으로 결과를 보이기/숨기기** 합니다.
+
+```{r calc-sum, echo=FALSE}
+s <- sum(1:100)
+```
+
+<button class="toggle-btn" onclick="toggle('sum-out')">결과 보기 / 숨기기</button>
+
+```{r show-sum, results='asis', echo=FALSE}
+show_result("sum-out", s)
+```
+
+## 2) 데이터프레임 결과 토글 (버튼)
+
+```{r make-df, echo=FALSE}
+df <- data.frame(group = rep(LETTERS[1:3], each=3),
+                 x = 1:9, y = (1:9)^2)
+head_df <- head(df, 6)
+```
+
+<button class="toggle-btn" onclick="toggle('df-out')">데이터 미리보기</button>
+
+```{r show-df, results='asis', echo=FALSE}
+show_result("df-out", head_df)
+```
+
+## 3) 플롯 결과 토글 (간단/권장: details 사용)
+
+> 버튼 방식으로 **플롯을 감싸 숨기기**도 가능하지만, 가장 간단하고 안정적인 방법은
+> HTML의 `<details>`를 이용하는 것입니다. 슬라이드 안에서도 잘 작동합니다.
+
+<details>
+  <summary><strong>플롯 보기/숨기기</strong></summary>
+
+```{r, echo=FALSE}
+plot(cars, main="Speed vs Stopping Distance")
+```
+
+</details>
+
+## 4) 플롯 결과 토글 (버튼으로 감싸기: 고급)
+
+아래는 **버튼 + div 래퍼**로 플롯을 숨기는 예시입니다.  
+(플롯은 렌더링 시 이미 생성되며, 우리는 표시만 제어합니다.)
+
+<button class="toggle-btn" onclick="toggle('plot-wrap')">플롯 토글</button>
+
+<div id="plot-wrap" class="hidden">
+```{r plot-hidden, echo=FALSE}
+plot(pressure, col = 'steelblue', main="Vapor Pressure of Mercury")
+```
+</div>
+
+## 5) 연습 문제 (5분)
+
+- 위 helper `show_result(id, x)`를 사용해서,  
+  - 1부터 1000까지 제곱의 합 `sum((1:1000)^2)` 결과를 **버튼 토글**로 표시해보세요.
+- `details` 토글을 이용해 **임의의 ggplot**을 보여주고 숨겨보세요.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# ggplot 예제 힌트 (정답은 슬라이드에 포함하지 않음)
+# library(ggplot2)
+# p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
+# print(p)
+```

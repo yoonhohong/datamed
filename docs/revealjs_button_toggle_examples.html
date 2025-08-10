@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Yoon-Ho Hong" />
+  <meta name="dcterms.date" content="2025-08-10" />
+  <title>Revealjs 슬라이드: 버튼으로 R 결과 보이기</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/reveal.js-4.2.1/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/reveal.js-4.2.1/dist/reveal.css">
+
+  <style type="text/css">
+    /* CSS from pandoc style.html() */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+                  </style>
+
+  <link rel="stylesheet" href="site_libs/reveal.js-4.2.1/dist/theme/simple.css" id="theme">
+
+
+  <style type="text/css">
+  /* some tweaks to reveal css */
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+  </style>
+
+    <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Revealjs 슬라이드: 버튼으로 R 결과 보이기</h1>
+  <h2 class="author">Yoon-Ho Hong</h2>
+  <h3 class="date">2025-08-10</h3>
+</section>
+
+<section id="안내" class="slide level2">
+<h2>안내</h2>
+<ul>
+<li>이 슬라이드는 <strong>버튼 클릭으로 R 실행 결과를
+토글(보이기/숨기기)</strong> 하는 예제를 담고 있습니다.<br />
+</li>
+<li>R 코드는 <strong>렌더링 시 실행</strong>되며, 슬라이드에서는 결과의
+<strong>표시 여부만 버튼으로 제어</strong>합니다.</li>
+</ul>
+<!-- 토글 스크립트 & 스타일 -->
+<script>
+function toggle(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  if (el.style.display === 'none' || el.style.display === ''){
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+</script>
+<style>
+button.toggle-btn {
+  padding: 8px 14px; border: 0; border-radius: 8px;
+  background: #2b6cb0; color: white; cursor: pointer; font-size: 16px;
+}
+button.toggle-btn:hover { background: #2c5282; }
+pre.hidden, div.hidden { display: none; }
+.reveal section pre { max-height: 420px; overflow: auto; }
+</style>
+</section>
+<section id="텍스트숫자-결과-토글-버튼" class="slide level2">
+<h2>1) 텍스트/숫자 결과 토글 (버튼)</h2>
+<p>다음은 1부터 100까지의 합을 계산한 뒤, <strong>버튼으로 결과를
+보이기/숨기기</strong> 합니다.</p>
+<button class="toggle-btn" onclick="toggle(&#39;sum-out&#39;)">
+결과 보기 / 숨기기
+</button>
+<pre id="sum-out" class="hidden">[1] 5050</pre>
+</section>
+<section id="데이터프레임-결과-토글-버튼" class="slide level2">
+<h2>2) 데이터프레임 결과 토글 (버튼)</h2>
+<button class="toggle-btn" onclick="toggle(&#39;df-out&#39;)">
+데이터 미리보기
+</button>
+<pre id="df-out" class="hidden">  group x  y
+1     A 1  1
+2     A 2  4
+3     A 3  9
+4     B 4 16
+5     B 5 25
+6     B 6 36</pre>
+</section>
+<section id="플롯-결과-토글-간단권장-details-사용" class="slide level2">
+<h2>3) 플롯 결과 토글 (간단/권장: details 사용)</h2>
+<blockquote>
+<p>버튼 방식으로 <strong>플롯을 감싸 숨기기</strong>도 가능하지만, 가장
+간단하고 안정적인 방법은 HTML의 <code>&lt;details&gt;</code>를 이용하는
+것입니다. 슬라이드 안에서도 잘 작동합니다.</p>
+</blockquote>
+<details>
+<summary>
+<strong>플롯 보기/숨기기</strong>
+</summary>
+<p><img src="revealjs_button_toggle_examples_files/figure-revealjs/unnamed-chunk-1-1.png" width="768" /></p>
+</details>
+</section>
+<section id="플롯-결과-토글-버튼으로-감싸기-고급" class="slide level2">
+<h2>4) 플롯 결과 토글 (버튼으로 감싸기: 고급)</h2>
+<p>아래는 <strong>버튼 + div 래퍼</strong>로 플롯을 숨기는
+예시입니다.<br />
+(플롯은 렌더링 시 이미 생성되며, 우리는 표시만 제어합니다.)</p>
+<button class="toggle-btn" onclick="toggle(&#39;plot-wrap&#39;)">
+플롯 토글
+</button>
+<div id="plot-wrap" class="hidden">
+<p><img src="revealjs_button_toggle_examples_files/figure-revealjs/plot-hidden-1.png" width="768" /></p>
+</div>
+</section>
+<section id="연습-문제-5분" class="slide level2">
+<h2>5) 연습 문제 (5분)</h2>
+<ul>
+<li>위 helper <code>show_result(id, x)</code>를 사용해서,
+<ul>
+<li>1부터 1000까지 제곱의 합 <code>sum((1:1000)^2)</code> 결과를
+<strong>버튼 토글</strong>로 표시해보세요.</li>
+</ul></li>
+<li><code>details</code> 토글을 이용해 <strong>임의의 ggplot</strong>을
+보여주고 숨겨보세요.</li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="site_libs/reveal.js-4.2.1/dist/reveal.js"></script>
+  
+  <!-- reveal.js plugins -->
+  
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+        // Display a presentation progress bar
+        progress: true,
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Can be used to limit the contexts in which the slide number appears
+        showSlideNumber: 'all',
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+        // Push each slide change to the browser history
+        // Implies `hash: true`
+        history: true,
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+        // Enable the slide overview mode
+        overview: true,
+        // Vertical centering of slides
+        center: true,
+        // Enables touch navigation on devices with touch input
+        touch: true,
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+        // Turns fragments on and off globally
+        fragments: true,
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Transition style
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'fade', // none/fade/slide/convex/concave/zoom
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+        // The display mode that will be used to show slides
+        display: 'block',
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+
+
+        // Optional reveal.js plugins
+        plugins: [
+        ]
+      });
+
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

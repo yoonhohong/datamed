@@ -1,0 +1,115 @@
+---
+title: "탐색적 데이터 분석 (임상 데이터 예제)"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+## 1. 데이터 불러오기
+
+```{r}
+# 데이터 불러오기
+data <- read.csv("eda_clinical_dataset_small.csv")
+```
+
+```{r}
+# 데이터 미리보기
+head(data)
+```
+
+```{r}
+# 데이터 구조 확인
+glimpse(data)
+```
+
+## 2. 변수 이해하기
+
+- **age**: 환자 나이 (연속형 변수)
+- **sex**: 성별 (범주형 변수)
+- **medication_adherence**: 항고혈압제 복용 지속성 (범주형 변수, High/Low)
+- **dementia_diagnosis**: 치매 진단 여부 (범주형 변수, Yes/No)
+- **bmi**: 체질량지수 (연속형 변수)
+- **num_comorbidities**: 동반질환 수 (이산형 변수)
+- **outpatient_visits_per_year**: 연간 외래 방문 횟수 (연속형 변수)
+- **education_proxy**: 교육수준 proxy (보험료 분위, 1~4)
+
+## 3. 기초 통계 확인
+
+```{r}
+summary(data)
+```
+
+```{r}
+# 범주형 변수 빈도
+table(data$sex)
+table(data$medication_adherence)
+table(data$dementia_diagnosis)
+```
+
+## 4. 시각화를 통한 탐색
+
+### 4.1 연속형 변수 분포
+
+```{r}
+ggplot(data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "나이 분포", x = "나이", y = "빈도")
+```
+
+```{r}
+ggplot(data, aes(x = bmi)) +
+  geom_histogram(binwidth = 1, fill = "lightgreen", color = "black") +
+  labs(title = "BMI 분포", x = "BMI", y = "빈도")
+```
+
+### 4.2 범주형 변수 분포
+
+```{r}
+ggplot(data, aes(x = medication_adherence, fill = medication_adherence)) +
+  geom_bar() +
+  labs(title = "항고혈압제 복용 지속성 분포", x = "복용 지속성", y = "빈도")
+```
+
+### 4.3 그룹별 비교
+
+```{r}
+ggplot(data, aes(x = dementia_diagnosis, y = age, fill = dementia_diagnosis)) +
+  geom_boxplot() +
+  labs(title = "치매 진단 여부에 따른 나이 분포", x = "치매 진단 여부", y = "나이")
+```
+
+```{r}
+ggplot(data, aes(x = dementia_diagnosis, y = bmi, fill = dementia_diagnosis)) +
+  geom_boxplot() +
+  labs(title = "치매 진단 여부에 따른 BMI 분포", x = "치매 진단 여부", y = "BMI")
+```
+
+## 5. 간단한 통계 검정
+
+### 나이에 따른 치매 여부 차이 (t-test)
+
+```{r}
+t.test(age ~ dementia_diagnosis, data = data)
+```
+
+### 성별에 따른 치매 여부 차이 (카이제곱 검정)
+
+```{r}
+table_sex_dementia <- table(data$sex, data$dementia_diagnosis)
+chisq.test(table_sex_dementia)
+```
+
+## 6. 주요 학습 포인트
+
+- **glimpse vs head**: glimpse는 변수 타입과 구조를 더 잘 보여줌
+- **ggplot 시각화**: 연속형 → histogram, 범주형 → bar chart, 그룹 비교 → boxplot
+- **기초 통계 검정**: t-test(연속형 vs 범주형), 카이제곱(범주형 vs 범주형)
+- **EDA의 목적**: 데이터 이해, 이상치 탐지, 분석 방향 설정
