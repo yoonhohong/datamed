@@ -200,4 +200,15 @@ cox_tidy %>%
 
 - **서브그룹 차이**가 선택/접근성 편향을 반영하는가?
 
+## 생존분석
+
+[생존분석](https://mixolydian-canoe-039.notion.site/25336359f28680eb8b42ff0a1064dc9b)
+
+
+
+
+
+
+
+
 
