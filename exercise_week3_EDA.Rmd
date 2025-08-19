@@ -202,7 +202,7 @@ cox_tidy %>%
 
 ## 생존분석
 
-[생존분석](https://mixolydian-canoe-039.notion.site/25336359f28680eb8b42ff0a1064dc9b)
+[생존분석: Kaplan-Meier analysis, Cox proportional hazard regression analysis](https://mixolydian-canoe-039.notion.site/25336359f28680eb8b42ff0a1064dc9b)
 
 
 
