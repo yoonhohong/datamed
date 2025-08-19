@@ -351,8 +351,7 @@ div.tocify {
 <p>이 강의에서는 데이터 분석 전처리 → 가공 → 탐색적 분석의 흐름을
 따라가며, 다음 주요 내용을 실습합니다.</p>
 <ul>
-<li>데이터 정제 (Cleaning) – 오류, 결측치, 이상치 처리<br />
-</li>
+<li>데이터 정제 (Cleaning) – 오류, 결측치, 이상치 처리</li>
 <li>데이터 가공 (Wrangling) – 변수 선택, 필터링, 정렬, 생성</li>
 <li>데이터 병합 &amp; 재구조화 (Merging &amp; Reshaping)</li>
 <li>탐색적 데이터 분석 (EDA) – 요약 통계, 시각화</li>
@@ -361,7 +360,7 @@ div.tocify {
 <div id="준비" class="section level2">
 <h2>0. 준비</h2>
 <p>필요한 패키지 설치 &amp; 로딩</p>
-<pre class="r"><code>install.packages(c(&quot;gapminder&quot;, &quot;dplyr&quot;, &quot;tidyr&quot;, &quot;ggplot2&quot;))
+<pre class="r"><code># install.packages(c(&quot;gapminder&quot;, &quot;dplyr&quot;, &quot;tidyr&quot;, &quot;ggplot2&quot;))
 library(gapminder)
 library(dplyr)
 library(tidyr)
@@ -369,12 +368,13 @@ library(ggplot2)</code></pre>
 </div>
 <div id="데이터-정제-data-cleaning" class="section level2">
 <h2>1. 데이터 정제 (Data Cleaning)</h2>
-<p>정의: 데이터의 오류를 찾아 제거하거나 수정하는 과정 주요 작업 -
-중복값 제거 (Duplicates) - 잘못된 값 수정 (Irrelevant/Inconsistent
-values) - 결측치 처리 (Missing values) - 이상치 탐색 (Outliers) 및
-처리</p>
-<p>실제 분석에서는 정제에 80%의 시간이 걸린다는 말이 있을 정도로
-중요합니다.</p>
+<p>데이터의 오류를 찾아 제거하거나 수정하는 과정 주요 작업<br />
+- 중복값 제거 (Duplicates)<br />
+- 잘못된 값 수정 (Irrelevant/Inconsistent values)<br />
+- 결측치 처리 (Missing values)<br />
+- 이상치 탐색 (Outliers) 및 처리</p>
+<p>실제 연구에서는 데이터 정제에 80%의 시간이 걸린다는 말이 있을 정도로
+많은 비중을 차지합니다.</p>
 <pre class="r"><code># 중복 확인
 gapminder %&gt;% distinct()
 
@@ -383,7 +383,7 @@ colSums(is.na(gapminder))</code></pre>
 </div>
 <div id="데이터-가공-data-wrangling" class="section level2">
 <h2>2. 데이터 가공 (Data Wrangling)</h2>
-<p>정의: 분석이 가능하도록 데이터를 적절한 형식으로 변환하는 과정</p>
+<p>분석이 가능하도록 데이터를 적절한 형식으로 변환하는 과정</p>
 <div id="변수-선택-select" class="section level3">
 <h3>2.1. 변수 선택: select</h3>
 <pre class="r"><code>gapminder %&gt;%
@@ -396,6 +396,7 @@ colSums(is.na(gapminder))</code></pre>
 <h3>2.2. 조건 추출: filter</h3>
 <pre class="r"><code>gapminder %&gt;%
   filter(year == 1957) 
+
 gapminder %&gt;%
   filter(country == &quot;Korea, Rep.&quot;) </code></pre>
 </div>
@@ -403,6 +404,7 @@ gapminder %&gt;%
 <h3>2.3. 정렬: arrange</h3>
 <pre class="r"><code>gapminder %&gt;%
   arrange(gdpPercap) 
+
 gapminder %&gt;%
   arrange(desc(gdpPercap)) </code></pre>
 </div>
@@ -410,6 +412,7 @@ gapminder %&gt;%
 <h3>2.4. 새로운 변수 생성: mutate</h3>
 <pre class="r"><code>gapminder %&gt;%
   mutate(pop = pop/1000000)
+
 gapminder %&gt;%
   mutate(gdp = gdpPercap*pop)</code></pre>
 </div>
@@ -433,6 +436,7 @@ gapminder %&gt;%
 <pre class="r"><code>df1 &lt;- data.frame(
   country=c(&quot;Korea&quot;,&quot;Japan&quot;,&quot;China&quot;),
   life_exp=c(80,83,67))
+
 df2 &lt;- data.frame(
   country=c(&quot;Korea&quot;,&quot;Japan&quot;,&quot;Taiwan&quot;),
   pop_mil=c(50,100,10))
@@ -509,7 +513,8 @@ long_data %&gt;%
 <h3>5.4. 히스토그램: histogram</h3>
 <pre class="r"><code>ggplot(gapminder, aes(x=lifeExp)) + 
   geom_histogram()</code></pre>
-<pre class="r"><code>ggplot(gapminder, aes(x=lifeExp)) + geom_histogram(binwidth = 5)</code></pre>
+<pre class="r"><code>ggplot(gapminder, aes(x=lifeExp)) + 
+  geom_histogram(binwidth = 5)</code></pre>
 </div>
 <div id="박스-플롯-box-plot" class="section level3">
 <h3>5.5. 박스 플롯: box plot</h3>
@@ -540,24 +545,27 @@ long_data %&gt;%
 <h3>5.7. ggplot2 plot의 기본 성분과 구조</h3>
 <p><strong>기본 성분</strong><br />
 - Data: 주로 data frame 형태의 데이터 (data)<br />
-- Aesthetics: 데이터를 축, 색상, 점의 크기 등으로 매핑 (mapping) -
-Geometric objects: 점, 선, 도형과 같은 기하학적 객체<br />
+- Aesthetics: 데이터를 축, 색상, 점의 크기 등으로 매핑 (mapping)<br />
+- Geometric objects: 점, 선, 도형과 같은 기하학적 객체<br />
 - Scales: 데이터의 스케일(x축, y축, 점의 크기, 투명도 등)을 동적으로
 조정하여 어떤 시각적 요소를 사용할 것인가 정의<br />
 - Coordinate system: 좌표계<br />
-- Facetting: 조건부 플롯을 위해 패널을 분할하여 표현하는 방법 -
-Statistical transformation: Binning, quantiles, smoothing 등의 통계
+- Facetting: 조건부 플롯을 위해 패널을 분할하여 표현하는 방법<br />
+- Statistical transformation: Binning, quantiles, smoothing 등의 통계
 변환<br />
 - Position adjustment: 위치의 조정</p>
-<p><strong>구조</strong> - ggplot = layers + scales + coordinate system
+<p><strong>구조</strong><br />
+- ggplot = layers + scales + coordinate system<br />
 - layers = data + mapping + geom + stat + position</p>
-<p><strong>함수군</strong>. - Plot creation: ggplot 클래스 객체를
-생성하는 함수군 - Geoms: graphic의 geometric (기하학적인 형태)을
-지정하는 함수군 - Statistics: 데이터를 통계적인 관점으로 변환하는 함수군
-- Scales: 축의 스케일 변환과 라벨, 범례 등을 변경하는 함수군 -
-Coordinate systems: 좌표계를 설정하는 함수군 - Faceting: 그래픽 facet
-layout 을 정의하는 함수군 - Position adjustment: geometric 의 위치를
-지정하는 함수군 - Others</p>
+<p><strong>함수군</strong>.<br />
+- Plot creation: ggplot 클래스 객체를 생성하는 함수군<br />
+- Geoms: graphic의 geometric (기하학적인 형태)을 지정하는 함수군<br />
+- Statistics: 데이터를 통계적인 관점으로 변환하는 함수군<br />
+- Scales: 축의 스케일 변환과 라벨, 범례 등을 변경하는 함수군<br />
+- Coordinate systems: 좌표계를 설정하는 함수군<br />
+- Faceting: 그래픽 facet layout 을 정의하는 함수군<br />
+- Position adjustment: geometric 의 위치를 지정하는 함수군<br />
+</p>
 </div>
 </div>
 <div id="연습" class="section level2">
@@ -570,6 +578,36 @@ layout 을 정의하는 함수군 - Position adjustment: geometric 의 위치를
 </div>
 <div id="실습" class="section level2">
 <h2>7. 실습</h2>
+<p><strong><code>데이터셋</code></strong><br />
+- antihypertensive_dementia.csv</p>
+<p><strong><code>최종 연구 목적</code></strong><br />
+항고혈압제 지속적 복용이 치매 발생위험을 낮추는가?</p>
+<p><strong><code>변수 설명</code></strong><br />
+- <em>id</em>: 각 환자를 구분하는 고유 ID<br />
+- <em>age</em>: 환자의 나이<br />
+- <em>sex</em>: 성별 (Male, Female)<br />
+- <em>insurance_quartile</em>: 보험료 4분위 수 (사회경제적 지위 proxy
+변수)<br />
+- <em>num_comorbidities</em>: 동반질환(comorbidity) 개수<br />
+- bmi: 체질량지수<br />
+- <em>depression_dx</em>: 우울증 진단 여부 (Yes, No)<br />
+- <em>outpatient_visits</em>: 연간 외래 방문 횟수 (의료 이용 빈도
+proxy)<br />
+- <em>cognitive_score</em>: 기저 인지기능 점수 (연속형)<br />
+- <em>medication_adherence</em>: 항고혈압제 복용 순응도 (High,
+Low)<br />
+- <em>follow_up_years</em>: 추적관찰 기간(년)<br />
+- <em>dementia_dx</em>: 치매 진단 여부 (Yes, No)<br />
+- <em>time_to_dementia</em>: 치매 발병까지 걸린 시간 (일 단위, 사건 발생
+시점까지의 기간)<br />
+- <em>event</em>: 치매 발병 사건 발생 여부 (1 = 치매 발생, 0 =
+censored)</p>
+<p><strong><code>분석 가이드</code></strong><br />
+치매 발생 여부(event, dementia_dx)를 종속변수로 하고, 항고혈압제 복용
+여부(medication_adherence)와 여러 공변량(age, sex, 보험 quartile,
+comorbidities, BMI, depression, 방문횟수, cognitive score, follow-up
+기간 등)을 활용하여 생존분석 (Cox regression, Kaplan-Meier)을
+수행한다.</p>
 <p><a href="exercise_week3_EDA.html">Exercise_week3_EDA</a>.</p>
 </div>
 

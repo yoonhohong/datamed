@@ -1,201 +1,203 @@
 ---
-title: "Exercise week 3: EDA"
+title: "항고혈압제 장기 복용과 치매 위험"
+subtitle: "분석 가이드"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output:
   revealjs::revealjs_presentation:
     self_contained: true
-    transition: slide
-    center: false
-    reveal_options:
-      slideNumber: true
-      hash: true
-      controls: true
-      progress: true
+    theme: simple
+    transition: fade
+    slideNumber: true
+    code_folding: show
 ---
+
+```{=html}
+<style type="text/css">
+p, li {
+  text-align: left;
+}
+</style>
+```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(echo = TRUE, eval = F)
 ```
 
-## 1) 데이터 로딩 & 빠른 확인
-**무엇을 하나요?**  
-- 데이터를 읽고, **앞부분/구조/요약**을 확인합니다.    
-- 결측/중복/라벨/범위 문제를 대략적으로 스캔합니다.   
+## 연구 질문 & 가설
 
----
+**연구 질문**: 항고혈압제의 **지속 복용**은 치매 발생 위험을 낮추는가?\
+**귀무가설(H0)**: 지속 복용군과 비교군의 치매 발생 위험에 **차이가 없음**.\
+**대립가설(H1)**: 지속 복용군의 치매 발생 위험이 **더 낮다**.
 
-```{r}
-library(tidyverse) 
-path_data <- "data/antihypertensive_dementia.csv"
-df <- read.csv(path_data)
-head(df)
+> 임상적 해석: HR (Hazard ratio) = 0.74라면 **약 26% 위험 감소**. 신뢰구간과 p값을 함께 본다.
+
+-------------------------
+
+## 변수 & 사전 설계 점검
+
+- medication_adherence: High vs. Low 
+- 치매 진단: dementia_dx or event 
+- 공변량: age, sex, insurance_quartile (교육 proxy), num_comorbidities, outpatient_visits, cognitive_score, bmi, depression_dx
+
+------------------
+
+## 전체 워크플로우
+
+1)  데이터 확인 → 2) 정제 → 3) 가공 → 4) 기술통계/EDA → 5) 생존곡선 & 로그순위검정 → 6) Cox 회귀 → 7) 가정 점검 & 민감도분석 → 8) 보고
+
+------------------
+
+## 1) 데이터 확인 (Data Understanding)
+
+-   파일 읽기 & 구조 파악
+-   변수 타입 점검 (연속/범주)
+-   결측치 분포 확인
+
+``` {r}
+df <- readr::read_csv("data/antihypertensive_dementia.csv") 
 glimpse(df)
 summary(df)
+sapply(df, function(x) sum(is.na(x))) 
 ```
 
-## 2) 간단한 품질 지표 확인 
+--------------------
 
-### 2-1) 범주형 
+## 2) 데이터 정제 (Cleaning)
+
+- 공백 정리
+- 오탈자 정리 
+- 이상치 완화(예: **BMI 하한**)
+- 범주형 변환 & 레이블 정리
+- 결측치 처리 전략: 제거 vs 대체(명시)
+
+``` {r}
+df <- df %>%
+  mutate(bmi = ifelse(bmi<15, 15, bmi),
+         sex = factor(sex))
+# fct_collpase()
+```
+
+---------------------------
+
+## 3) 데이터 가공 (Wrangling)
+
+-   나이 그룹화: `cut()`
+-   생존분석 입력 변수 구성: `time_to_event`, `event`(0/1)
+
+``` {r}
+df <- df %>%
+  mutate(age_group = cut(age, 
+                         breaks = c(60,70,80,90,Inf), 
+                         right = FALSE),
+    event = ifelse(!is.na(event), 
+                   event, dementia_dx))
+```
+
+----------------
+
+## 4) 기술 통계 & 그룹 비교
+
+-   Table: 기초 특성 (지속 복용 vs 비복용/불규칙)
+-   연속형: t-test / wilcoxon rank sum test.\
+-   범주형: chi-square test, Fisher's exact test
+
+``` {r}
+# t.test()
+# wilcox.test()
+# chisq.test()
+# fisher.test()
+```
+
+-----------------------
+
+## 5) 탐색적 시각화
+
+-   분포 확인: 히스토그램/박스플롯
+-   그룹 차이: 막대/바이올린
+-   노출--결과 연관의 조감
+
+``` {r}
+df %>%
+   ggplot(aes(x = medication_adherence, 
+              y = age)) +
+   geom_boxplot() 
+
+# geom_histogram()
+# geom_bar() 
+```
+
+
+## 6) 생존곡선 & 로그순위 검정
+
+-   입력: `Surv(time, event)`
+-   군별 생존곡선: `survfit()`
+-   비교: `survdiff()`
+
+``` {r}
+fit_km <- survfit(Surv(time_to_dementia, event) ~ 
+                    medication_adherence, 
+                  data = df)
+ggsurvplot(fit_km, 
+           data = df, 
+           risk.table = TRUE, 
+           conf.int = TRUE)
+survdiff(Surv(time_to_dementia, event) ~ 
+           medication_adherence, data = df)
+```
+
+-------------------------
+
+## 7) 다변량 Cox 회귀 & 가정 점검
+
+-   공변량 통제.\
+-   비례위험 가정 점검: `cox.zph()`
+
+``` {r}
+fit_cox <- coxph(Surv(time_to_dementia, event) ~
+                   medication_adherence +
+                   age + sex,
+                 data = df)
+summary(fit_cox)
+
+# PH 가정 점검
+zph <- cox.zph(fit_cox)
+zph
+plot(zph)
+```
+
+----------------------
+
+## 8) 결과 보고 & 시각화
+
+-   핵심 지표: HR(95% CI), p-value
+-   Forest plot로 가독성 향상
 
 ```{r}
-table(df$sex) # M, F, Male, Female 
-table(df$insurance_quartile, useNA = "ifany")
-table(df$num_comorbidities)
-table(df$depression_dx)
-table(df$medication_adherence) # H, High, L, Low 
-table(df$dementia_dx) # no, No, yes, Yes 
+broom::tidy(fit_cox, 
+            exponentiate = TRUE, 
+            conf.int = TRUE) -> cox_tidy
+cox_tidy %>%
+  ggplot(aes(x = reorder(term, estimate), 
+             y = estimate, 
+             ymin = conf.low, 
+             ymax = conf.high)) +
+  geom_pointrange() + 
+  coord_flip() + 
+  theme_minimal() +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  labs(x="", y="Hazard Ratio (95% CI)")
 ```
 
----
+----------------------
 
-### 2-2) 연속형 
+## (선택) 서브그룹
 
-```{r}
-plot(density(df$bmi, na.rm = T))
-plot(density(df$outpatient_visits)) # errors, outliers 
-plot(density(df$cognitive_score, na.rm = T)) 
-plot(density(df$time_to_dementia))
-range(df$time_to_dementia)
-```
+- 연령/성별/교육 proxy 서브그룹 분석\
 
----
+----------------------
 
-### 2-3) 이상치 비율 구하기 
+## 체크리스트
 
-```{r}
-df %>% summarise(
-  bad_visits = mean(outpatient_visits < 0 | outpatient_visits > 60, na.rm=TRUE),
-  bad_bmi    = mean(bmi < 15 | bmi > 50, na.rm=TRUE),
-  bad_time   = mean(time_to_dementia <= 0, na.rm=TRUE)
-)
-```
+- **서브그룹 차이**가 선택/접근성 편향을 반영하는가?
 
----
 
-## 3) 데이터 정제 (라벨 통일 / 결측 처리 / 이상치 / 중복 제거)
-**무엇을 하나요?**  
-- 라벨을 통일하고  
-- 결측치를 간단하게 처리하고   
-- 이상치를 완화하고    
-- 중복을 제거합니다    
-
----
-
-### 3-1) 라벨 정리 
-
-```{r}
-df2 <- df %>%
-  mutate(
-    sex = recode(sex, "M"="Male","F"="Female", .default = sex),
-    medication_adherence = recode(medication_adherence, 
-                            "H" = "High", "L" = "Low", 
-                          .default = medication_adherence), 
-    dementia_dx = recode(dementia_dx, "No" = "no", 
-                         "Yes" = "yes", 
-                         .default = dementia_dx))
-```
-
----
-
-### 3-2) 형변환; character -> factor 
-
-```{r}
-df3 = df2 %>%
-  mutate(sex = factor(sex), 
-         medication_adherence = factor(medication_adherence), 
-         dementia_dx = factor(dementia_dx))
-summary(df3)
-```
-
----
-
-### 3-3) 간단 결측 처리 (예시: 중앙값/최빈값)
-
-```{r}
-df5 = df4 %>%
-  mutate(insurance_quartile = 
-           if_else(is.na(insurance_quartile), 
-                   median(insurance_quartile, na.rm=TRUE), 
-                   insurance_quartile),
-    age = if_else(is.na(age), 
-                  round(median(age, na.rm=TRUE)), age),
-    cognitive_score = if_else(is.na(cognitive_score),
-                  median(cognitive_score, na.rm=TRUE), 
-                  cognitive_score),
-    bmi = if_else(is.na(bmi), median(bmi, na.rm=TRUE), bmi)
-  ) 
-```
-
---- 
-
-### 3-4) 이상치 완화 및 중복 제거 
-
-```{r}
-df5 = df5 %>%
-  mutate(
-    bmi = pmin(pmax(bmi, 15), 50),
-    outpatient_visits = pmin(pmax(outpatient_visits, 0), 60),
-    time_to_dementia = if_else(
-      time_to_dementia <= 0, 1, time_to_dementia) 
-    # 최소 1개월로 보정
-  ) %>%
-  distinct() # 중복 제거
-```
-
----
-
-### 3-5) 형변환: 연속형 -> 범주형 
-
-```{r}
-df6 = df5 %>%
-  mutate(bmi_class = cut(bmi, 
-                         breaks = c(-Inf, 18.5, 25, 30, Inf), 
-                         labels = c("Under","Normal","Over",
-                                    "Obese")), 
-         age_group = cut(age, breaks=c(60,70,80,Inf), 
-                         right=FALSE))
-```
-
----
-
-## 4) 생존분석 맛보기 (KM / Log-rank)
-**무엇을 하나요?**  
-- Kaplan–Meier 곡선으로 복약군별 **치매 무발생 생존**을 비교하고,  
-- 로그순위 검정으로 곡선 차이를 테스트합니다.
-
----
-
-### 4-1) KM 분석 
-
-```{r}
-library(survival)
-library(survminer)
-df_surv <- df6 %>%
-  mutate(adherent = 
-           factor(medication_adherence,
-                  levels=c("Low","High")))
-fit_km <- survfit(
-  Surv(time_to_dementia, event) ~ adherent, 
-  data = df_surv)
-ggsurvplot(fit_km, conf.int = TRUE, 
-           risk.table = TRUE,
-           legend.labs = c("Low","High"),
-           xlab = "Months", 
-           ylab = "Dementia-free survival")
-```
-
----
-
-### 4-2) Log-rank test
-
-```{r}
-survdiff(
-  Surv(time_to_dementia, event) ~ adherent, 
-  data = df_surv)
-```
-
----
-
-## 5) 연습
-
-- 결측 처리 전략(중앙값/최빈값 vs 제거)을 바꿔보고 결과 비교하기  
-- `outpatient_visits`를 구간화해서(`0–6 / 7–12 / 13–18 / 19+`) KM 곡선 층화 비교  

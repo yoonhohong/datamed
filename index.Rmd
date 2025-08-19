@@ -63,7 +63,7 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 
 ### 실습 데이터 
 
-
+[antihypertensive_dementia.csv](https://github.com/yoonhohong/datamed/blob/main/data/antihypertensive_dementia.csv)    
 
 ### 실습 
 

@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="" />
 
+<meta name="date" content="2025-08-18" />
 
-<title>임상 데이터 의학 (Clinical Data Medicine with R)</title>
+<title>survival analysis: math</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -33,8 +33,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
-<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -266,153 +264,68 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">임상 데이터 의학 (Clinical Data Medicine
-with R)</h1>
-<h4 class="author"></h4>
+<h1 class="title toc-ignore">survival analysis: math</h1>
+<h4 class="date">2025-08-18</h4>
 
 </div>
 
 
-<div id="강좌-소개" class="section level3">
-<h3>강좌 소개</h3>
-<p>인공지능과 정밀의료 시대에 접어들면서 의료현장과 의학 연구에서
-<strong>데이터 분석 능력</strong>과 <strong>비판적 사고능력</strong>은
-필수적 역량이 되었다. 본 선택 교과목에서는 강의와 실습을 병행하며, 임상
-데이터를 이해하고 분석하기 위한 <strong>통계적 추론</strong> 및
-<strong>기계학습</strong>을 다룬다. 학생들은 프로그래밍 언어인 R을
-활용하여 임상연구 데이터를 다루고 분석 과정을 직접 구현해보는
-<strong>경험</strong>을 하게 된다.<br />
-과정은 기초편(4주)과 심화편(4주), 두 단계로 구성된다. 기초편은
-프로그래밍 경험이 없는 학생도 수강 가능하며, 데이터 분석을 위한 R의 기본
-문법과 데이터 가공 및 시각화, 기초적인 통계적 추론(가설 검정과 모수
-추정)을 학습한다. 심화편은 기초편을 수강했거나, 기존에 R 또는 Python
-등의 프로그래밍 경험이 있는 학생을 대상으로 하며, 통계적 모델링과
-기계학습을 중심으로 심화된 학습을 진행한다.</p>
-</div>
-<div id="목표" class="section level3">
-<h3>목표</h3>
-<p>수강생들은 의학/의료 문제해결을 위한 양적 추론과 데이터 분석, 비판적
-사고력 및 협업/소통 역량을 갖추는 것을 목표로 한다.</p>
-</div>
-<div id="강의와-실습-계획" class="section level3">
-<h3>강의와 실습 계획</h3>
-<div id="전반기초편" class="section level4">
-<h4>전반(기초편)</h4>
-<p>1주: <strong>데이터 의학</strong><br />
-의학과 의료에서 데이터 분석과 양적 추론의 중요성을 이해하고, 데이터
-분석을 통한 양적 추론 과정의 전반적 흐름에서 비판적 사고력의 중요성과
-기술적, 윤리적 고려사항을 이해한다.</p>
-<p>2주: <strong>R 기초</strong><br />
-R 기본 문법과 작업 환경, 사용법을 익힌다: 데이터 유형과 구조, 데이터
-입출력, 프로그래밍(조건문과 반복문, 함수)</p>
-<p>3주: <strong>탐색적 데이터 분석</strong><br />
-R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 데이터 분석을 할
-수 있다.</p>
-<p>4주: <strong>통계적 추론</strong><br />
-통계적 추론의 기본 개념들을 이해하고, R을 활용하여 가설 검정과 모수
-추정을 구현할 수 있다.</p>
-</div>
-<div id="후반심화편" class="section level4">
-<h4>후반(심화편)</h4>
-<p>1주: <strong>회귀 및 분류</strong><br />
-선형회귀, 로지스틱회귀를 통해 회귀와 분류 문제에 대한 통계적 모델링을
-이해하고, R을 이용해 구현할 수 있다.</p>
-<p>2주: <strong>생존 분석</strong><br />
-생존분석에 대한 통계적 모델링을 이해하고, R을 이용해 구현할 수 있다.</p>
-<p>3주: <strong>지도 기계학습</strong><br />
-지도 기계학습의 개념과 주요 알고리즘, 편향과 분산 절충(bias-variance
-trade-off), 교차검증(cross validation)을 이해하고, 모델 성능을 평가할 수
-있다.</p>
-<p>4주: <strong>비지도 기계학습</strong><br />
-비지도 기계학습의 개념, 주성분분석, 군집분석을 이해하고, 활용할 수
-있다.</p>
-</div>
-</div>
-<div id="교재" class="section level3">
-<h3>교재</h3>
-<p><a href="https://r4ds.had.co.nz/">R for Data Science, Hadley Wickham
-and Garrett Grolemund, 2017</a><br />
-<a href="https://www-bcf.usc.edu/~gareth/ISL/">An Introduction to
-Statistical Learning (with Applications in R), Springer (Gareth James,
-Daniel Witten, Trevor Hastie, Robert Tibshirani, 2013)</a></p>
-</div>
-<div id="강의록" class="section level3">
-<h3>강의록</h3>
-<ul>
-<li><p><a href="week1_intro.html">데이터 의학</a><br />
-</p></li>
-<li><p><a href="week2_R_basics.html">R의 기초</a><br />
-</p></li>
-<li><p><a href="week3_EDA.html">탐색적 데이터 분석</a></p></li>
-<li><p><a href="ML_basics.html">통계적 모델링과 기계학습의
-기초</a><br />
-</p></li>
-<li><p><a
-href="Bootstrapping.html">부트스트래핑(Bootstrapping)</a><br />
-</p></li>
-<li><p><a href="LinearRegression.html">선형회귀 모델(Linear regression
-model)</a><br />
-</p></li>
-<li><p><a href="LME.html">선형혼합효과 모델(Linear mixed effects
-model)</a><br />
-</p></li>
-<li><p><a href="LogisticRegression.html">로지스틱회귀 모델(Logistic
-regression model)</a><br />
-</p></li>
-<li><p><a href="LDA.html">선형판별분석(Linear discriminant
-analysis)</a><br />
-</p></li>
-<li><p><a href="ROC.html">ROC curve</a><br />
-</p></li>
-<li><p><a href="D7_CV_regularization.html">교차검증과
-정규화(Ridge/Lasso)</a><br />
-</p></li>
-<li><p><a href="RandomForest_GradientBoosting.html">의사결정나무, Random
-forest, Gradient Boosting</a><br />
-</p></li>
-<li><p><a href="D9_Unsupervised.html">비지도기계학습(PCA,
-클러스터링)</a></p></li>
-</ul>
-</div>
-<div id="실습-데이터" class="section level3">
-<h3>실습 데이터</h3>
-<p><a
-href="https://github.com/yoonhohong/datamed/blob/main/data/antihypertensive_dementia.csv">antihypertensive_dementia.csv</a></p>
-</div>
-<div id="실습" class="section level3">
-<h3>실습</h3>
-<ul>
-<li><a href="Classification_problem.html">분류</a><br />
-</li>
-<li><a href="breast_cancer.html">Wisconsin breast cancer
-dataset</a><br />
-</li>
-<li><a href="diabetes.html">Pima indians diabetes dataset</a><br />
-</li>
-<li><a href="PCA.html">Principal component analysis</a><br />
-</li>
-<li><a href="sampleSize.html">Sample size calculation</a><br />
-</li>
-<li><a href="RandomForest.html">Random forest &amp; gradient
-boosting</a></li>
-</ul>
-</div>
-<div id="워크시트" class="section level3">
-<h3>워크시트</h3>
-<p><a href="https://forms.gle/zmXDRVitdZMHpxtx5">워크시트</a></p>
-</div>
-<div id="성찰-일지" class="section level3">
-<h3>성찰 일지</h3>
-<p><a href="https://forms.gle/1977oRBrniAaJ57y6">오늘의 성찰
-일지</a></p>
-</div>
-<div id="강좌-연혁" class="section level3">
-<h3>강좌 연혁</h3>
-<p><strong>서울대학교 의과대학 2학년 2학기</strong><br />
-- 2025년8월6일-9월24일(전반 4주 기초, 후반 4주 심화)<br />
-- 2023년8월2일-9월20일(8주)<br />
-- 2022년8월2일-9월20일(8주)<br />
-- 2019년8월6일-10월1일(8주)</p>
+<div id="hazard-function-survival-function" class="section level2">
+<h2>hazard function &amp; survival function</h2>
+<p>hazard 함수와 survival 함수 관계를 확률 밀도 함수(PDF)와 누적분포
+함수(CDF)의 기본 정의에서 유도해 보겠습니다.</p>
+<hr />
+<ol style="list-style-type: decimal">
+<li><p><span class="math display">\[T\]</span>를 사건 발생 시간(연속형
+확률변수)이라 하겠습니다.</p></li>
+<li><p>생존 함수(Survival function)는 사건이 시점 <span
+class="math display">\[t\]</span>까지 발생하지 않을 확률입니다. <span
+class="math display">\[
+S(t) = P(T &gt; t) = 1 - F(t)
+\]</span> 여기서 <span class="math display">\[F(t)\]</span>는
+누적분포함수(CDF)로 사건이 <span class="math display">\[t\]</span>
+이전에 발생할 확률입니다.</p></li>
+<li><p>확률밀도함수(PDF)는 <span class="math display">\[F(t)\]</span>의
+미분입니다. <span class="math display">\[
+f(t) = \frac{d}{dt} F(t)
+\]</span></p></li>
+<li><p>hazard 함수 <span class="math display">\[h(t)\]</span>는 시점
+<span class="math display">\[t\]</span>까지 사건이 발생하지 않은
+상태에서, 바로 다음 아주 짧은 시간 간격 <span
+class="math display">\[\Delta t\]</span> 내에 사건이 발생할 조건부
+확률을 <span class="math display">\[\Delta t\]</span>로 나눈 값으로
+정의됩니다. <span class="math display">\[
+h(t) = \lim_{\Delta t \to 0} \frac{P(t \leq T  t) = \frac{d}{dt} (1 -
+F(t)) = -f(t)
+\]</span></p></li>
+<li><p>5번 식의 <span class="math display">\[f(t) = h(t) S(t)\]</span>를
+위 미분식에 대입하면, <span class="math display">\[
+\frac{d}{dt} S(t) = - h(t) S(t)
+\]</span></p></li>
+<li><p>양변을 <span class="math display">\[S(t)\]</span>로 나누면, <span
+class="math display">\[
+\frac{1}{S(t)} \frac{d}{dt} S(t) = - h(t)
+\]</span></p></li>
+<li><p>좌변은 <span class="math display">\[S(t)\]</span>의 로그 미분
+형태이므로, <span class="math display">\[
+\frac{d}{dt} \log S(t) = - h(t)
+\]</span></p></li>
+<li><p>양변을 적분하면, <span class="math display">\[
+\log S(t) = - \int_0^t h(u) du + C
+\]</span></p></li>
+<li><p><span class="math display">\[t=0\]</span>일 때 생존 확률은
+1이므로, <span class="math display">\[S(0) = 1\]</span>에서 <span
+class="math display">\[C=0\]</span>임을 알 수 있습니다. 따라서, <span
+class="math display">\[
+S(t) = \exp\left(- \int_0^t h(u) du \right)
+\]</span></p></li>
+</ol>
+<hr />
+<p>결과적으로, hazard 함수 <span class="math display">\[h(t)\]</span>를
+시간에 따라 적분한 누적위험함수의 음수를 지수 함수에 넣으면 생존함수
+<span class="math display">\[S(t)\]</span>가 되며, 이는 기본적인
+확률밀도함수와 누적분포함수 정의에서 자연스럽게 나오는 관계입니다. 이
+과정은 survival analysis의 가장 핵심적인 수학적 기초입니다.</p>
 </div>
 
 
