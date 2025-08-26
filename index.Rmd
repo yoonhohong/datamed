@@ -49,15 +49,15 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 - [데이터 의학](week1_intro.html)   
 - [R의 기초](week2_R_basics.html)   
 - [탐색적 데이터 분석](week3_EDA.html)  
+- [통계적 모델링과 기계학습의 기초](week4_stat_model.html)   
 
-- [통계적 모델링과 기계학습의 기초](ML_basics.html)   
-- [부트스트래핑(Bootstrapping)](Bootstrapping.html)   
+ 
 - [선형회귀 모델(Linear regression model)](LinearRegression.html)   
-- [선형혼합효과 모델(Linear mixed effects model)](LME.html)   
 - [로지스틱회귀 모델(Logistic regression model)](LogisticRegression.html)   
-- [선형판별분석(Linear discriminant analysis)](LDA.html)   
-- [ROC curve](ROC.html)   
-- [교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html)   
+
+
+- [교차검증과 정규화(Ridge/Lasso)](D7_CV_regularization.html)
+
 - [의사결정나무, Random forest, Gradient Boosting](RandomForest_GradientBoosting.html)   
 - [비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html)   
 
@@ -66,6 +66,10 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 [antihypertensive_dementia.csv](https://github.com/yoonhohong/datamed/blob/main/data/antihypertensive_dementia.csv)    
 
 ### 실습 
+
+- [부트스트래핑(Bootstrapping)](Bootstrapping.html)   
+- [ROC curve](ROC.html)   
+- [선형판별분석(Linear discriminant analysis)](LDA.html)   
 
 - [분류](Classification_problem.html)   
 - [Wisconsin breast cancer dataset](breast_cancer.html)    
