@@ -16,13 +16,45 @@ set.seed(42)
 
 **학습목표**
 
+-   표준 오차의 개념을 이해한다.
 -   (가설) 검정과 (모수) 추정의 개념을 이해하고, 어떻게 사용되는지 알 수 있다.
 -   모수 vs. 비모수 접근법의 차이점을 이해한다.
 -   R을 사용하여 가설 검정과 모수 추정을 위한 통계적 모델을 구축하고, 그 결과를 해석할 수 있다.
 
+------------------------------------------------------------------------
+
+## 표준 오차
+
+표본에서 모집단의 평균을 추정하는 문제를 생각해보자.
+
+$$\mu = mean(\bar{X})$$\
+$\mu$: 모평균\
+$\bar{X}$: 표본평균\
+(중심극한정리)
+
+표본평균을 모평균으로 간주할 때, 불확실성을 어떻게 정량화할까?\
+표준오차(standard error of mean, SEM) = 표본평균의 표준 편차
+
+$$SEM = \frac{\sigma}{\sqrt{n}}$$
+
+$\sigma$: 모표준 편차\
+$n$: 관측치의 개수(표본의 크기)
+
+표준 오차는 표본의 크기가 클수록 작아짐
+
+모집단의 표준편차를 어떻게 구할까?\
+표본의 표준편차(s)로 대치, 정확히는 모표준편차의 불편 추정량(unbiased estimate)으로서의 표본 표준편차 $$s = \sqrt\frac{\sum(X_i-\bar{X})^2}{n-1}$$
+
+n 대신 n-1을 사용하는 이유?\\
+
+:   모집단의 분산에 대한 불편 추정량으로서 표본 분산의 자유도는 n이 아니라 n-1 (표본의 평균을 알고 있으므로, 자유도는 n이 아니라 n-1)\
+    모집단의 표준편차는 표본의 표준편차보다 항상 크다.
+
+------------------------------------------------------------------------
+
 ## 가설 검정과 모수 추정
 
-### 가설 검정
+## 1. 가설 검정
 
 귀무가설(H₀): 차이·효과 없음 (예: 두 집단 평균 차이 = 0).\
 대립가설(H₁): 차이·효과 있음.
@@ -33,71 +65,168 @@ set.seed(42)
 - p-value 산출\
 - 유의수준(α, 보통 0.05)과 비교 → H₀ 기각 여부 판단\
 
-#### Lab
+------------------------------------------------------------------------
 
-치매 진단 여부에 따라 기저(baseline) 인지 점수에 차이가 있는가?
+### Student T-test
 
-```{r}
-# t 검정 
-t.test(cognitive_score ~ dementia_dx, data = df)
+**개념**\
+- 두 집단의 평균 차이를 비교할 때 사용하는 검정 방법\
+- 정규분포와 유사한 **t 분포**를 사용\
+- independent t-test, paired t-test, one-sample t-test로 나눌 수 있음
+
+**가설 예시**\
+- 귀무가설(H0): 두 집단의 평균은 차이가 없다 (μ1 = μ2)\
+- 대립가설(H1): 두 집단의 평균은 차이가 있다 (μ1 ≠ μ2)
+
+**검정 통계량**\
+- t값은 t 검정에 이용되는 검정통계량으로, 두 집단의 평균의 차이를 표준오차(SE)로 나눈 값
+
+$$t = \frac{\bar{X}_1 - \bar{X}_2}{SE}$$
+
+------------------------------------------------------------------------
+
+**예시**
+
+남성과 여성의 평균 BMI에 차이가 있는지 검정
+
+```{r, eval=FALSE}
+set.seed(123)
+male_bmi <- rnorm(30, mean=25, sd=3)
+female_bmi <- rnorm(30, mean=23, sd=3)
+plot(density(female_bmi))
+lines(density(male_bmi))
+t.test(male_bmi, female_bmi, var.equal=TRUE)
 ```
 
-치매 진단 여부와 항고혈압제 복용의 지속성 사이에 관련성이 있는가?
-
 ```{r}
-# 카이 제곱 검정 
-tab_df = table(df$medication_adherence, df$dementia_dx)
-tab_df
-chisq.test(tab_df)
+library(tidyverse)
+# t 분포 데이터 생성
+# 
+x_vals <- seq(-4, 4, length.out = 200)
+t_dist <- dt(x_vals, df = 58)
+plot_data <- data.frame(x = x_vals, density = t_dist)
+ggplot(plot_data, aes(x, density)) +
+  geom_line() +
+  geom_vline(xintercept = 1.8758) +
+  geom_vline(xintercept = -1.8758) 
 ```
 
-항고혈압제 지속적 복용군과 비복용군의 치매 발생 누적 위험은 차이가 있는가? Kaplan-Meier curve를 그려보고, log rank test를 해보라.
+-----------------------------------------------------
+
+### Chi-square test
+
+**개념** \
+- 범주형 변수 간의 독립성을 검정 - 기대빈도와 관찰빈도의 차이를 이용 - 카이제곱 분포(χ²)를 이용
+
+**가설 예시** \
+- 귀무가설(H0): 두 변수는 독립이다 - 대립가설(H1): 두 변수는 독립이 아니다
+
+**검정 통계량**
+
+$$\chi^2 = \sum \frac{(O - E)^2}{E}$$\
+\
+- $O$: 관찰 빈도 (Observed frequency)\
+- $E$: 기대 빈도 (Expected frequency)
+
+-----------------------------------------------------
+**예시**
 
 ```{r}
-library(survival) # survfit, survdiff 
-library(survminer) # ggsurvplot 
-km_fit <- survfit(Surv(time_to_dementia, event) ~ medication_adherence, data = df)
-ggsurvplot(km_fit, data = df, pval = TRUE, risk.table = TRUE)
-survdiff(Surv(time_to_dementia, event) ~ medication_adherence, data = df)
+data <- matrix(c(30, 10, 20, 20, 30, 40), 
+               nrow=3, byrow=TRUE)
+colnames(data) <- c("A1", "A2", "A3")
+rownames(data) <- c("B1", "B2")
+data <- as.table(data)
+chisq.test(data)
 ```
 
-### 모수 추정
+```{r}
+# 카이제곱 분포 데이터
+x_vals <- seq(0, 20, length.out = 200)
+chi_dist <- dchisq(x_vals, df = 2)
+plot_data <- data.frame(x = x_vals, density = chi_dist)
+ggplot(plot_data, aes(x, density)) +
+  geom_line() +
+  geom_vline(xintercept = 10.81)
+```
+
+-----------------------------------------------------
+
+### Kaplan-Meyer 곡선 & Log-rank 검정
+
+**Kaplan--Meier(KM) curve** 
+
+:   사건 발생까지의 시간을 추적하면서 생존함수(Survival function)를 추정하는 비모수적 방법
+
+$$S(t) = P(T > t)$$
+
+사건이 발생한 시점을 기준으로 생존 확률을 단계적으로 곱해나감 (step function). 검열(censoring) 자료(추적 중단, 탈락자 등)를 고려할 수 있음. KM 곡선은 계단 모양(step curve) 으로 표현되며, 두 그룹(예: 복용군 vs 비복용군)의 생존율 추이를 비교할 때 유용하다.
+
+**Kaplan--Meier 생존함수 추정식**
+
+$$\hat{S}(t) = \prod_{t_i \leq t} \left(1 - \frac{d_i}{n_i}\right)$$
+
+-   $t_i$: 사건(event, 예: 사망, 질병 진단)이 발생한 시점
+-   $d_i$: $t_i$ 시점에서 사건이 발생한 수 (number of events)
+-   $n_i$: $t_i$ 직전에 아직 위험집단(risk set)에 속해 있는 개체 수
+
+------------------------------------------------------
+
+**Log-rank 검정**
+
+두 개 이상의 KM 곡선이 통계적으로 유의미하게 다른지 비교하는 검정 방법.
+
+귀무가설: 두 그룹 간 생존곡선에 차이가 없다. 대립가설: 두 그룹 간 생존곡선에 차이가 있다.
+
+각 시간 구간마다 관찰된 사건 수와 기대 사건 수를 비교하여 전체 검정 통계량을 계산. 검정 통계량은 Chi-square 분포를 따른다.
+
+
+-----------------------------------------------------
+### Lab
+
+data: antihypertensive_dementia_clean.csv
+
+1.  치매 진단 여부에 따라 기저(baseline) 인지 점수에 차이가 있는가?
+
+2.  치매 진단 여부와 항고혈압제 복용의 지속성 사이에 관련성이 있는가?
+
+3.  항고혈압제 지속적 복용군과 비복용군의 치매 발생 누적 위험은 차이가 있는가? Kaplan-Meier curve를 그려보고, log rank test를 해보라.
+
+---------------------------------------------------
+
+## 2. 모수 추정
 
 모집단의 특성을 대표하는 값을 표본 데이터로부터 추정
 
--   점 추정(point estimation): 모집단 모수를 하나의 값으로 추정. 예: 표본 평균으로 모집단 평균 추정\
+-   점 추정(point estimation): 모집단 모수를 하나의 값으로 추정.\
+    예: 표본 평균으로 모집단 평균 추정\
+    
 -   구간 추정(interval estimation): 모수가 포함될 것으로 기대되는 구간(신뢰구간, CI) 제시\
     예: 모집단 평균은 50\~60 범위에 있을 가능성이 95%이다
 
-모수 추정은 불확실성을 가진다 → 표준 오차(Standard Error, SE)로 측정. 표본이 크거나, 표본의 표준편차가 작으면 -\> SE가 작아지고, 추정의 정밀도가 높아진다.
+모수 추정은 불확실성을 가지며, 이를 표준 오차(Standard Error, SE)로 측정한다.\
+표본이 크거나, 표본의 표준편차가 작으면 -\> 표준오차가 작아진다(즉, 추정의 정밀도가 높아진다)
 
-### 표준 오차
+-----------------------------------------------------
 
-$$\mu = mean(\bar{X})$$\
-$\mu$: 모평균\
-$\bar{X}$: 표본평균\
-(중심극한정리)
+### 선형 회귀 
 
-표본 평균의 표준오차(standard error of mean, SEM) = 표본평균의 표준 편차
+선형 회귀는 독립변수(X)가 종속변수(Y)에 미치는 **선형적 관계(linear relationship)**를 추정하는 통계적 모델
 
-$$SEM = \frac{\sigma}{\sqrt{n}}$$
+$$Y_i = \beta_0 + \beta_1 X_{i1} + \beta_2 X_{i2} + \cdots + \beta_p X_{ip} + \epsilon_i$$ 
+- $Y_i$: 종속 변수 (outcome)  
+- $\beta_0$: 절편 (intercept)  
+- $\beta_j$: 회귀 계수 (regression coefficient), 독립변수의 효과 크기  
+- $X_{ij}$: 독립 변수  
+- $\epsilon_i$: 오차항 (error term), $N(0, \sigma^2)$ 가정  
 
-$\sigma$: 모표준 편차\
-$n$: 관측치의 개수(표본의 크기)
+추정 방법 (Ordinary Least Squares, OLS)   
+**목표:** 오차 제곱합(Sum of Squared Errors, SSE)을 최소화하는 회귀 계수를 찾는 것  
 
-표준 오차는 표본의 크기가 클수록 작아짐
+$$SSE = \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2 = \sum_{i=1}^{n} (Y_i - \beta_0 - \beta_1 X_{i1} - \cdots - \beta_p X_{ip})^2$$
 
-모집단의 표준편차 = 표본 표준편차의 기대값 (수학적 증명은 생략).
-
-모집단의 표준편차의 불편 추정량(unbiased estimate)으로서의 표본의 표준편차($s$)
-
-$$s = \sqrt\frac{\sum(X_i-\bar{X})^2}{n-1}$$
-
-n 대신 n-1을 사용하는 이유?\
-: 모집단의 분산에 대한 불편 추정량으로서의 표본 분산에 대한 자유도는 n이 아니라 n-1 (표본의 평균을 알고 있으므로, 자유도는 n이 아니라 n-1)\
-모집단의 표준편차는 항상 표본의 표준편차보다 크다.
-
-#### Lab
+-------------------------------------------------
+**예시** 
 
 Baseline 인지 점수(cognitive_score)에 영향을 미치는 요인은 무엇인가? 선형 회귀 모델로 추정해보라.
 
@@ -106,6 +235,60 @@ lm_fit = lm(cognitive_score ~ age + sex + insurance_quartile + num_comorbidities
 summary(lm_fit)
 ```
 
+-----------------------------------------------------
+
+### Cox proportional hazard regression 
+
+Cox proportional hazards regression (콕스 비례위험 회귀)는 **생존분석(survival analysis)**에서 가장 널리 사용되는 모형 중 하나로, 
+독립변수(공변량, covariates)가 사건 발생 위험(hazard)에 미치는 영향을 평가하는데 사용된다.
+
+- 종속변수: 생존 시간(time-to-event)과 사건 발생 여부(event indicator)
+- 독립변수: 연속형, 범주형 모두 가능
+- 장점: 생존 시간의 분포(예: 지수분포, 와이블 분포 등)를 가정하지 않아도 된다 (semi-parametric model).
+
+
+**위험 함수 (Hazard Function)**   
+시간 t 에서 사건이 발생할 **순간 위험도**는 다음과 같이 정의된다.
+
+$$h(t) = \lim_{\Delta t \to 0} \frac{P(t \leq T < t + \Delta t \mid T \geq t)}{\Delta t}$$ 
+
+여기서,  
+- T: 사건 발생 시간 (random variable)  
+- h(t): 위험 함수 (hazard function)  
+
+
+**Cox 모형 수식** 
+콕스 모형은 다음과 같이 표현된다.
+
+$$h(t \mid X) = h_0(t) \exp(\beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p)$$ 
+추정 방법
+
+- 모수적 방법과 달리 $h_0(t)$의 형태를 명시하지 않고, **partial likelihood (부분우도)**를 통해 $\beta\$를 추정한다.
+- 추정된 계수 $\beta\$는 각 변수의 상대적 위험도를 설명한다.
+
+
+- $h_0(t)$: 기준 위험 함수(baseline hazard), 특정 기준군에서의 위험도  
+- $\beta_j$: 공변량 $X_j$의 회귀 계수  
+- $\exp(\beta_j)$: 공변량 $X_j$의 **위험비(hazard ratio, HR)**  
+
+
+**해석** 
+
+- $HR = \exp(\beta) > 1$: 해당 변수 증가 시 사건 발생 위험 증가  
+- $HR = \exp(\beta) < 1$: 해당 변수 증가 시 사건 발생 위험 감소  
+- $HR = 1$: 영향 없음  
+
+예: 항고혈압제 지속 복용 여부(1=복용, 0=비복용)  
+- $HR = 0.74$: 지속 복용군의 치매 발생 위험이 비복용군 대비 26% 낮음.  
+
+**비례위험 가정 (Proportional Hazards Assumption)** 
+
+Cox 모형의 기본 가정은 **위험비(HR)가 시간에 따라 일정하다**는 것이다.   
+즉, 두 집단의 위험비는 시간이 흘러도 변하지 않는다.  
+
+-------------------------------------------------
+**예시** 
+
 항고혈압제 지속적 복용 여부는 치매 발생에 영향을 미치는가? 얼마나 영향을 미치는가? Cox 비례위험 모델로 추정해보라.
 
 ```{r}
@@ -113,10 +296,11 @@ cox_fit <- coxph(Surv(time_to_dementia, event) ~ medication_adherence, data = df
 summary(cox_fit)
 ```
 
+--------------------------------------------------
 
-### 모수적 방법과 비모수적 방법 
+## 모수적 방법과 비모수적 방법
 
-#### 모수적 방법
+### 1. 모수적 방법
 
 모집단이 특정 분포를 따른다고 가정하고(혹은 모델의 형태에 대한 특정한 가정하에) 분석하는 방법
 
@@ -124,53 +308,47 @@ summary(cox_fit)
 
 단점: 가정이 위배되면 결과가 왜곡될 수 있음
 
-예시>  
-- t-test (정규분포 가정하 평균 비교), ANOVA  
-- 선형/로지스틱 회귀, 콕스 비례위험 회귀  
+예시\>\
+- t-test (정규분포 가정하 평균 비교), ANOVA\
+- 선형/로지스틱 회귀, 콕스 비례위험 회귀
 
-예를 들어, 선형 회귀 모델에서는 Y는 X에 대해 선형 관계라고 가정 
+예를 들어, 선형 회귀 모델에서는 Y는 X에 대해 선형 관계라고 가정
 
-$$f(X) = \beta_0 + \beta_1X_1 + \beta_2X_2 + ...+\beta_pX_p$$
-파라미터 집합 $\beta_0$, $\beta_1$, $\beta_2$,..., $\beta_p$을 추정\
-선형 모델의 적합에 가장 일반적으로 사용되는 기법은 최소제곱법(least squares)
 
-#### 비모수적 방법(non-parametric)
+### 2. 비모수적 방법(non-parametric)
 
-비모수적 방법은 특정 분포를 가정하지 않고(혹은 모델의 형태에 대한 강한 가정을 두지 않고), 가설을 검정하거나 모수를 추정하는 방법  
+비모수적 방법은 특정 분포를 가정하지 않고(혹은 모델의 형태에 대한 강한 가정을 두지 않고), 가설을 검정하거나 모수를 추정하는 방법
 
 장점: 작은 표본, 극단치(outlier), 비정규분포에도 유연함
 
 단점: 모수적 방법보다 검정력(statistical power)이 낮을 수 있음
 
-예시> 
-- Wilcoxon rank-sum test (독립표본 t-test 대체)
-- Wilcoxon signed-rank test (paired t-test 대체)
-- Kruskal-Wallis 검정 (ANOVA 대체)
-- Fisher’s exact test (Chi-square test 대체)  
-- 의사결정나무 (Decision Tree)\ 
-- K-nearest neighbor  
+예시\> - Wilcoxon rank-sum test (독립표본 t-test 대체) - Wilcoxon signed-rank test (paired t-test 대체) - Kruskal-Wallis 검정 (ANOVA 대체) - Fisher's exact test (Chi-square test 대체)\
+- 의사결정나무 (Decision Tree)  - K-nearest neighbor
 
 **요약**
 
-| 구분         | 모수적 방법          | 비모수적 방법                  |
-| ---------- | --------------- | ------------------------ |
-| **가정**     | 분포(정규분포 등)      | 분포 가정 없음                 |
-| **데이터 형태** | 수치형 (연속형), 큰 표본 | 순위 데이터, 비정규 분포, 작은 표본    |
-| **예시**     | t-test, ANOVA   | Wilcoxon, Fisher’s exact |
-| **장점**     | 강력한 검정력         | 유연성, 안전성                 |
-| **단점**     | 가정 위반 시 잘못된 결론  | 상대적으로 낮은 검정력             |
+| 구분            | 모수적 방법              | 비모수적 방법                       |
+|------------------|---------------------|---------------------------------|
+| **가정**        | 분포(정규분포 등)        | 분포 가정 없음                      |
+| **데이터 형태** | 수치형 (연속형), 큰 표본 | 순위 데이터, 비정규 분포, 작은 표본 |
+| **예시**        | t-test, ANOVA            | Wilcoxon, Fisher's exact            |
+| **장점**        | 강력한 검정력            | 유연성, 안전성                      |
+| **단점**        | 가정 위반 시 잘못된 결론 | 상대적으로 낮은 검정력              |
 
-
-#### Lab 
 
 t-test는 두 집단 평균 차이를 검정(정규성·등분산 가정이 기본). 표본이 충분히 크면 중심극한정리로 어느 정도 견고.
 
-Wilcoxon rank-sum(Mann–Whitney)은 분포 가정 없이 순위로 비교 → 비정규분포/긴 꼬리/극단치에 더 강건.
+Wilcoxon rank-sum(Mann--Whitney)은 분포 가정 없이 순위로 비교 → 비정규분포/긴 꼬리/극단치에 더 강건.
 
-언제 Wilcoxon?\    
+언제 Wilcoxon? \
 - 표본이 작고 정규성 보장 어려움\
 - 분포가 비대칭/이상치 존재\
 - 등분산 의심이 강함(특히 Welch t-test로 보정해도 불안할 때)\
+
+-----------------------------------------------
+
+**예시** 
 
 ```{r}
 set.seed(123)
@@ -189,7 +367,9 @@ wilcox.test(score ~ group, data = df)
 
 카이제곱 검정은 기대도수가 충분히 클 때(일반적 기준: 모든 셀 ≥5) 근사적으로 유효.
 
-Fisher 정확 검정은 소표본/희귀 사건 등으로 기대도수가 작은 셀(특히 <5)이 있으면 더 적합. “정확”한 p-값을 계산.
+Fisher 정확 검정은 소표본/희귀 사건 등으로 기대도수가 작은 셀(특히 \<5)이 있으면 더 적합. "정확"한 p-값을 계산.
+
+**예시** 
 
 ```{r}
 tab <- matrix(c(12, 5, 7, 8), nrow = 2)
@@ -198,40 +378,36 @@ rownames(tab) = c("Improved", "Not Improved")
 tab
 ```
 
-
 ```{r}
 chisq.test(tab)
 fisher.test(tab)
 ```
 
-### 실습 
+## 실습
 
-1. 위 예시 데이터셋에서 t.test와 wilcox.test 결과를 비교하고, 언제 Wilcoxon을 사용하는 것이 더 적절한지 설명하라.
+1.  위 예시 데이터셋에서 t.test와 wilcox.test 결과를 비교하고, 언제 Wilcoxon을 사용하는 것이 더 적절한지 설명하라.
 
-2. chisq.test와 fisher.test 결과를 비교하고, 어떤 상황에서 Fisher’s exact test가 더 적합한지 토론하라.
+2.  chisq.test와 fisher.test 결과를 비교하고, 어떤 상황에서 Fisher's exact test가 더 적합한지 토론하라.
 
-3. 데이터에 극단값을 추가해보고(treatment 그룹에 score=100 삽입) t-test와 Wilcoxon 결과를 비교하라.
+3.  데이터에 극단값을 추가해보고(treatment 그룹에 score=100 삽입) t-test와 Wilcoxon 결과를 비교하라.
 
-4. 표본 크기를 줄여(각 그룹 5명) 두 검정을 다시 해보고 p-value 변화를 관찰하라.
+4.  표본 크기를 줄여(각 그룹 5명) 두 검정을 다시 해보고 p-value 변화를 관찰하라.
 
-[5-9] Data: antihypertensive_dementia_clean.csv 
+\[5-9\] Data: antihypertensive_dementia_clean.csv
 
-5. 성별(sex)에 따라 **BMI** 평균 차이가 있는지 검정하라.  
+5.  성별(sex)에 따라 BMI 평균 차이가 있는지 검정하라.
 
-6. **우울증 진단(depression_dx)**과 **치매진단(dementia_dx)**의 관련성을 검정하라.
+6.  우울증 진단(depression_dx)과 치매진단(dementia_dx)의 관련성을 검정하라.
 
-7. `outpatient_visits`와 `insurance_quartile`을 포함해 치매진단을 예측하는 모형을 만들고, medication_adherence (High)의 **OR**과 95% CI를 보고하라.  
-**힌트**: `glm(..., family = binomial)` → `exp(coef())`
+7.  insurance_quartile을 1--2 vs 3--4 두 그룹으로 묶어 KM 곡선을 비교하고 log-rank test를 수행하라.
 
-8. `insurance_quartile`을 1–2 vs 3–4 두 그룹으로 묶어 KM 곡선을 비교하고 **log-rank test**를 수행하라.  
+9.  age_group = cut(age, breaks=c(60,65,70,75,80,85,90, Inf), right=FALSE) 을 만들고, age_group 포함 Cox 모형을 적합하라. cox.zph로 PH 가정을 평가하라.  
+    **도전**: PH 위반 변수는 strata() 로 층화하거나, tt() 로 시간가변효과를 고려.
 
-9. `age_group = cut(age, breaks=c(60,65,70,75,80,85,90, Inf), right=FALSE)`을 만들고, `age_group` 포함 Cox 모형을 적합하라. `cox.zph`로 PH 가정을 평가하라.   
-**도전**: PH 위반 변수는 `strata()`로 층화하거나, `tt()`로 시간가변효과를 고려.
+## 마무리
 
-
-### 마무리
-- 가설 검정(t, χ², log-rank)으로 **차이/독립성**을 평가
-- 회귀(선형/로지스틱/Cox)로 **효과크기(β, OR, HR)**와 **CI**를 추정
-- 임상적 의미는 **효과크기 + CI + 맥락**으로 해석
+-   가설 검정(t, χ², log-rank)으로 **차이/독립성**을 평가
+-   회귀(선형/로지스틱/Cox)로 **효과크기(β, OR, HR)**와 **CI**를 추정
+-   임상적 의미는 **효과크기 + CI + 맥락**으로 해석
 
 

@@ -311,4 +311,5 @@ ggplot(gapminder,
 **`분석 가이드`**\
 치매 발생 여부(event, dementia_dx)를 종속변수로 하고, 항고혈압제 복용 여부(medication_adherence)와 여러 공변량(age, sex, 보험 quartile, comorbidities, BMI, depression, 방문횟수, cognitive score, follow-up 기간 등)을 활용하여 생존분석 (Cox regression, Kaplan-Meier)을 수행한다.
 
-[Exercise_week3_EDA](exercise_week3_EDA.html).
+[Exercise_week3_EDA](exercise_week3_EDA.html)
+

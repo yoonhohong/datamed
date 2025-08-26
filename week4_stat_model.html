@@ -3034,15 +3034,26 @@ vertical-align: -.125em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#가설-검정과-모수-추정" id="toc-가설-검정과-모수-추정" class="nav-link active" data-scroll-target="#가설-검정과-모수-추정">가설 검정과 모수 추정</a>
+  <li><a href="#표준-오차" id="toc-표준-오차" class="nav-link active" data-scroll-target="#표준-오차">표준 오차</a></li>
+  <li><a href="#가설-검정과-모수-추정" id="toc-가설-검정과-모수-추정" class="nav-link" data-scroll-target="#가설-검정과-모수-추정">가설 검정과 모수 추정</a></li>
+  <li><a href="#가설-검정" id="toc-가설-검정" class="nav-link" data-scroll-target="#가설-검정">1. 가설 검정</a>
   <ul class="collapse">
-  <li><a href="#가설-검정" id="toc-가설-검정" class="nav-link" data-scroll-target="#가설-검정">가설 검정</a></li>
-  <li><a href="#모수-추정" id="toc-모수-추정" class="nav-link" data-scroll-target="#모수-추정">모수 추정</a></li>
-  <li><a href="#표준-오차" id="toc-표준-오차" class="nav-link" data-scroll-target="#표준-오차">표준 오차</a></li>
-  <li><a href="#모수적-방법과-비모수적-방법" id="toc-모수적-방법과-비모수적-방법" class="nav-link" data-scroll-target="#모수적-방법과-비모수적-방법">모수적 방법과 비모수적 방법</a></li>
+  <li><a href="#student-t-test" id="toc-student-t-test" class="nav-link" data-scroll-target="#student-t-test">Student T-test</a></li>
+  <li><a href="#chi-square-test" id="toc-chi-square-test" class="nav-link" data-scroll-target="#chi-square-test">Chi-square test</a></li>
+  <li><a href="#kaplan-meyer-곡선-log-rank-검정" id="toc-kaplan-meyer-곡선-log-rank-검정" class="nav-link" data-scroll-target="#kaplan-meyer-곡선-log-rank-검정">Kaplan-Meyer 곡선 &amp; Log-rank 검정</a></li>
+  </ul></li>
+  <li><a href="#모수-추정" id="toc-모수-추정" class="nav-link" data-scroll-target="#모수-추정">2. 모수 추정</a>
+  <ul class="collapse">
+  <li><a href="#선형-회귀" id="toc-선형-회귀" class="nav-link" data-scroll-target="#선형-회귀">선형 회귀</a></li>
+  <li><a href="#cox-proportional-hazard-regression" id="toc-cox-proportional-hazard-regression" class="nav-link" data-scroll-target="#cox-proportional-hazard-regression">Cox proportional hazard regression</a></li>
+  </ul></li>
+  <li><a href="#모수적-방법과-비모수적-방법" id="toc-모수적-방법과-비모수적-방법" class="nav-link" data-scroll-target="#모수적-방법과-비모수적-방법">모수적 방법과 비모수적 방법</a>
+  <ul class="collapse">
+  <li><a href="#모수적-방법" id="toc-모수적-방법" class="nav-link" data-scroll-target="#모수적-방법">1. 모수적 방법</a></li>
+  <li><a href="#비모수적-방법non-parametric" id="toc-비모수적-방법non-parametric" class="nav-link" data-scroll-target="#비모수적-방법non-parametric">2. 비모수적 방법(non-parametric)</a></li>
+  </ul></li>
   <li><a href="#실습" id="toc-실습" class="nav-link" data-scroll-target="#실습">실습</a></li>
   <li><a href="#마무리" id="toc-마무리" class="nav-link" data-scroll-target="#마무리">마무리</a></li>
-  </ul></li>
   </ul>
 </nav>
 </div>
@@ -3067,14 +3078,41 @@ vertical-align: -.125em;
 
 <p><strong>학습목표</strong></p>
 <ul>
+<li>표준 오차의 개념을 이해한다.</li>
 <li>(가설) 검정과 (모수) 추정의 개념을 이해하고, 어떻게 사용되는지 알 수 있다.</li>
 <li>모수 vs. 비모수 접근법의 차이점을 이해한다.</li>
 <li>R을 사용하여 가설 검정과 모수 추정을 위한 통계적 모델을 구축하고, 그 결과를 해석할 수 있다.</li>
 </ul>
+<hr>
+<section id="표준-오차" class="level2">
+<h2 class="anchored" data-anchor-id="표준-오차">표준 오차</h2>
+<p>표본에서 모집단의 평균을 추정하는 문제를 생각해보자.</p>
+<p><span class="math display">\[\mu = mean(\bar{X})\]</span><br>
+<span class="math inline">\(\mu\)</span>: 모평균<br>
+<span class="math inline">\(\bar{X}\)</span>: 표본평균<br>
+(중심극한정리)</p>
+<p>표본평균을 모평균으로 간주할 때, 불확실성을 어떻게 정량화할까?<br>
+표준오차(standard error of mean, SEM) = 표본평균의 표준 편차</p>
+<p><span class="math display">\[SEM = \frac{\sigma}{\sqrt{n}}\]</span></p>
+<p><span class="math inline">\(\sigma\)</span>: 모표준 편차<br>
+<span class="math inline">\(n\)</span>: 관측치의 개수(표본의 크기)</p>
+<p>표준 오차는 표본의 크기가 클수록 작아짐</p>
+<p>모집단의 표준편차를 어떻게 구할까?<br>
+표본의 표준편차(s)로 대치, 정확히는 모표준편차의 불편 추정량(unbiased estimate)으로서의 표본 표준편차 <span class="math display">\[s = \sqrt\frac{\sum(X_i-\bar{X})^2}{n-1}\]</span></p>
+<dl>
+<dt>n 대신 n-1을 사용하는 이유?\</dt>
+<dd>
+<p>모집단의 분산에 대한 불편 추정량으로서 표본 분산의 자유도는 n이 아니라 n-1 (표본의 평균을 알고 있으므로, 자유도는 n이 아니라 n-1)<br>
+모집단의 표준편차는 표본의 표준편차보다 항상 크다.</p>
+</dd>
+</dl>
+<hr>
+</section>
 <section id="가설-검정과-모수-추정" class="level2">
 <h2 class="anchored" data-anchor-id="가설-검정과-모수-추정">가설 검정과 모수 추정</h2>
-<section id="가설-검정" class="level3">
-<h3 class="anchored" data-anchor-id="가설-검정">가설 검정</h3>
+</section>
+<section id="가설-검정" class="level2">
+<h2 class="anchored" data-anchor-id="가설-검정">1. 가설 검정</h2>
 <p>귀무가설(H₀): 차이·효과 없음 (예: 두 집단 평균 차이 = 0).<br>
 대립가설(H₁): 차이·효과 있음.</p>
 <p>절차<br>
@@ -3083,80 +3121,231 @@ vertical-align: -.125em;
 - p-value 산출<br>
 - 유의수준(α, 보통 0.05)과 비교 → H₀ 기각 여부 판단<br>
 </p>
-<section id="lab" class="level4">
-<h4 class="anchored" data-anchor-id="lab">Lab</h4>
-<p>치매 진단 여부에 따라 기저(baseline) 인지 점수에 차이가 있는가?</p>
+<hr>
+<section id="student-t-test" class="level3">
+<h3 class="anchored" data-anchor-id="student-t-test">Student T-test</h3>
+<p><strong>개념</strong><br>
+- 두 집단의 평균 차이를 비교할 때 사용하는 검정 방법<br>
+- 정규분포와 유사한 <strong>t 분포</strong>를 사용<br>
+- independent t-test, paired t-test, one-sample t-test로 나눌 수 있음</p>
+<p><strong>가설 예시</strong><br>
+- 귀무가설(H0): 두 집단의 평균은 차이가 없다 (μ1 = μ2)<br>
+- 대립가설(H1): 두 집단의 평균은 차이가 있다 (μ1 ≠ μ2)</p>
+<p><strong>검정 통계량</strong><br>
+- t값은 t 검정에 이용되는 검정통계량으로, 두 집단의 평균의 차이를 표준오차(SE)로 나눈 값</p>
+<p><span class="math display">\[t = \frac{\bar{X}_1 - \bar{X}_2}{SE}\]</span></p>
+<hr>
+<p><strong>예시</strong></p>
+<p>남성과 여성의 평균 BMI에 차이가 있는지 검정</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># t 검정 </span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(cognitive_score <span class="sc">~</span> dementia_dx, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>male_bmi <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">30</span>, <span class="at">mean=</span><span class="dv">25</span>, <span class="at">sd=</span><span class="dv">3</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>female_bmi <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">30</span>, <span class="at">mean=</span><span class="dv">23</span>, <span class="at">sd=</span><span class="dv">3</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(female_bmi))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(male_bmi))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(male_bmi, female_bmi, <span class="at">var.equal=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>치매 진단 여부와 항고혈압제 복용의 지속성 사이에 관련성이 있는가?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 카이 제곱 검정 </span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tab_df <span class="ot">=</span> <span class="fu">table</span>(df<span class="sc">$</span>medication_adherence, df<span class="sc">$</span>dementia_dx)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>tab_df</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># t 분포 데이터 생성</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">4</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>t_dist <span class="ot">&lt;-</span> <span class="fu">dt</span>(x_vals, <span class="at">df =</span> <span class="dv">58</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_vals, <span class="at">density =</span> t_dist)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(x, density)) <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">1.8758</span>) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="sc">-</span><span class="fl">1.8758</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>항고혈압제 지속적 복용군과 비복용군의 치매 발생 누적 위험은 차이가 있는가? Kaplan-Meier curve를 그려보고, log rank test를 해보라.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) <span class="co"># survfit, survdiff </span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survminer) <span class="co"># ggsurvplot </span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>km_fit <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(time_to_dementia, event) <span class="sc">~</span> medication_adherence, <span class="at">data =</span> df)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsurvplot</span>(km_fit, <span class="at">data =</span> df, <span class="at">pval =</span> <span class="cn">TRUE</span>, <span class="at">risk.table =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">survdiff</span>(<span class="fu">Surv</span>(time_to_dementia, event) <span class="sc">~</span> medication_adherence, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<hr>
 </section>
+<section id="chi-square-test" class="level3">
+<h3 class="anchored" data-anchor-id="chi-square-test">Chi-square test</h3>
+<p><strong>개념</strong><br>
+- 범주형 변수 간의 독립성을 검정 - 기대빈도와 관찰빈도의 차이를 이용 - 카이제곱 분포(χ²)를 이용</p>
+<p><strong>가설 예시</strong><br>
+- 귀무가설(H0): 두 변수는 독립이다 - 대립가설(H1): 두 변수는 독립이 아니다</p>
+<p><strong>검정 통계량</strong></p>
+<p><span class="math display">\[\chi^2 = \sum \frac{(O - E)^2}{E}\]</span><br>
+<br>
+- <span class="math inline">\(O\)</span>: 관찰 빈도 (Observed frequency)<br>
+- <span class="math inline">\(E\)</span>: 기대 빈도 (Expected frequency)</p>
+<table class="table">
+<colgroup>
+<col style="width: 75%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>예시</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">::: {.cell}</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>{.r .cell-code} data &lt;- matrix(c(30, 10, 20, 20, 30, 40), nrow=3, byrow=TRUE) colnames(data) &lt;- c(&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;) rownames(data) &lt;- c(&quot;B1&quot;, &quot;B2&quot;) data &lt;- as.table(data) chisq.test(data)</code> :::</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">::: {.cell}</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>{.r .cell-code} # 카이제곱 분포 데이터 x_vals &lt;- seq(0, 20, length.out = 200) chi_dist &lt;- dchisq(x_vals, df = 2) plot_data &lt;- data.frame(x = x_vals, density = chi_dist) ggplot(plot_data, aes(x, density)) + geom_line() + geom_vline(xintercept = 10.81)</code> :::</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="모수-추정" class="level3">
-<h3 class="anchored" data-anchor-id="모수-추정">모수 추정</h3>
-<p>모집단의 특성을 대표하는 값을 표본 데이터로부터 추정</p>
-<ul>
-<li>점 추정(point estimation): 모집단 모수를 하나의 값으로 추정. 예: 표본 평균으로 모집단 평균 추정<br>
-</li>
-<li>구간 추정(interval estimation): 모수가 포함될 것으로 기대되는 구간(신뢰구간, CI) 제시<br>
-예: 모집단 평균은 50~60 범위에 있을 가능성이 95%이다</li>
-</ul>
-<p>모수 추정은 불확실성을 가진다 → 표준 오차(Standard Error, SE)로 측정. 표본이 크거나, 표본의 표준편차가 작으면 -&gt; SE가 작아지고, 추정의 정밀도가 높아진다.</p>
-</section>
-<section id="표준-오차" class="level3">
-<h3 class="anchored" data-anchor-id="표준-오차">표준 오차</h3>
-<p><span class="math display">\[\mu = mean(\bar{X})\]</span><br>
-<span class="math inline">\(\mu\)</span>: 모평균<br>
-<span class="math inline">\(\bar{X}\)</span>: 표본평균<br>
-(중심극한정리)</p>
-<p>표본 평균의 표준오차(standard error of mean, SEM) = 표본평균의 표준 편차</p>
-<p><span class="math display">\[SEM = \frac{\sigma}{\sqrt{n}}\]</span></p>
-<p><span class="math inline">\(\sigma\)</span>: 모표준 편차<br>
-<span class="math inline">\(n\)</span>: 관측치의 개수(표본의 크기)</p>
-<p>표준 오차는 표본의 크기가 클수록 작아짐</p>
-<p>모집단의 표준편차 = 표본 표준편차의 기대값 (수학적 증명은 생략).</p>
-<p>모집단의 표준편차의 불편 추정량(unbiased estimate)으로서의 표본의 표준편차(<span class="math inline">\(s\)</span>)</p>
-<p><span class="math display">\[s = \sqrt\frac{\sum(X_i-\bar{X})^2}{n-1}\]</span></p>
+<section id="kaplan-meyer-곡선-log-rank-검정" class="level3">
+<h3 class="anchored" data-anchor-id="kaplan-meyer-곡선-log-rank-검정">Kaplan-Meyer 곡선 &amp; Log-rank 검정</h3>
 <dl>
-<dt>n 대신 n-1을 사용하는 이유?\</dt>
+<dt><strong>Kaplan–Meier(KM) curve</strong> </dt>
 <dd>
-모집단의 분산에 대한 불편 추정량으로서의 표본 분산에 대한 자유도는 n이 아니라 n-1 (표본의 평균을 알고 있으므로, 자유도는 n이 아니라 n-1)<br>
-모집단의 표준편차는 항상 표본의 표준편차보다 크다.
+<p>사건 발생까지의 시간을 추적하면서 생존함수(Survival function)를 추정하는 비모수적 방법</p>
 </dd>
 </dl>
-<section id="lab-1" class="level4">
-<h4 class="anchored" data-anchor-id="lab-1">Lab</h4>
-<p>Baseline 인지 점수(cognitive_score)에 영향을 미치는 요인은 무엇인가? 선형 회귀 모델로 추정해보라.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">=</span> <span class="fu">lm</span>(cognitive_score <span class="sc">~</span> age <span class="sc">+</span> sex <span class="sc">+</span> insurance_quartile <span class="sc">+</span> num_comorbidities <span class="sc">+</span> bmi <span class="sc">+</span> depression_dx <span class="sc">+</span> outpatient_visits, <span class="at">data =</span> df)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>항고혈압제 지속적 복용 여부는 치매 발생에 영향을 미치는가? 얼마나 영향을 미치는가? Cox 비례위험 모델로 추정해보라.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cox_fit <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time_to_dementia, event) <span class="sc">~</span> medication_adherence, <span class="at">data =</span> df)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cox_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<p><span class="math display">\[S(t) = P(T &gt; t)\]</span></p>
+<p>사건이 발생한 시점을 기준으로 생존 확률을 단계적으로 곱해나감 (step function). 검열(censoring) 자료(추적 중단, 탈락자 등)를 고려할 수 있음. KM 곡선은 계단 모양(step curve) 으로 표현되며, 두 그룹(예: 복용군 vs 비복용군)의 생존율 추이를 비교할 때 유용하다.</p>
+<p><strong>Kaplan–Meier 생존함수 추정식</strong></p>
+<p><span class="math display">\[\hat{S}(t) = \prod_{t_i \leq t} \left(1 - \frac{d_i}{n_i}\right)\]</span></p>
+<ul>
+<li><span class="math inline">\(t_i\)</span>: 사건(event, 예: 사망, 질병 진단)이 발생한 시점</li>
+<li><span class="math inline">\(d_i\)</span>: <span class="math inline">\(t_i\)</span> 시점에서 사건이 발생한 수 (number of events)</li>
+<li><span class="math inline">\(n_i\)</span>: <span class="math inline">\(t_i\)</span> 직전에 아직 위험집단(risk set)에 속해 있는 개체 수</li>
+</ul>
+<hr>
+<p><strong>Log-rank 검정</strong></p>
+<p>두 개 이상의 KM 곡선이 통계적으로 유의미하게 다른지 비교하는 검정 방법.</p>
+<p>귀무가설: 두 그룹 간 생존곡선에 차이가 없다. 대립가설: 두 그룹 간 생존곡선에 차이가 있다.</p>
+<p>각 시간 구간마다 관찰된 사건 수와 기대 사건 수를 비교하여 전체 검정 통계량을 계산. 검정 통계량은 Chi-square 분포를 따른다.</p>
+<table class="table">
+<colgroup>
+<col style="width: 75%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">### Lab</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">data: antihypertensive_dementia_clean.csv</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1. 치매 진단 여부에 따라 기저(baseline) 인지 점수에 차이가 있는가?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2. 치매 진단 여부와 항고혈압제 복용의 지속성 사이에 관련성이 있는가?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3. 항고혈압제 지속적 복용군과 비복용군의 치매 발생 누적 위험은 차이가 있는가? Kaplan-Meier curve를 그려보고, log rank test를 해보라.</td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
-<section id="모수적-방법과-비모수적-방법" class="level3">
-<h3 class="anchored" data-anchor-id="모수적-방법과-비모수적-방법">모수적 방법과 비모수적 방법</h3>
-<section id="모수적-방법" class="level4">
-<h4 class="anchored" data-anchor-id="모수적-방법">모수적 방법</h4>
+<section id="모수-추정" class="level2">
+<h2 class="anchored" data-anchor-id="모수-추정">2. 모수 추정</h2>
+<p>모집단의 특성을 대표하는 값을 표본 데이터로부터 추정</p>
+<ul>
+<li><p>점 추정(point estimation): 모집단 모수를 하나의 값으로 추정.<br>
+예: 표본 평균으로 모집단 평균 추정<br>
+</p></li>
+<li><p>구간 추정(interval estimation): 모수가 포함될 것으로 기대되는 구간(신뢰구간, CI) 제시<br>
+예: 모집단 평균은 50~60 범위에 있을 가능성이 95%이다</p></li>
+</ul>
+<p>모수 추정은 불확실성을 가지며, 이를 표준 오차(Standard Error, SE)로 측정한다.<br>
+표본이 크거나, 표본의 표준편차가 작으면 -&gt; 표준오차가 작아진다(즉, 추정의 정밀도가 높아진다)</p>
+<hr>
+<section id="선형-회귀" class="level3">
+<h3 class="anchored" data-anchor-id="선형-회귀">선형 회귀</h3>
+<p>선형 회귀는 독립변수(X)가 종속변수(Y)에 미치는 <strong>선형적 관계(linear relationship)</strong>를 추정하는 통계적 모델</p>
+<p><span class="math display">\[Y_i = \beta_0 + \beta_1 X_{i1} + \beta_2 X_{i2} + \cdots + \beta_p X_{ip} + \epsilon_i\]</span> - <span class="math inline">\(Y_i\)</span>: 종속 변수 (outcome)<br>
+- <span class="math inline">\(\beta_0\)</span>: 절편 (intercept)<br>
+- <span class="math inline">\(\beta_j\)</span>: 회귀 계수 (regression coefficient), 독립변수의 효과 크기<br>
+- <span class="math inline">\(X_{ij}\)</span>: 독립 변수<br>
+- <span class="math inline">\(\epsilon_i\)</span>: 오차항 (error term), <span class="math inline">\(N(0, \sigma^2)\)</span> 가정</p>
+<p>추정 방법 (Ordinary Least Squares, OLS)<br>
+<strong>목표:</strong> 오차 제곱합(Sum of Squared Errors, SSE)을 최소화하는 회귀 계수를 찾는 것</p>
+<p><span class="math display">\[SSE = \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2 = \sum_{i=1}^{n} (Y_i - \beta_0 - \beta_1 X_{i1} - \cdots - \beta_p X_{ip})^2\]</span></p>
+<table class="table">
+<colgroup>
+<col style="width: 69%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>예시</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Baseline 인지 점수(cognitive_score)에 영향을 미치는 요인은 무엇인가? 선형 회귀 모델로 추정해보라.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">::: {.cell}</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>{.r .cell-code} lm_fit = lm(cognitive_score ~ age + sex + insurance_quartile + num_comorbidities + bmi + depression_dx + outpatient_visits, data = df) summary(lm_fit)</code> :::</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="cox-proportional-hazard-regression" class="level3">
+<h3 class="anchored" data-anchor-id="cox-proportional-hazard-regression">Cox proportional hazard regression</h3>
+<p>Cox proportional hazards regression (콕스 비례위험 회귀)는 <strong>생존분석(survival analysis)</strong>에서 가장 널리 사용되는 모형 중 하나로, 독립변수(공변량, covariates)가 사건 발생 위험(hazard)에 미치는 영향을 평가하는데 사용된다.</p>
+<ul>
+<li>종속변수: 생존 시간(time-to-event)과 사건 발생 여부(event indicator)</li>
+<li>독립변수: 연속형, 범주형 모두 가능</li>
+<li>장점: 생존 시간의 분포(예: 지수분포, 와이블 분포 등)를 가정하지 않아도 된다 (semi-parametric model).</li>
+</ul>
+<p><strong>위험 함수 (Hazard Function)</strong><br>
+시간 t 에서 사건이 발생할 <strong>순간 위험도</strong>는 다음과 같이 정의된다.</p>
+<p><span class="math display">\[h(t) = \lim_{\Delta t \to 0} \frac{P(t \leq T &lt; t + \Delta t \mid T \geq t)}{\Delta t}\]</span></p>
+<p>여기서,<br>
+- T: 사건 발생 시간 (random variable)<br>
+- h(t): 위험 함수 (hazard function)</p>
+<p><strong>Cox 모형 수식</strong> 콕스 모형은 다음과 같이 표현된다.</p>
+<p><span class="math display">\[h(t \mid X) = h_0(t) \exp(\beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p)\]</span> 추정 방법</p>
+<ul>
+<li><p>모수적 방법과 달리 <span class="math inline">\(h_0(t)\)</span>의 형태를 명시하지 않고, <strong>partial likelihood (부분우도)</strong>를 통해 $$를 추정한다.</p></li>
+<li><p>추정된 계수 $$는 각 변수의 상대적 위험도를 설명한다.</p></li>
+<li><p><span class="math inline">\(h_0(t)\)</span>: 기준 위험 함수(baseline hazard), 특정 기준군에서의 위험도<br>
+</p></li>
+<li><p><span class="math inline">\(\beta_j\)</span>: 공변량 <span class="math inline">\(X_j\)</span>의 회귀 계수<br>
+</p></li>
+<li><p><span class="math inline">\(\exp(\beta_j)\)</span>: 공변량 <span class="math inline">\(X_j\)</span>의 <strong>위험비(hazard ratio, HR)</strong></p></li>
+</ul>
+<p><strong>해석</strong></p>
+<ul>
+<li><span class="math inline">\(HR = \exp(\beta) &gt; 1\)</span>: 해당 변수 증가 시 사건 발생 위험 증가<br>
+</li>
+<li><span class="math inline">\(HR = \exp(\beta) &lt; 1\)</span>: 해당 변수 증가 시 사건 발생 위험 감소<br>
+</li>
+<li><span class="math inline">\(HR = 1\)</span>: 영향 없음</li>
+</ul>
+<p>예: 항고혈압제 지속 복용 여부(1=복용, 0=비복용)<br>
+- <span class="math inline">\(HR = 0.74\)</span>: 지속 복용군의 치매 발생 위험이 비복용군 대비 26% 낮음.</p>
+<p><strong>비례위험 가정 (Proportional Hazards Assumption)</strong></p>
+<p>Cox 모형의 기본 가정은 <strong>위험비(HR)가 시간에 따라 일정하다</strong>는 것이다.<br>
+즉, 두 집단의 위험비는 시간이 흘러도 변하지 않는다.</p>
+<table class="table">
+<colgroup>
+<col style="width: 69%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>예시</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">항고혈압제 지속적 복용 여부는 치매 발생에 영향을 미치는가? 얼마나 영향을 미치는가? Cox 비례위험 모델로 추정해보라.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">::: {.cell}</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>{.r .cell-code} cox_fit &lt;- coxph(Surv(time_to_dementia, event) ~ medication_adherence, data = df) summary(cox_fit)</code> :::</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="모수적-방법과-비모수적-방법" class="level2">
+<h2 class="anchored" data-anchor-id="모수적-방법과-비모수적-방법">모수적 방법과 비모수적 방법</h2>
+<section id="모수적-방법" class="level3">
+<h3 class="anchored" data-anchor-id="모수적-방법">1. 모수적 방법</h3>
 <p>모집단이 특정 분포를 따른다고 가정하고(혹은 모델의 형태에 대한 특정한 가정하에) 분석하는 방법</p>
 <p>장점: 가정이 맞다면 더 강력하고 추정의 효율성이 높음</p>
 <p>단점: 가정이 위배되면 결과가 왜곡될 수 있음</p>
@@ -3164,11 +3353,9 @@ vertical-align: -.125em;
 - t-test (정규분포 가정하 평균 비교), ANOVA<br>
 - 선형/로지스틱 회귀, 콕스 비례위험 회귀</p>
 <p>예를 들어, 선형 회귀 모델에서는 Y는 X에 대해 선형 관계라고 가정</p>
-<p><span class="math display">\[f(X) = \beta_0 + \beta_1X_1 + \beta_2X_2 + ...+\beta_pX_p\]</span> 파라미터 집합 <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>,…, <span class="math inline">\(\beta_p\)</span>을 추정<br>
-선형 모델의 적합에 가장 일반적으로 사용되는 기법은 최소제곱법(least squares)</p>
 </section>
-<section id="비모수적-방법non-parametric" class="level4">
-<h4 class="anchored" data-anchor-id="비모수적-방법non-parametric">비모수적 방법(non-parametric)</h4>
+<section id="비모수적-방법non-parametric" class="level3">
+<h3 class="anchored" data-anchor-id="비모수적-방법non-parametric">2. 비모수적 방법(non-parametric)</h3>
 <p>비모수적 방법은 특정 분포를 가정하지 않고(혹은 모델의 형태에 대한 강한 가정을 두지 않고), 가설을 검정하거나 모수를 추정하는 방법</p>
 <p>장점: 작은 표본, 극단치(outlier), 비정규분포에도 유연함</p>
 <p>단점: 모수적 방법보다 검정력(statistical power)이 낮을 수 있음</p>
@@ -3177,9 +3364,9 @@ vertical-align: -.125em;
 <p><strong>요약</strong></p>
 <table class="table">
 <colgroup>
-<col style="width: 20%">
-<col style="width: 30%">
-<col style="width: 48%">
+<col style="width: 25%">
+<col style="width: 29%">
+<col style="width: 45%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -3216,9 +3403,6 @@ vertical-align: -.125em;
 </tr>
 </tbody>
 </table>
-</section>
-<section id="lab-2" class="level4">
-<h4 class="anchored" data-anchor-id="lab-2">Lab</h4>
 <p>t-test는 두 집단 평균 차이를 검정(정규성·등분산 가정이 기본). 표본이 충분히 크면 중심극한정리로 어느 정도 견고.</p>
 <p>Wilcoxon rank-sum(Mann–Whitney)은 분포 가정 없이 순위로 비교 → 비정규분포/긴 꼬리/극단치에 더 강건.</p>
 <p>언제 Wilcoxon? <br>
@@ -3226,35 +3410,38 @@ vertical-align: -.125em;
 - 분포가 비대칭/이상치 존재<br>
 - 등분산 의심이 강함(특히 Welch t-test로 보정해도 불안할 때)<br>
 </p>
+<hr>
+<p><strong>예시</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">55</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Treatment&quot;</span>, <span class="st">&quot;Control&quot;</span>), <span class="at">each =</span> <span class="dv">10</span>),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">c</span>(data1, data2)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">55</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Treatment&quot;</span>, <span class="st">&quot;Control&quot;</span>), <span class="at">each =</span> <span class="dv">10</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">c</span>(data1, data2)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df, <span class="at">var.equal =</span> <span class="cn">TRUE</span>) <span class="co"># 또는 var.equal = FALSE(웰치)</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df, <span class="at">var.equal =</span> <span class="cn">TRUE</span>) <span class="co"># 또는 var.equal = FALSE(웰치)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>카이제곱 검정은 기대도수가 충분히 클 때(일반적 기준: 모든 셀 ≥5) 근사적으로 유효.</p>
 <p>Fisher 정확 검정은 소표본/희귀 사건 등으로 기대도수가 작은 셀(특히 &lt;5)이 있으면 더 적합. “정확”한 p-값을 계산.</p>
+<p><strong>예시</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Drug&quot;</span>, <span class="st">&quot;Placebo&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Improved&quot;</span>, <span class="st">&quot;Not Improved&quot;</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>tab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Drug&quot;</span>, <span class="st">&quot;Placebo&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Improved&quot;</span>, <span class="st">&quot;Not Improved&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>tab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
-<section id="실습" class="level3">
-<h3 class="anchored" data-anchor-id="실습">실습</h3>
+<section id="실습" class="level2">
+<h2 class="anchored" data-anchor-id="실습">실습</h2>
 <ol type="1">
 <li><p>위 예시 데이터셋에서 t.test와 wilcox.test 결과를 비교하고, 언제 Wilcoxon을 사용하는 것이 더 적절한지 설명하라.</p></li>
 <li><p>chisq.test와 fisher.test 결과를 비교하고, 어떤 상황에서 Fisher’s exact test가 더 적합한지 토론하라.</p></li>
@@ -3263,23 +3450,20 @@ vertical-align: -.125em;
 </ol>
 <p>[5-9] Data: antihypertensive_dementia_clean.csv</p>
 <ol start="5" type="1">
-<li><p>성별(sex)에 따라 <strong>BMI</strong> 평균 차이가 있는지 검정하라.</p></li>
-<li><p><strong>우울증 진단(depression_dx)</strong>과 <strong>치매진단(dementia_dx)</strong>의 관련성을 검정하라.</p></li>
-<li><p><code>outpatient_visits</code>와 <code>insurance_quartile</code>을 포함해 치매진단을 예측하는 모형을 만들고, medication_adherence (High)의 <strong>OR</strong>과 95% CI를 보고하라.<br>
-<strong>힌트</strong>: <code>glm(..., family = binomial)</code> → <code>exp(coef())</code></p></li>
-<li><p><code>insurance_quartile</code>을 1–2 vs 3–4 두 그룹으로 묶어 KM 곡선을 비교하고 <strong>log-rank test</strong>를 수행하라.</p></li>
-<li><p><code>age_group = cut(age, breaks=c(60,65,70,75,80,85,90, Inf), right=FALSE)</code>을 만들고, <code>age_group</code> 포함 Cox 모형을 적합하라. <code>cox.zph</code>로 PH 가정을 평가하라.<br>
-<strong>도전</strong>: PH 위반 변수는 <code>strata()</code>로 층화하거나, <code>tt()</code>로 시간가변효과를 고려.</p></li>
+<li><p>성별(sex)에 따라 BMI 평균 차이가 있는지 검정하라.</p></li>
+<li><p>우울증 진단(depression_dx)과 치매진단(dementia_dx)의 관련성을 검정하라.</p></li>
+<li><p>insurance_quartile을 1–2 vs 3–4 두 그룹으로 묶어 KM 곡선을 비교하고 log-rank test를 수행하라.</p></li>
+<li><p>age_group = cut(age, breaks=c(60,65,70,75,80,85,90, Inf), right=FALSE) 을 만들고, age_group 포함 Cox 모형을 적합하라. cox.zph로 PH 가정을 평가하라.<br>
+<strong>도전</strong>: PH 위반 변수는 strata() 로 층화하거나, tt() 로 시간가변효과를 고려.</p></li>
 </ol>
 </section>
-<section id="마무리" class="level3">
-<h3 class="anchored" data-anchor-id="마무리">마무리</h3>
+<section id="마무리" class="level2">
+<h2 class="anchored" data-anchor-id="마무리">마무리</h2>
 <ul>
 <li>가설 검정(t, χ², log-rank)으로 <strong>차이/독립성</strong>을 평가</li>
 <li>회귀(선형/로지스틱/Cox)로 <strong>효과크기(β, OR, HR)</strong>와 <strong>CI</strong>를 추정</li>
 <li>임상적 의미는 <strong>효과크기 + CI + 맥락</strong>으로 해석</li>
 </ul>
-</section>
 </section>
 
 </main>
