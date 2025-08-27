@@ -3041,6 +3041,7 @@ vertical-align: -.125em;
   <li><a href="#student-t-test" id="toc-student-t-test" class="nav-link" data-scroll-target="#student-t-test">Student T-test</a></li>
   <li><a href="#chi-square-test" id="toc-chi-square-test" class="nav-link" data-scroll-target="#chi-square-test">Chi-square test</a></li>
   <li><a href="#kaplan-meyer-곡선-log-rank-검정" id="toc-kaplan-meyer-곡선-log-rank-검정" class="nav-link" data-scroll-target="#kaplan-meyer-곡선-log-rank-검정">Kaplan-Meyer 곡선 &amp; Log-rank 검정</a></li>
+  <li><a href="#lab" id="toc-lab" class="nav-link" data-scroll-target="#lab">Lab</a></li>
   </ul></li>
   <li><a href="#모수-추정" id="toc-모수-추정" class="nav-link" data-scroll-target="#모수-추정">2. 모수 추정</a>
   <ul class="collapse">
@@ -3170,28 +3171,26 @@ vertical-align: -.125em;
 <br>
 - <span class="math inline">\(O\)</span>: 관찰 빈도 (Observed frequency)<br>
 - <span class="math inline">\(E\)</span>: 기대 빈도 (Expected frequency)</p>
-<table class="table">
-<colgroup>
-<col style="width: 75%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>예시</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">::: {.cell}</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>{.r .cell-code} data &lt;- matrix(c(30, 10, 20, 20, 30, 40), nrow=3, byrow=TRUE) colnames(data) &lt;- c(&quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;) rownames(data) &lt;- c(&quot;B1&quot;, &quot;B2&quot;) data &lt;- as.table(data) chisq.test(data)</code> :::</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">::: {.cell}</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>{.r .cell-code} # 카이제곱 분포 데이터 x_vals &lt;- seq(0, 20, length.out = 200) chi_dist &lt;- dchisq(x_vals, df = 2) plot_data &lt;- data.frame(x = x_vals, density = chi_dist) ggplot(plot_data, aes(x, density)) + geom_line() + geom_vline(xintercept = 10.81)</code> :::</td>
-</tr>
-</tbody>
-</table>
+<hr>
+<p><strong>예시</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>), </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">nrow=</span><span class="dv">3</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;A1&quot;</span>, <span class="st">&quot;A2&quot;</span>, <span class="st">&quot;A3&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(data) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;B1&quot;</span>, <span class="st">&quot;B2&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">as.table</span>(data)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 카이제곱 분포 데이터</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>chi_dist <span class="ot">&lt;-</span> <span class="fu">dchisq</span>(x_vals, <span class="at">df =</span> <span class="dv">2</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_vals, <span class="at">density =</span> chi_dist)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(x, density)) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">10.81</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
 </section>
 <section id="kaplan-meyer-곡선-log-rank-검정" class="level3">
 <h3 class="anchored" data-anchor-id="kaplan-meyer-곡선-log-rank-검정">Kaplan-Meyer 곡선 &amp; Log-rank 검정</h3>
@@ -3215,28 +3214,17 @@ vertical-align: -.125em;
 <p>두 개 이상의 KM 곡선이 통계적으로 유의미하게 다른지 비교하는 검정 방법.</p>
 <p>귀무가설: 두 그룹 간 생존곡선에 차이가 없다. 대립가설: 두 그룹 간 생존곡선에 차이가 있다.</p>
 <p>각 시간 구간마다 관찰된 사건 수와 기대 사건 수를 비교하여 전체 검정 통계량을 계산. 검정 통계량은 Chi-square 분포를 따른다.</p>
-<table class="table">
-<colgroup>
-<col style="width: 75%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">### Lab</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">data: antihypertensive_dementia_clean.csv</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1. 치매 진단 여부에 따라 기저(baseline) 인지 점수에 차이가 있는가?</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2. 치매 진단 여부와 항고혈압제 복용의 지속성 사이에 관련성이 있는가?</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3. 항고혈압제 지속적 복용군과 비복용군의 치매 발생 누적 위험은 차이가 있는가? Kaplan-Meier curve를 그려보고, log rank test를 해보라.</td>
-</tr>
-</tbody>
-</table>
+<hr>
+</section>
+<section id="lab" class="level3">
+<h3 class="anchored" data-anchor-id="lab">Lab</h3>
+<p>data: antihypertensive_dementia_clean.csv</p>
+<ol type="1">
+<li><p>치매 진단 여부에 따라 기저(baseline) 인지 점수에 차이가 있는가?</p></li>
+<li><p>치매 진단 여부와 항고혈압제 복용의 지속성 사이에 관련성이 있는가?</p></li>
+<li><p>항고혈압제 지속적 복용군과 비복용군의 치매 발생 누적 위험은 차이가 있는가? Kaplan-Meier curve를 그려보고, log rank test를 해보라.</p></li>
+</ol>
+<hr>
 </section>
 </section>
 <section id="모수-추정" class="level2">
@@ -3263,25 +3251,14 @@ vertical-align: -.125em;
 <p>추정 방법 (Ordinary Least Squares, OLS)<br>
 <strong>목표:</strong> 오차 제곱합(Sum of Squared Errors, SSE)을 최소화하는 회귀 계수를 찾는 것</p>
 <p><span class="math display">\[SSE = \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2 = \sum_{i=1}^{n} (Y_i - \beta_0 - \beta_1 X_{i1} - \cdots - \beta_p X_{ip})^2\]</span></p>
-<table class="table">
-<colgroup>
-<col style="width: 69%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>예시</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Baseline 인지 점수(cognitive_score)에 영향을 미치는 요인은 무엇인가? 선형 회귀 모델로 추정해보라.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">::: {.cell}</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>{.r .cell-code} lm_fit = lm(cognitive_score ~ age + sex + insurance_quartile + num_comorbidities + bmi + depression_dx + outpatient_visits, data = df) summary(lm_fit)</code> :::</td>
-</tr>
-</tbody>
-</table>
+<hr>
+<p><strong>예시</strong></p>
+<p>Baseline 인지 점수(cognitive_score)에 영향을 미치는 요인은 무엇인가? 선형 회귀 모델로 추정해보라.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">=</span> <span class="fu">lm</span>(cognitive_score <span class="sc">~</span> age <span class="sc">+</span> sex <span class="sc">+</span> insurance_quartile <span class="sc">+</span> num_comorbidities <span class="sc">+</span> bmi <span class="sc">+</span> depression_dx <span class="sc">+</span> outpatient_visits, <span class="at">data =</span> df)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
 </section>
 <section id="cox-proportional-hazard-regression" class="level3">
 <h3 class="anchored" data-anchor-id="cox-proportional-hazard-regression">Cox proportional hazard regression</h3>
@@ -3321,25 +3298,14 @@ vertical-align: -.125em;
 <p><strong>비례위험 가정 (Proportional Hazards Assumption)</strong></p>
 <p>Cox 모형의 기본 가정은 <strong>위험비(HR)가 시간에 따라 일정하다</strong>는 것이다.<br>
 즉, 두 집단의 위험비는 시간이 흘러도 변하지 않는다.</p>
-<table class="table">
-<colgroup>
-<col style="width: 69%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>예시</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">항고혈압제 지속적 복용 여부는 치매 발생에 영향을 미치는가? 얼마나 영향을 미치는가? Cox 비례위험 모델로 추정해보라.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">::: {.cell}</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>{.r .cell-code} cox_fit &lt;- coxph(Surv(time_to_dementia, event) ~ medication_adherence, data = df) summary(cox_fit)</code> :::</td>
-</tr>
-</tbody>
-</table>
+<hr>
+<p><strong>예시</strong></p>
+<p>항고혈압제 지속적 복용 여부는 치매 발생에 영향을 미치는가? 얼마나 영향을 미치는가? Cox 비례위험 모델로 추정해보라.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cox_fit <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time_to_dementia, event) <span class="sc">~</span> medication_adherence, <span class="at">data =</span> df)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cox_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
 </section>
 </section>
 <section id="모수적-방법과-비모수적-방법" class="level2">
@@ -3413,30 +3379,30 @@ vertical-align: -.125em;
 <hr>
 <p><strong>예시</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">55</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Treatment&quot;</span>, <span class="st">&quot;Control&quot;</span>), <span class="at">each =</span> <span class="dv">10</span>),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">c</span>(data1, data2)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">55</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Treatment&quot;</span>, <span class="st">&quot;Control&quot;</span>), <span class="at">each =</span> <span class="dv">10</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">c</span>(data1, data2)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df, <span class="at">var.equal =</span> <span class="cn">TRUE</span>) <span class="co"># 또는 var.equal = FALSE(웰치)</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df, <span class="at">var.equal =</span> <span class="cn">TRUE</span>) <span class="co"># 또는 var.equal = FALSE(웰치)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(score <span class="sc">~</span> group, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>카이제곱 검정은 기대도수가 충분히 클 때(일반적 기준: 모든 셀 ≥5) 근사적으로 유효.</p>
 <p>Fisher 정확 검정은 소표본/희귀 사건 등으로 기대도수가 작은 셀(특히 &lt;5)이 있으면 더 적합. “정확”한 p-값을 계산.</p>
 <p><strong>예시</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Drug&quot;</span>, <span class="st">&quot;Placebo&quot;</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Improved&quot;</span>, <span class="st">&quot;Not Improved&quot;</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>tab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Drug&quot;</span>, <span class="st">&quot;Placebo&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(tab) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Improved&quot;</span>, <span class="st">&quot;Not Improved&quot;</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>tab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>

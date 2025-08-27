@@ -129,6 +129,8 @@ $$\chi^2 = \sum \frac{(O - E)^2}{E}$$\
 - $E$: 기대 빈도 (Expected frequency)
 
 -----------------------------------------------------
+
+
 **예시**
 
 ```{r}
@@ -149,6 +151,7 @@ ggplot(plot_data, aes(x, density)) +
   geom_line() +
   geom_vline(xintercept = 10.81)
 ```
+
 
 -----------------------------------------------------
 
@@ -182,6 +185,7 @@ $$\hat{S}(t) = \prod_{t_i \leq t} \left(1 - \frac{d_i}{n_i}\right)$$
 
 
 -----------------------------------------------------
+
 ### Lab
 
 data: antihypertensive_dementia_clean.csv
@@ -226,9 +230,12 @@ $$Y_i = \beta_0 + \beta_1 X_{i1} + \beta_2 X_{i2} + \cdots + \beta_p X_{ip} + \e
 $$SSE = \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2 = \sum_{i=1}^{n} (Y_i - \beta_0 - \beta_1 X_{i1} - \cdots - \beta_p X_{ip})^2$$
 
 -------------------------------------------------
+
+
 **예시** 
 
 Baseline 인지 점수(cognitive_score)에 영향을 미치는 요인은 무엇인가? 선형 회귀 모델로 추정해보라.
+
 
 ```{r}
 lm_fit = lm(cognitive_score ~ age + sex + insurance_quartile + num_comorbidities + bmi + depression_dx + outpatient_visits, data = df)
@@ -287,6 +294,7 @@ Cox 모형의 기본 가정은 **위험비(HR)가 시간에 따라 일정하다*
 즉, 두 집단의 위험비는 시간이 흘러도 변하지 않는다.  
 
 -------------------------------------------------
+
 **예시** 
 
 항고혈압제 지속적 복용 여부는 치매 발생에 영향을 미치는가? 얼마나 영향을 미치는가? Cox 비례위험 모델로 추정해보라.
