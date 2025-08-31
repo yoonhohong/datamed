@@ -176,8 +176,10 @@ SE: 표준오차(standard error)
 
 
 ```{r}
-predictions = predict(lm_1952, newdata = df_1952, interval = "predict")
+predictions = predict(lm_1952, newdata = df_1952, interval = "prediction")
+#predictions = predict(lm_1952, newdata = df_1952, interval = "confidence")
 head(predictions)
+predict(lm_1952, newdata = df_1952)
 ```
 
 
@@ -210,8 +212,8 @@ head(pred)
 예측값과 실제 관측값이 얼마나 다른지 살펴봅시다.
 
 ```{r}
-df = data.frame(obs = df_2002$lifeExp, prd = pred)
-ggplot(df, aes(obs, prd)) + 
+df_2002_pred = data.frame(obs = df_2002$lifeExp, prd = pred)
+ggplot(df_2002_pred, aes(obs, prd)) + 
   geom_point() + 
   geom_abline(slope = 1, intercept = 0) 
 ```
@@ -234,7 +236,7 @@ df_1952_pred %>%
 
 1952년 데이터로 학습한 모델을 2002년 검정 데이터셋(test)에 적용해서 기대수명을 예측할 때, 예측 모델의 정확성을 구해봅시다(rmse)    
 ```{r}
-df %>%
+df_2002_pred %>%
   mutate(sqe = (pred - obs)^2) %>%
   summarize(rmse = sqrt(sum(sqe)/140))
 ```
@@ -288,6 +290,7 @@ df_1952 %>%
 ```{r}
 summary(aov(gdpPercap_log10 ~ continent, data = df_1952))
 ```
+
 어느 정도의 상관관계가 지나친지 어떻게 알 수 있을까요? 
 
 일반적으로 변수 간 상관관계가 0.8 이상인 경우 모델에서 예측 변수를 제외할 것을 제안하지만, 이는 매우 임의적인 규칙입니다. 때로는 높은 상관관계에도 불구하고 모델 추정치가 잘 작동하는 경우도 있고, 한편 각 변수 쌍의 상관관계는 낮지만 다중공선성이 존재할 수도 있습니다. 어떤 예측 변수를 포함하거나 제외할지 결정하려면 어떻게 해야 할까요?
