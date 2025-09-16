@@ -246,8 +246,4 @@ perf@y.values[[1]]
 
 ## 로지스틱 회귀: 실습
 
-[week5_lab](https://mixolydian-canoe-039.notion.site/25f36359f28680ffb5c2d4b6f63eac5f?source=copy_link) 
-
-
-
-
+[week5_lab](https://mixolydian-canoe-039.notion.site/25f36359f28680ffb5c2d4b6f63eac5f?source=copy_link)

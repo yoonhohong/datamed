@@ -9,11 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Hong, Yoon-Ho" />
 
-<meta name="date" content="2022-09-04" />
 
-<title>CV_regularization</title>
+<title>교차 검증과 정규화</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -341,13 +339,61 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">CV_regularization</h1>
-<h4 class="author">Hong, Yoon-Ho</h4>
-<h4 class="date">2022-09-04</h4>
+<h1 class="title toc-ignore">교차 검증과 정규화</h1>
 
 </div>
 
 
+<div id="학습-목표-learning-objectives" class="section level2">
+<h2>학습 목표 (Learning Objectives)</h2>
+<ol style="list-style-type: decimal">
+<li>교차 검증의 필요성 이해<br />
+
+<ul>
+<li>훈련 데이터와 검증 데이터의 차이를 설명할 수 있다.<br />
+</li>
+<li>과적합(overfitting)과 bias-variance trade-off 개념을 이해한다.<br />
+</li>
+</ul></li>
+<li>대표적인 교차 검증 방법 비교<br />
+
+<ul>
+<li>Validation set approach, LOOCV, k-Fold CV의 특징과 장단점을 설명할
+수 있다.<br />
+</li>
+<li>실제 데이터를 이용해 각 방법의 RMSE를 계산하고 비교할 수 있다.<br />
+</li>
+</ul></li>
+<li>정규화의 필요성 이해<br />
+
+<ul>
+<li>고차원 데이터(p &gt;&gt; n)에서 발생하는 문제(차원의 저주)를 설명할
+수 있다.<br />
+</li>
+<li>Feature selection, Shrinkage, Dimension reduction의 기본 개념을
+구분할 수 있다. - Ridge와 Lasso 회귀의 원리 및 차이점 설명<br />
+</li>
+</ul></li>
+<li>Ridge와 Lasso의 목적 함수와 penalty term을 수식으로 이해할 수
+있다.<br />
+
+<ul>
+<li>Ridge는 계수 크기를 줄이고, Lasso는 일부 계수를 0으로 만들어 변수
+선택을 수행함을 설명할 수 있다.<br />
+</li>
+</ul></li>
+<li>실습을 통해 정규화 기법 적용<br />
+
+<ul>
+<li>R의 glmnet 패키지를 사용하여 Ridge/Lasso 회귀 모델을 적합시킬 수
+있다.<br />
+</li>
+<li>교차 검증을 통해 최적의 λ 값을 선택하고, 모델의 예측 성능을 평가할
+수 있다.<br />
+</li>
+</ul></li>
+</ol>
+</div>
 <div id="교차-검증-cross-validation" class="section level2">
 <h2>1. 교차 검증 (Cross-Validation)</h2>
 <p>모델의 성능을 평가할 때는 반드시 검증 데이터(test set) 가 필요합니다.
@@ -457,13 +503,29 @@ variance가 LOOCV보다 작게 나타나는 경우가 많음.</p>
 <h2>2. 정규화 (Regularization)</h2>
 <div id="왜-필요한가" class="section level3">
 <h3>2.1 왜 필요한가?</h3>
-<p>차원의 저주(Curse of Dimensionality) - p &gt;&gt; n 상황에서 문제
-발생</p>
-<p>문제점 - 모델 해석력(interpretability) 저하 - 과적합(overfitting) →
-높은 분산</p>
-<p>따라서 다음 기법들이 필요합니다. - Feature selection: subset
-selection, stepwise selection - Shrinkage (정규화): ridge, lasso -
-Dimension reduction: PCA 등</p>
+<p>차원의 저주(Curse of Dimensionality)</p>
+<ol style="list-style-type: decimal">
+<li><p>데이터 희소성 (Data sparsity)<br />
+차원이 증가하면 관측치가 고차원 공간에 희소하게 퍼짐. 데이터 포인트 간
+거리가 멀어져서 “비슷한 관측치”라는 개념이 무의미해짐. 최근접
+이웃(nearest neighbor) 같은 방법이 성능을 잃음.</p></li>
+<li><p>과적합(Overfitting) 위험 증가 변수가 많으면 모델이 훈련 데이터의
+노이즈까지 학습하기 쉬움.<br />
+p≫n 상황에서는 자유도가 커져서, 예측 안정성이 떨어지고 분산(variance) 이
+매우 커짐.</p></li>
+<li><p>해석력(Interpretability) 저하<br />
+변수가 많을수록 어떤 변수가 중요한지 파악하기 어려움.<br />
+다중공선성(multicollinearity) 문제가 심각해짐 → 추정된 계수
+불안정.</p></li>
+<li><p>계산 복잡도 증가<br />
+변수가 늘어날수록 모델 학습에 필요한 연산량이 기하급수적으로 증가.<br />
+특히 전수조사 방식의 변수 선택(subset selection)은 현실적으로
+불가능.</p></li>
+</ol>
+<p>대안적 기법들<br />
+- Feature selection: subset selection, stepwise selection<br />
+- Shrinkage (정규화): ridge, lasso<br />
+- Dimension reduction: PCA 등</p>
 </div>
 <div id="부분집합-선택-subset-selection" class="section level3">
 <h3>2.2 부분집합 선택 (Subset Selection)</h3>

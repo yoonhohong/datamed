@@ -1,0 +1,278 @@
+---
+title: "교차 검증과 정규화"  
+output: 
+  html_document:
+    toc: yes
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = F, warning = F, message = F)
+```
+
+## 학습 목표 (Learning Objectives)
+
+1.  교차 검증의 필요성 이해 \
+    - 훈련 데이터와 검증 데이터의 차이를 설명할 수 있다. \
+    - 과적합(overfitting)과 bias-variance trade-off 개념을 이해한다.\
+2.  대표적인 교차 검증 방법 비교 \
+    - Validation set approach, LOOCV, k-Fold CV의 특징과 장단점을 설명할 수 있다. \
+    - 실제 데이터를 이용해 각 방법의 RMSE를 계산하고 비교할 수 있다.\
+3.  정규화의 필요성 이해 \
+    - 고차원 데이터(p \>\> n)에서 발생하는 문제(차원의 저주)를 설명할 수 있다. \
+    - Feature selection, Shrinkage, Dimension reduction의 기본 개념을 구분할 수 있다. - Ridge와 Lasso 회귀의 원리 및 차이점 설명 \
+4.  Ridge와 Lasso의 목적 함수와 penalty term을 수식으로 이해할 수 있다. \
+    - Ridge는 계수 크기를 줄이고, Lasso는 일부 계수를 0으로 만들어 변수 선택을 수행함을 설명할 수 있다. \
+5.  실습을 통해 정규화 기법 적용 \
+    - R의 glmnet 패키지를 사용하여 Ridge/Lasso 회귀 모델을 적합시킬 수 있다. \
+    - 교차 검증을 통해 최적의 λ 값을 선택하고, 모델의 예측 성능을 평가할 수 있다.\
+
+## 1. 교차 검증 (Cross-Validation)
+
+모델의 성능을 평가할 때는 반드시 검증 데이터(test set) 가 필요합니다.
+훈련 데이터(training set)에서는 항상 더 유연한 모델이 더 좋은 성능을 보이는 것처럼 보입니다.
+그러나 훈련 데이터에서 좋은 성능이 검증 데이터에서도 보장되지는 않습니다.
+
+유연한 모델은 훈련 데이터의 노이즈까지 학습하여 과적합(overfitting)되기 쉽습니다.
+
+과적합된 모델은 분산(variance)이 커지고, 예측 안정성이 떨어집니다.
+
+따라서 우리는 bias-variance trade-off 를 고려하여 적절한 모델을 선택해야 합니다.
+
+모델 성능을 평가하는 대표적인 세 가지 접근법은 다음과 같습니다.
+
+-   Validation set approach\
+-   LOOCV (Leave-One-Out Cross-Validation)\
+-   k-fold CV
+
+### 1.1 예제 데이터 준비
+
+auto 데이터셋에서 자동차 연비(mpg)를 예측하는 회귀 모델을 만들어봅시다.
+
+```{r, message=F}
+library(dplyr)
+
+auto = read.csv("data/auto-mpg.csv")
+auto = auto %>% select(-c(model.year, origin, car.name))
+summary(auto)
+```
+
+```{r}
+temp = auto[!grepl("^[0-9]+$", auto$horsepower), ]
+temp
+auto = auto[grepl("^[0-9]+$", auto$horsepower),]
+auto$horsepower = as.numeric(auto$horsepower)
+```
+
+### 1.2 Validation Set Approach
+
+훈련 데이터와 검증 데이터를 나누어 RMSE를 계산합니다.
+
+```{r}
+set.seed(1)
+train_index = sample(nrow(auto), round(nrow(auto)*2/3))
+train_data = auto[train_index, ]
+test_data = auto[-train_index, ]
+
+lm.fit = lm(mpg ~ ., data = train_data)
+
+pred = predict(lm.fit, test_data)
+obs = test_data$mpg
+
+mse = mean((pred - obs)^2)
+sqrt(mse)
+```
+
+10번 반복해 RMSE의 평균과 분산을 계산해 봅니다.
+
+```{r}
+rmse_vs = c()
+
+for (i in 1:10){
+  train_index = sample(nrow(auto), round(nrow(auto)*2/3), replace = F)
+  train_data = auto[train_index, ]
+  test_data = auto[-train_index, ]
+  lm.fit = lm(mpg ~ ., data = train_data)
+  pred = predict(lm.fit, test_data)
+  obs = test_data$mpg
+  mse = mean((pred - obs)^2)
+  rmse_vs[i] = sqrt(mse)
+}
+
+mean(rmse_vs); var(rmse_vs)
+```
+
+### 1.3 LOOCV (Leave-One-Out CV)
+
+데이터의 각 관측치를 하나씩 검증 셋으로 사용하는 방법입니다.
+
+```{r}
+rmse_loocv = c()
+for (i in 1:nrow(auto)){
+  lm.fit = lm(mpg ~ ., data = auto[-i,])
+  pred = predict(lm.fit, auto[i,])
+  obs = auto$mpg[i]
+  mse = (pred - obs)^2
+  rmse_loocv[i] = sqrt(mse)
+}
+mean(rmse_loocv); var(rmse_loocv)
+```
+
+### 1.4 k-Fold CV
+
+보통 k=5 또는 10 이 자주 사용됩니다.
+
+```{r}
+library(caret)
+folds = createFolds(1:nrow(auto), k=5)
+rmse_kcv = c()
+
+for (i in 1:5){
+  lm.fit = lm(mpg ~ ., data = auto[-folds[[i]],])
+  pred = predict(lm.fit, auto[folds[[i]],])
+  obs = auto[folds[[i]],]$mpg
+  mse = mean((pred - obs)^2)
+  rmse_kcv[i] = sqrt(mse)
+}
+
+mean(rmse_kcv); var(rmse_kcv)
+```
+
+### 1.5 세 기법 비교
+
+Validation set approach - 훈련 데이터가 작아져 bias가 큼.
+- 분할의 임의성 때문에 variance도 큼.
+
+LOOCV - bias는 작지만, 모델들이 서로 매우 유사하여 variance가 커질 수 있음.
+
+k-Fold CV - bias는 validation set approach와 LOOCV 사이.
+- 실제로는 variance가 LOOCV보다 작게 나타나는 경우가 많음.
+
+## 2. 정규화 (Regularization)
+
+### 2.1 왜 필요한가?
+
+차원의 저주(Curse of Dimensionality)
+
+1.  데이터 희소성 (Data sparsity)\
+    차원이 증가하면 관측치가 고차원 공간에 희소하게 퍼짐.
+    데이터 포인트 간 거리가 멀어져서 "비슷한 관측치"라는 개념이 무의미해짐.
+    최근접 이웃(nearest neighbor) 같은 방법이 성능을 잃음.
+
+2.  과적합(Overfitting) 위험 증가 변수가 많으면 모델이 훈련 데이터의 노이즈까지 학습하기 쉬움.\
+    p≫n 상황에서는 자유도가 커져서, 예측 안정성이 떨어지고 분산(variance) 이 매우 커짐.
+
+3.  해석력(Interpretability) 저하 \
+    변수가 많을수록 어떤 변수가 중요한지 파악하기 어려움.
+    \
+    다중공선성(multicollinearity) 문제가 심각해짐 → 추정된 계수 불안정.
+
+4.  계산 복잡도 증가\
+    변수가 늘어날수록 모델 학습에 필요한 연산량이 기하급수적으로 증가.\
+    특히 전수조사 방식의 변수 선택(subset selection)은 현실적으로 불가능.
+
+대안적 기법들 \
+- Feature selection: subset selection, stepwise selection\
+- Shrinkage (정규화): ridge, lasso\
+- Dimension reduction: PCA 등
+
+### 2.2 부분집합 선택 (Subset Selection)
+
+최상의 부분집합 선택: 가능한 모든 경우(2\^p)를 탐색 (계산 비용 큼)
+
+Feature selection\
+- Forward selection (변수 추가).
+- Backward elimination (변수 제거)\
+- Mixed (혼합형): stepwise selection
+
+### 2.3 수축(Shrinkage)
+
+[Ridge regression](https://www.youtube.com/watch?v=Q81RR3yKn30)\
+[Lasso regression](https://www.youtube.com/watch?v=NGf0voTMlcs)
+
+아래 식을 최소로 하는 $\beta$ 를 추정 (note: shrinkage penalty)
+
+능형회귀(ridge regresssion)\
+$$RSS + \lambda \sum_{j=1}^{p} \beta^2_j$$\
+$\lambda$: tuning parameter
+
+라소회귀(lasso regression)\
+$$RSS + \lambda \sum_{j=1}^{p} |\beta_j|$$
+
+Ridge는 계수를 0에 가깝게, Lasso는 일부 계수를 아예 0으로 만듭니다(변수 선택 기능).
+
+```{r echo=TRUE}
+library(glmnet)
+```
+
+### 2.4 예제: Hitters 데이터
+
+```{r include=FALSE}
+library(ISLR)
+str(Hitters)
+summary(Hitters)
+Hitters = na.omit(Hitters)
+```
+
+```{r}
+x = model.matrix(Salary~., Hitters)[,-1] # create a design matrix, convert factors to a set of dummy variables, remove intercept term   
+y = Hitters$Salary 
+```
+
+lambda 값의 범위를 설정합니다.
+
+```{r}
+grid = 10^seq(10, -2, length = 100) # lambda를 10^10 에서 10^-2 까지 값을 갖도록 설정 
+```
+
+```{r}
+ridge.mod = glmnet(x,y,alpha = 0, lambda = grid, standardize = T) # alpha = 0 for ridge regression, alpha = 1 for lasso regression, standardize = TRUE 
+plot(ridge.mod)
+```
+
+변수는 반드시 표준화(standardization) 필요 λ 값이 커질수록 계수들이 0에 수축
+
+교차 검증으로 λ 선택
+
+```{r}
+set.seed(1)
+train = sample(nrow(x), nrow(x)/2)
+y.test = y[-train]
+
+cv.ridge = cv.glmnet(x[train,], y[train], alpha = 0, lambda = grid, nfolds = 10)
+plot(cv.ridge)
+bestlambda.ridge = cv.ridge$lambda.min
+bestlambda.ridge
+```
+
+```{r}
+ridge.pred = predict(ridge.mod, s=bestlambda.ridge, newx=x[-train,])
+mean((ridge.pred - y.test)^2) %>% sqrt()
+```
+
+Lasso Regression
+
+```{r}
+lasso.mod = glmnet(x[train,], y[train], alpha = 1, lambda = grid)
+
+cv.lasso = cv.glmnet(x[train,], y[train], alpha = 1,nfolds = 10)
+plot(cv.lasso)
+bestlambda.lasso = cv.lasso$lambda.min
+
+lasso.pred = predict(lasso.mod, s=bestlambda.lasso, newx=x[-train,])
+mean((lasso.pred - y.test)^2) %>% sqrt()
+
+lasso.out = glmnet(x, y, alpha = 1, lambda = grid)
+predict(lasso.out, type="coefficients", s=bestlambda.lasso)
+```
+
+## 3. 정리
+
+교차 검증: 모델의 예측 성능을 객관적으로 평가하기 위한 필수 절차.
+정규화: 고차원 데이터에서 과적합을 막고, 해석 가능성을 높이는 기법.\
+Ridge: 모든 계수를 조금씩 줄임\
+Lasso: 일부 계수를 0으로 만들어 변수 선택 기능 수행.

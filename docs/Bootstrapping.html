@@ -3025,6 +3025,14 @@ vertical-align: -.125em;
    
   <ul>
   <li><a href="#부트스트래핑" id="toc-부트스트래핑" class="nav-link active" data-scroll-target="#부트스트래핑">부트스트래핑</a></li>
+  <li><a href="#모집단과-표본" id="toc-모집단과-표본" class="nav-link" data-scroll-target="#모집단과-표본">모집단과 표본</a></li>
+  <li><a href="#표본-평균과-표준오차-계산" id="toc-표본-평균과-표준오차-계산" class="nav-link" data-scroll-target="#표본-평균과-표준오차-계산">표본 평균과 표준오차 계산</a></li>
+  <li><a href="#부트스트래핑-1" id="toc-부트스트래핑-1" class="nav-link" data-scroll-target="#부트스트래핑-1">부트스트래핑</a>
+  <ul class="collapse">
+  <li><a href="#for-구문을-이용한-구현" id="toc-for-구문을-이용한-구현" class="nav-link" data-scroll-target="#for-구문을-이용한-구현">for 구문을 이용한 구현</a></li>
+  <li><a href="#replicate-을-활용한-구현" id="toc-replicate-을-활용한-구현" class="nav-link" data-scroll-target="#replicate-을-활용한-구현">replicate 을 활용한 구현</a></li>
+  </ul></li>
+  <li><a href="#핵심-메시지" id="toc-핵심-메시지" class="nav-link" data-scroll-target="#핵심-메시지">핵심 메시지</a></li>
   </ul>
 </nav>
 </div>
@@ -3056,90 +3064,78 @@ vertical-align: -.125em;
 <p>기계학습과 통계적 모델링의 기초에서 이어집니다.</p>
 <section id="부트스트래핑" class="level2">
 <h2 class="anchored" data-anchor-id="부트스트래핑">부트스트래핑</h2>
-<p>부트스트래핑이란(bootstrapping) 모수를 추정하거나 가설 검정을 위해서 무작위로 표본을 추출하는 과정을 가리킵니다. 이 때 중복을 허용합니다.</p>
-<p>그럼, 앞서 모평균을 추정하고 표본 평균의 변동성을 측정하는 문제에 적용해보기로 합시다.</p>
-<p>우선, 다음과 같이 크기가 1000인 모집단이 있다고 해봅시다. 정규분포를 따르는 확률 변수 X의 평균과 표준편차는 각각 0과 10입니다.</p>
+<p>부트스트래핑(bootstrapping)은 <strong>실제 모집단을 모르더라도</strong>, 현재 가지고 있는 <strong>표본을 반복적으로 재추출</strong>하여 통계량의 분포를 추정하는 방법이다.</p>
+<p>부트스트래핑 개념을 이해하기 위해서 이전 시간에 다루었던 표본 평균을 통해 모평균을 추정하고 표본 평균의 변동성, 즉 표준오차를 구하는 문제에 적용해보기로 하자.</p>
+</section>
+<section id="모집단과-표본" class="level2">
+<h2 class="anchored" data-anchor-id="모집단과-표본">모집단과 표본</h2>
+<p>모집단(population)을 정규분포에서 생성.<br>
+모집단 전체의 평균과 표준편차를 확인.<br>
+여기서 실제 분석 대상은 모집단이 아니라, 추출한 표본(sample).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">0</span>, <span class="dv">10</span>) <span class="co"># number=1000, mean=0, sd=10</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pop);<span class="fu">sd</span>(pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.1164814</code></pre>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">0</span>, <span class="dv">10</span>) </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pop)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(pop)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sampl <span class="ot">=</span> <span class="fu">sample</span>(pop, <span class="dv">100</span>, <span class="at">replace =</span> F) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 10.34916</code></pre>
-</div>
-</div>
-<p>모집단에서 크기가 100인 표본을 무작위로 추출합니다.</p>
+</section>
+<section id="표본-평균과-표준오차-계산" class="level2">
+<h2 class="anchored" data-anchor-id="표본-평균과-표준오차-계산">표본 평균과 표준오차 계산</h2>
+<p>SEM 은 표본 평균이 얼마나 불확실한지를 나타내는 지표.<br>
+계산식: 표본 표준편차 / √표본 크기.<br>
+±2*SEM 은 대략적인 95% 신뢰구간의 의미.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sampl <span class="ot">=</span> <span class="fu">sample</span>(pop, <span class="dv">100</span>, <span class="at">replace =</span> F) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x_bar <span class="ot">=</span> <span class="fu">mean</span>(sampl) <span class="co"># 표본 평균 </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(sampl) <span class="co"># 표본 크기 </span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sem <span class="ot">=</span> <span class="fu">sd</span>(sampl)<span class="sc">/</span><span class="fu">sqrt</span>(n)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sem <span class="co"># 표준오차 </span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>x_bar <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>sem <span class="co"># 95% 신뢰구간 하한 </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>x_bar <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>sem <span class="co"># 95% 신뢰구간 상한 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>모평균의 추정치(즉, 표본 평균)와 표준 오차, 95% 신뢰구간을 구해봅시다.</p>
+</section>
+<section id="부트스트래핑-1" class="level2">
+<h2 class="anchored" data-anchor-id="부트스트래핑-1">부트스트래핑</h2>
+<p>표본에서 다시 복원추출을 반복해 가짜 표본(bootstrap sample)들을 만든다.<br>
+각 가짜 표본의 평균을 계산 → 표본 평균들의 분포 확인.<br>
+이 분포의 표준편차가 <strong>표본 평균의 표준오차</strong>와 유사하다.</p>
+<section id="for-구문을-이용한-구현" class="level3">
+<h3 class="anchored" data-anchor-id="for-구문을-이용한-구현">for 구문을 이용한 구현</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x_bar <span class="ot">=</span> <span class="fu">mean</span>(sampl) <span class="co"># 표본 평균 </span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(sampl) <span class="co"># 표본 크기 </span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>s <span class="ot">=</span> <span class="fu">sqrt</span>(<span class="fu">var</span>(sampl)<span class="sc">*</span>n<span class="sc">/</span>(n<span class="dv">-1</span>)) <span class="co"># 모표준편차의 불편추정량으로서 표본 표준편차 </span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>sem <span class="ot">=</span> s<span class="sc">/</span><span class="fu">sqrt</span>(n)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>CI <span class="ot">=</span> <span class="fu">c</span>(x_bar <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>sem, x_bar <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>sem)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>x_bar; sem; CI</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.6630055</code></pre>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>boot_sampl <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(i)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  boot_sampl[[i]] <span class="ot">=</span> <span class="fu">sample</span>(sampl, <span class="dv">100</span>, <span class="at">replace =</span> T)  <span class="co"># 표본에서 다시 표본 추출</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">=</span> <span class="fu">lapply</span>(boot_sampl, mean) </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>temp2 <span class="ot">=</span> <span class="fu">unlist</span>(temp)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(temp2)   <span class="co"># 부트스트랩된 평균들의 평균</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(temp2)     <span class="co"># 부트스트랩된 평균들의 표준편차 ≈ SEM</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.146568</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -2.956141  1.630130</code></pre>
-</div>
-</div>
-<p>이제, 부트스트래핑을 적용해 모평균의 추정치와 표준 오차, 95% 신뢰구간을 구해봅시다.</p>
-<p>먼저 다음과 같은 함수를 정의해줍니다.</p>
+</section>
+<section id="replicate-을-활용한-구현" class="level3">
+<h3 class="anchored" data-anchor-id="replicate-을-활용한-구현">replicate 을 활용한 구현</h3>
+<p>for 구문 대신 replicate() 사용 → 코드 간결화.<br>
+sd(means) 값이 곧 부트스트랩으로 구한 SEM 추정치.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fn <span class="ot">=</span> <span class="cf">function</span>(z, index){</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(z[index])</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>} <span class="co"># function need two arguments, the second one should be index</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>boot <span class="ot">=</span> <span class="cf">function</span>(x){</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample</span>(x, <span class="dv">100</span>, <span class="at">replace =</span> T)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">boot</span>(sampl)) <span class="ot">-&gt;</span> temp</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(temp, mean)  <span class="ot">-&gt;</span> means</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(means)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(means)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>이제, 표본에서 하위 표본을 추출하고(복원을 허락), 해당 하위 표본의 평균을 구하는 함수를 적용합니다.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ind <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">length</span>(sampl), <span class="fu">length</span>(sampl), <span class="at">replace =</span> T)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fn</span>(sampl, ind)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.7172011</code></pre>
-</div>
-</div>
-<p>위 과정을 1000번 반복합니다.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># boot </span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">boot</span>(sampl, fn, <span class="at">R=</span><span class="dv">1000</span>) </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>t0 <span class="co"># original = the mean of the original sample</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.6630055</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">=</span> <span class="fu">mean</span>(res<span class="sc">$</span>t)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sem <span class="ot">=</span> <span class="fu">sd</span>(res<span class="sc">$</span>t) <span class="co"># standard deviation of the sample mean </span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">=</span> <span class="fu">boot.ci</span>(res, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>mu; sem; ci</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.6532886</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.139013</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
-Based on 1000 bootstrap replicates
-
-CALL : 
-boot.ci(boot.out = res, type = &quot;norm&quot;)
-
-Intervals : 
-Level      Normal        
-95%   (-2.9051,  1.5597 )  
-Calculations and Intervals on Original Scale</code></pre>
-</div>
-</div>
-<p>위에서 구한 표준오차, 신뢰구간과 비교해봅니다.</p>
+</section>
+</section>
+<section id="핵심-메시지" class="level2">
+<h2 class="anchored" data-anchor-id="핵심-메시지">핵심 메시지</h2>
+<p>SEM은 표본 평균의 불확실성을 수치화한 값이다.<br>
+부트스트래핑은 실제 모집단을 몰라도 SEM을 추정할 수 있는 강력한 방법이다.<br>
+이 과정은 “이 한 번 뽑은 표본이 과연 얼마나 믿을 만한가?”라는 질문에 대한 답을 준다.</p>
 </section>
 
 </main>
