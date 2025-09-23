@@ -1,0 +1,189 @@
+---
+title: "Unsupervised learning: PCA, clustering"
+author: "Hong, Yoon-Ho"
+date: "2022-09-18"
+output: 
+  html_document: 
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+비지도 학습은 정답(label) 없이, 데이터 자체의 패턴과 구조를 학습하는 방법이다.
+
+주요 기법:   
+- 주성분분석 (Principal Component Analysis, PCA) → 차원 축소 / 시각화 / 전처리   
+- 군집분석 (Clustering) → 유사한 관측치 또는 변수끼리 하위 그룹(subgroup) 형성, ex) K-means clustering, 계층적 군집분석 (Hierarchical clustering)
+
+
+## 주성분분석(PCA) 
+
+개념
+- 첫번째 주성분: 분산을 가장 크게 설명하는 방향의 선형 결합.  
+- 두번째 주성분: 첫 번째 주성분과 직교(uncorrelated)하면서, 분산을 최대화하는 방향.  
+- 스케일링: 변수의 단위가 다르면 큰 분산을 가진 변수에 종속 → PCA 전에 표준화 필요
+
+$$Z_1 = \phi_{11}X_1 + \phi_{21}X_2 + ... + \phi_{p1}X_p$$ 
+
+$$\sum_{j=1}^p \phi^2_{j1} = 1$$
+
+- 로딩 벡터: 각 변수에 곱해지는 계수 ($\phi$)
+
+$$\phi_1 = (\phi_{11}, \phi_{21},,,\phi_{p1})^T$$
+- 주성분 점수(PC score): 각 관측치를 새로운 축(PC)에 투영한 값
+
+  
+## 실습(PCA)   
+
+USArrests dataset 
+
+```{r}
+states = row.names(USArrests) 
+summary(USArrests)
+apply(USArrests, 2, var) # column-wise 
+apply(USArrests, 2, mean) # column-wise 
+```
+
+
+```{r}
+pr.out = prcomp(USArrests, scale = TRUE) 
+names(pr.out)
+pr.out$rotation # loading vectors 
+head(pr.out$x) # pc scores
+biplot(pr.out) # 이중 플롯 (loading + scores)
+```
+
+방향 반전(biplot 시각화 조정):
+```{r}
+pr.out$rotation = -pr.out$rotation # loading vectors 
+pr.out$x = -pr.out$x # pc scores
+biplot(pr.out) 
+```
+
+분산 설명 비율 (Scree plot):
+```{r}
+pr.var = pr.out$sdev^2
+pve = pr.var/sum(pr.var)
+plot(pve, xlab = "Principal component", ylab = "Proportion of Variance Explained", type = "b") # scree plot 
+```
+
+
+```{r}
+library(ISLR) # NCI60 data in this package 
+class(NCI60) # NCI60: 64개 암세포주에 대한 6830개의 유전자 발현 관측치 
+nci.labs = NCI60$labs
+table(nci.labs) # 14개 유형의 암세포주 
+
+nci.data = NCI60$data
+dim(nci.data)
+
+nci_pc_out = prcomp(nci.data, scale = TRUE) 
+
+pc12scores = nci_pc_out$x[,c("PC1", "PC2")] # pc scores 
+
+df = data.frame(cell_lines = nci.labs, pc12scores)
+
+df %>% 
+  ggplot(aes(x=PC1, y=PC2, col = cell_lines)) + 
+  geom_point(size = 3)
+```
+
+
+## 계층적 군집분석 (Hierarchical Clustering)
+
+개념
+- 유사성 측정 (distance)
+*Euclidean distance*    
+$$d_{euc}(x,y) = \sqrt{\sum_{i=1}^n(x_i - y_i)^2}$$ 
+
+*Manhattan distance*   
+$$d_{man}(x,y) = \sum_{i=1}^n |{(x_i - y_i)|}$$  
+
+*pearson correlation distance*      
+$$d_{cor}(x, y) = 1 - \frac{\sum\limits_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum\limits_{i=1}^n(x_i - \bar{x})^2 \sum\limits_{i=1}^n(y_i -\bar{y})^2}}$$   
+* correlation distance: 형태(프로파일)에 초점     
+
+*linkage* 방법들        
+- complete linkage   
+클러스터 간 거리의 최대치          
+- average linkage   
+클러스터 간 거리의 평균치   
+- single linkage  
+클러스터 간 거리의 최소치 
+- centroid linkage   
+클러스터 간 무게중심사이의 거리  
+
+→ 보통 complete 또는 average linkage가 균형 잡힌 결과를 줌   
+
+
+## 실습(Hierachical clustering)   
+
+```{r}
+nci_scaled = scale(nci.data) # center and scale are TRUE in default  
+dist_mat = dist(nci_scaled)
+
+hclust.complete = hclust(dist_mat, method = "complete")
+plot(hclust.complete, labels = nci.labs, main = "complete linkage")
+
+hc.clusters = cutree(hclust.complete, 5)
+hc.clusters
+
+table(hc.clusters, nci.labs)
+```
+
+
+## K-means clustering 
+
+개념 
+- n개 관측치들을 K개 클러스터로 나누기  
+
+> 알고리즘 
+1. 초기화: 무작위로 K개의 클러스터 할당 
+2. 반복  
+  + 클러스터 각각에 대해 무게중심 계산       
+  + 각 관측치를 가장 가까운 중심(클러스터)에 재할당 
+3. 수렴할 때까지 반복   
+
+## 실습(K-means clustering)   
+
+```{r}
+set.seed(2)
+km.out = kmeans(nci_scaled, centers = 5, nstart = 20) # 20번 서로 다른 초기 중심값으로 시도해서, 그중 가장 좋은(최소 총 제곱거리, within-cluster sum of squares가 가장 작은) 결과를 선택, 지역 최적해(local optimum)에 빠질 위험을 줄이기 위함. 
+
+km.clusters = km.out$cluster
+km.clusters
+
+table(km.clusters, hc.clusters)
+```
+
+
+## Heatmap 
+
+실습: USArrests 데이터
+```{r}
+df_scaled = scale(USArrests)
+df_dist = dist(df_scaled) # row-wise distance matrix 
+hc_out = hclust(df_dist, method = "complete")
+plot(hc_out)
+
+hc_clusters = cutree(hc_out, 4)
+hc_clusters
+```
+
+
+Heatmap 시각화 
+```{r}
+library(pheatmap)
+
+mat = as.matrix(t(df_scaled)) # 변수 vs 관측치 전환
+pheatmap(mat, 
+         cluster_rows = T,
+         annotation_col = data.frame(hc_clusters))
+```
+
+

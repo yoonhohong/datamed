@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Hong, Yoon-Ho" />
+
+<meta name="date" content="2022-09-18" />
+
+<title>Unsupervised learning: PCA, clustering</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data medicine with R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown-header">by Yoon H. Hong</li>
+<li>
+  <a href="http://www.github.com/yoonhohong/datamed">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Unsupervised learning: PCA, clustering</h1>
+<h4 class="author">Hong, Yoon-Ho</h4>
+<h4 class="date">2022-09-18</h4>
+
+</div>
+
+
+<p>비지도 학습은 정답(label) 없이, 데이터 자체의 패턴과 구조를 학습하는
+방법이다.</p>
+<p>주요 기법:<br />
+- 주성분분석 (Principal Component Analysis, PCA) → 차원 축소 / 시각화 /
+전처리<br />
+- 군집분석 (Clustering) → 유사한 관측치 또는 변수끼리 하위
+그룹(subgroup) 형성, ex) K-means clustering, 계층적 군집분석
+(Hierarchical clustering)</p>
+<div id="주성분분석pca" class="section level2">
+<h2>주성분분석(PCA)</h2>
+<p>개념 - 첫번째 주성분: 분산을 가장 크게 설명하는 방향의 선형
+결합.<br />
+- 두번째 주성분: 첫 번째 주성분과 직교(uncorrelated)하면서, 분산을
+최대화하는 방향.<br />
+- 스케일링: 변수의 단위가 다르면 큰 분산을 가진 변수에 종속 → PCA 전에
+표준화 필요</p>
+<p><span class="math display">\[Z_1 = \phi_{11}X_1 + \phi_{21}X_2 + ...
++ \phi_{p1}X_p\]</span></p>
+<p><span class="math display">\[\sum_{j=1}^p \phi^2_{j1} =
+1\]</span></p>
+<ul>
+<li>로딩 벡터: 각 변수에 곱해지는 계수 (<span
+class="math inline">\(\phi\)</span>)</li>
+</ul>
+<p><span class="math display">\[\phi_1 = (\phi_{11},
+\phi_{21},,,\phi_{p1})^T\]</span> - 주성분 점수(PC score): 각 관측치를
+새로운 축(PC)에 투영한 값</p>
+</div>
+<div id="실습pca" class="section level2">
+<h2>실습(PCA)</h2>
+<p>USArrests dataset</p>
+<pre class="r"><code>states = row.names(USArrests) 
+summary(USArrests)
+apply(USArrests, 2, var) # column-wise 
+apply(USArrests, 2, mean) # column-wise </code></pre>
+<pre class="r"><code>pr.out = prcomp(USArrests, scale = TRUE) 
+names(pr.out)
+pr.out$rotation # loading vectors 
+head(pr.out$x) # pc scores
+biplot(pr.out) # 이중 플롯 (loading + scores)</code></pre>
+<p>방향 반전(biplot 시각화 조정):</p>
+<pre class="r"><code>pr.out$rotation = -pr.out$rotation # loading vectors 
+pr.out$x = -pr.out$x # pc scores
+biplot(pr.out) </code></pre>
+<p>분산 설명 비율 (Scree plot):</p>
+<pre class="r"><code>pr.var = pr.out$sdev^2
+pve = pr.var/sum(pr.var)
+plot(pve, xlab = &quot;Principal component&quot;, ylab = &quot;Proportion of Variance Explained&quot;, type = &quot;b&quot;) # scree plot </code></pre>
+<pre class="r"><code>library(ISLR) # NCI60 data in this package 
+class(NCI60) # NCI60: 64개 암세포주에 대한 6830개의 유전자 발현 관측치 
+nci.labs = NCI60$labs
+table(nci.labs) # 14개 유형의 암세포주 
+
+nci.data = NCI60$data
+dim(nci.data)
+
+nci_pc_out = prcomp(nci.data, scale = TRUE) 
+
+pc12scores = nci_pc_out$x[,c(&quot;PC1&quot;, &quot;PC2&quot;)] # pc scores 
+
+df = data.frame(cell_lines = nci.labs, pc12scores)
+
+df %&gt;% 
+  ggplot(aes(x=PC1, y=PC2, col = cell_lines)) + 
+  geom_point(size = 3)</code></pre>
+</div>
+<div id="계층적-군집분석-hierarchical-clustering"
+class="section level2">
+<h2>계층적 군집분석 (Hierarchical Clustering)</h2>
+<p>개념 - 유사성 측정 (distance) <em>Euclidean distance</em><br />
+<span class="math display">\[d_{euc}(x,y) = \sqrt{\sum_{i=1}^n(x_i -
+y_i)^2}\]</span></p>
+<p><em>Manhattan distance</em><br />
+<span class="math display">\[d_{man}(x,y) = \sum_{i=1}^n |{(x_i -
+y_i)|}\]</span></p>
+<p><em>pearson correlation distance</em><br />
+<span class="math display">\[d_{cor}(x, y) = 1 -
+\frac{\sum\limits_{i=1}^n (x_i - \bar{x})(y_i -
+\bar{y})}{\sqrt{\sum\limits_{i=1}^n(x_i - \bar{x})^2
+\sum\limits_{i=1}^n(y_i -\bar{y})^2}}\]</span><br />
+* correlation distance: 형태(프로파일)에 초점</p>
+<p><em>linkage</em> 방법들<br />
+- complete linkage<br />
+클러스터 간 거리의 최대치<br />
+- average linkage<br />
+클러스터 간 거리의 평균치<br />
+- single linkage<br />
+클러스터 간 거리의 최소치 - centroid linkage<br />
+클러스터 간 무게중심사이의 거리</p>
+<p>→ 보통 complete 또는 average linkage가 균형 잡힌 결과를 줌</p>
+</div>
+<div id="실습hierachical-clustering" class="section level2">
+<h2>실습(Hierachical clustering)</h2>
+<pre class="r"><code>nci_scaled = scale(nci.data) # center and scale are TRUE in default  
+dist_mat = dist(nci_scaled)
+
+hclust.complete = hclust(dist_mat, method = &quot;complete&quot;)
+plot(hclust.complete, labels = nci.labs, main = &quot;complete linkage&quot;)
+
+hc.clusters = cutree(hclust.complete, 5)
+hc.clusters
+
+table(hc.clusters, nci.labs)</code></pre>
+</div>
+<div id="k-means-clustering" class="section level2">
+<h2>K-means clustering</h2>
+<p>개념 - n개 관측치들을 K개 클러스터로 나누기</p>
+<blockquote>
+<p>알고리즘 1. 초기화: 무작위로 K개의 클러스터 할당 2. 반복<br />
++ 클러스터 각각에 대해 무게중심 계산<br />
++ 각 관측치를 가장 가까운 중심(클러스터)에 재할당 3. 수렴할 때까지
+반복</p>
+</blockquote>
+</div>
+<div id="실습k-means-clustering" class="section level2">
+<h2>실습(K-means clustering)</h2>
+<pre class="r"><code>set.seed(2)
+km.out = kmeans(nci_scaled, centers = 5, nstart = 20) # 20번 서로 다른 초기 중심값으로 시도해서, 그중 가장 좋은(최소 총 제곱거리, within-cluster sum of squares가 가장 작은) 결과를 선택, 지역 최적해(local optimum)에 빠질 위험을 줄이기 위함. 
+
+km.clusters = km.out$cluster
+km.clusters
+
+table(km.clusters, hc.clusters)</code></pre>
+</div>
+<div id="heatmap" class="section level2">
+<h2>Heatmap</h2>
+<p>실습: USArrests 데이터</p>
+<pre class="r"><code>df_scaled = scale(USArrests)
+df_dist = dist(df_scaled) # row-wise distance matrix 
+hc_out = hclust(df_dist, method = &quot;complete&quot;)
+plot(hc_out)
+
+hc_clusters = cutree(hc_out, 4)
+hc_clusters</code></pre>
+<p>Heatmap 시각화</p>
+<pre class="r"><code>library(pheatmap)
+
+mat = as.matrix(t(df_scaled)) # 변수 vs 관측치 전환
+pheatmap(mat, 
+         cluster_rows = T,
+         annotation_col = data.frame(hc_clusters))</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

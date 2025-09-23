@@ -52,8 +52,8 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 - [통계적 모델링](week4_stat_model.html)   
 - [회귀와 분류: 선형회귀와 로지스틱 회귀](week5_regression_classification.html)     
 - [교차검증과 정규화(Ridge/Lasso)](week7_CV_regularization.html)
-- [의사결정나무, Random forest, Gradient Boosting](RandomForest_GradientBoosting.html)   
-- [비지도기계학습(PCA, 클러스터링)](D9_Unsupervised.html)   
+- [의사결정나무, Random forest, Gradient Boosting](week8_RF_GB.html)   
+- [비지도기계학습(PCA, 클러스터링)](week8_Unsupervised.html)   
 
 ### 실습 데이터 
 
@@ -69,7 +69,7 @@ R 패키지를 사용하여 데이터 가공과 시각화를 통해 탐색적 �
 - [Pima indians diabetes dataset](diabetes.html)    
 - [Principal component analysis](PCA.html)    
 - [Sample size calculation](sampleSize.html)    
-- [Random forest & gradient boosting](RandomForest.html)      
+
 
 
 ### 워크시트 
