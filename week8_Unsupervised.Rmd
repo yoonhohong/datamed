@@ -1,7 +1,6 @@
 ---
 title: "Unsupervised learning: PCA, clustering"
 author: "Hong, Yoon-Ho"
-date: "2022-09-18"
 output: 
   html_document: 
     toc: true

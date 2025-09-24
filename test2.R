@@ -4,12 +4,18 @@ library(tidyverse)
 
 df = read_csv("data/risk_classification_bias.csv")
 
-str(df)
-
 df$race = factor(df$race)
 df$sex = factor(df$sex)
 df$inpatient_history = factor(df$inpatient_history)
 df$high_risk = factor(df$high_risk)
+
+install.packages("GGally")
+library(GGally)
+
+ggpairs(df)
+
+
+
 
 summary(df)
 
@@ -152,6 +158,9 @@ coef(cv_lasso, s = "lambda.min")
 cv_lasso$lambda.min
 
 plot(cv_lasso)
+
+
+
 
 
 
